@@ -1,7 +1,12 @@
 {
-  "name": "prisma-client-75b2b7837eba486d3eee1c982ee9213f6fca17ec89cbaff5c531ca64290a0f58",
+  "name": "prisma-client-for-langfuse-linux",
   "main": "index.js",
+  "version": "2.49.0",
   "types": "index.d.ts",
+  "author": "engineering@langfuse.com",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
   "browser": "index-browser.js",
   "exports": {
     "./package.json": "./package.json",
@@ -79,6 +84,5 @@
     },
     "./*": "./*"
   },
-  "version": "5.15.0",
   "sideEffects": false
 }
