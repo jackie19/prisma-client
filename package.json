@@ -1,7 +1,6 @@
 {
   "name": "prisma-client-for-langfuse-linux",
   "main": "index.js",
-  "version": "2.49.0",
   "types": "index.d.ts",
   "author": "engineering@langfuse.com",
   "publishConfig": {
@@ -84,5 +83,6 @@
     },
     "./*": "./*"
   },
+  "version": "2.53.0",
   "sideEffects": false
 }
