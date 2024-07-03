@@ -16,12 +16,12 @@ exports.Prisma = Prisma
 exports.$Enums = {}
 
 /**
- * Prisma Client JS version: 5.15.0
- * Query Engine version: 12e25d8d06f6ea5a0252864dd9a03b1bb51f3022
+ * Prisma Client JS version: 5.16.1
+ * Query Engine version: 34ace0eb2704183d2c05b60b52fba5c43c13f303
  */
 Prisma.prismaVersion = {
-  client: "5.15.0",
-  engine: "12e25d8d06f6ea5a0252864dd9a03b1bb51f3022"
+  client: "5.16.1",
+  engine: "34ace0eb2704183d2c05b60b52fba5c43c13f303"
 }
 
 Prisma.PrismaClientKnownRequestError = () => {
@@ -193,8 +193,12 @@ exports.Prisma.LlmApiKeysScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   provider: 'provider',
+  adapter: 'adapter',
   displaySecretKey: 'displaySecretKey',
   secretKey: 'secretKey',
+  baseURL: 'baseURL',
+  customModels: 'customModels',
+  withDefaultModels: 'withDefaultModels',
   projectId: 'projectId'
 };
 
@@ -262,6 +266,7 @@ exports.Prisma.ObservationScalarFieldEnum = {
   updatedAt: 'updatedAt',
   model: 'model',
   internalModel: 'internalModel',
+  internalModelId: 'internalModelId',
   modelParameters: 'modelParameters',
   input: 'input',
   output: 'output',
@@ -272,6 +277,9 @@ exports.Prisma.ObservationScalarFieldEnum = {
   inputCost: 'inputCost',
   outputCost: 'outputCost',
   totalCost: 'totalCost',
+  calculatedInputCost: 'calculatedInputCost',
+  calculatedOutputCost: 'calculatedOutputCost',
+  calculatedTotalCost: 'calculatedTotalCost',
   completionStartTime: 'completionStartTime',
   promptId: 'promptId'
 };
@@ -424,6 +432,7 @@ exports.Prisma.EvalTemplateScalarFieldEnum = {
   version: 'version',
   prompt: 'prompt',
   model: 'model',
+  provider: 'provider',
   modelParams: 'modelParams',
   vars: 'vars',
   outputSchema: 'outputSchema'
@@ -474,6 +483,22 @@ exports.Prisma.PosthogIntegrationScalarFieldEnum = {
   lastSyncAt: 'lastSyncAt',
   enabled: 'enabled',
   createdAt: 'createdAt'
+};
+
+exports.Prisma.BatchExportScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  projectId: 'projectId',
+  userId: 'userId',
+  finishedAt: 'finishedAt',
+  expiresAt: 'expiresAt',
+  name: 'name',
+  status: 'status',
+  query: 'query',
+  format: 'format',
+  url: 'url',
+  log: 'log'
 };
 
 exports.Prisma.TraceViewScalarFieldEnum = {
@@ -641,6 +666,7 @@ exports.Prisma.ModelName = {
   JobExecution: 'JobExecution',
   SsoConfig: 'SsoConfig',
   PosthogIntegration: 'PosthogIntegration',
+  BatchExport: 'BatchExport',
   TraceView: 'TraceView',
   ObservationView: 'ObservationView'
 };
