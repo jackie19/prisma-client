@@ -34,6 +34,11 @@ export type User = $Result.DefaultSelection<Prisma.$UserPayload>
  */
 export type VerificationToken = $Result.DefaultSelection<Prisma.$VerificationTokenPayload>
 /**
+ * Model Organization
+ * 
+ */
+export type Organization = $Result.DefaultSelection<Prisma.$OrganizationPayload>
+/**
  * Model Project
  * 
  */
@@ -48,6 +53,11 @@ export type ApiKey = $Result.DefaultSelection<Prisma.$ApiKeyPayload>
  * 
  */
 export type LlmApiKeys = $Result.DefaultSelection<Prisma.$LlmApiKeysPayload>
+/**
+ * Model OrganizationMembership
+ * 
+ */
+export type OrganizationMembership = $Result.DefaultSelection<Prisma.$OrganizationMembershipPayload>
 /**
  * Model ProjectMembership
  * 
@@ -114,6 +124,11 @@ export type DatasetRunItems = $Result.DefaultSelection<Prisma.$DatasetRunItemsPa
  */
 export type Events = $Result.DefaultSelection<Prisma.$EventsPayload>
 /**
+ * Model Comment
+ * 
+ */
+export type Comment = $Result.DefaultSelection<Prisma.$CommentPayload>
+/**
  * Model Prompt
  * 
  */
@@ -173,14 +188,15 @@ export type ObservationView = $Result.DefaultSelection<Prisma.$ObservationViewPa
  * Enums
  */
 export namespace $Enums {
-  export const ProjectRole: {
+  export const Role: {
   OWNER: 'OWNER',
   ADMIN: 'ADMIN',
   MEMBER: 'MEMBER',
-  VIEWER: 'VIEWER'
+  VIEWER: 'VIEWER',
+  NONE: 'NONE'
 };
 
-export type ProjectRole = (typeof ProjectRole)[keyof typeof ProjectRole]
+export type Role = (typeof Role)[keyof typeof Role]
 
 
 export const ObservationType: {
@@ -228,6 +244,16 @@ export const DatasetStatus: {
 export type DatasetStatus = (typeof DatasetStatus)[keyof typeof DatasetStatus]
 
 
+export const CommentObjectType: {
+  TRACE: 'TRACE',
+  OBSERVATION: 'OBSERVATION',
+  SESSION: 'SESSION',
+  PROMPT: 'PROMPT'
+};
+
+export type CommentObjectType = (typeof CommentObjectType)[keyof typeof CommentObjectType]
+
+
 export const JobType: {
   EVAL: 'EVAL'
 };
@@ -254,9 +280,9 @@ export type JobExecutionStatus = (typeof JobExecutionStatus)[keyof typeof JobExe
 
 }
 
-export type ProjectRole = $Enums.ProjectRole
+export type Role = $Enums.Role
 
-export const ProjectRole: typeof $Enums.ProjectRole
+export const Role: typeof $Enums.Role
 
 export type ObservationType = $Enums.ObservationType
 
@@ -277,6 +303,10 @@ export const ScoreDataType: typeof $Enums.ScoreDataType
 export type DatasetStatus = $Enums.DatasetStatus
 
 export const DatasetStatus: typeof $Enums.DatasetStatus
+
+export type CommentObjectType = $Enums.CommentObjectType
+
+export const CommentObjectType: typeof $Enums.CommentObjectType
 
 export type JobType = $Enums.JobType
 
@@ -410,6 +440,17 @@ export class PrismaClient<
   $transaction<R>(fn: (prisma: Omit<PrismaClient, runtime.ITXClientDenyList>) => $Utils.JsPromise<R>, options?: { maxWait?: number, timeout?: number, isolationLevel?: Prisma.TransactionIsolationLevel }): $Utils.JsPromise<R>
 
 
+  /**
+   * Gives access to the client metrics in json or prometheus format.
+   * 
+   * @example
+   * ```
+   * const metrics = await prisma.$metrics.json()
+   * // or
+   * const metrics = await prisma.$metrics.prometheus()
+   * ```
+   */
+  readonly $metrics: runtime.MetricsClient
   $extends: $Extensions.ExtendsHook<"extends", Prisma.TypeMapCb, ExtArgs>
 
       /**
@@ -453,6 +494,16 @@ export class PrismaClient<
   get verificationToken(): Prisma.VerificationTokenDelegate<ExtArgs>;
 
   /**
+   * `prisma.organization`: Exposes CRUD operations for the **Organization** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Organizations
+    * const organizations = await prisma.organization.findMany()
+    * ```
+    */
+  get organization(): Prisma.OrganizationDelegate<ExtArgs>;
+
+  /**
    * `prisma.project`: Exposes CRUD operations for the **Project** model.
     * Example usage:
     * ```ts
@@ -481,6 +532,16 @@ export class PrismaClient<
     * ```
     */
   get llmApiKeys(): Prisma.LlmApiKeysDelegate<ExtArgs>;
+
+  /**
+   * `prisma.organizationMembership`: Exposes CRUD operations for the **OrganizationMembership** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more OrganizationMemberships
+    * const organizationMemberships = await prisma.organizationMembership.findMany()
+    * ```
+    */
+  get organizationMembership(): Prisma.OrganizationMembershipDelegate<ExtArgs>;
 
   /**
    * `prisma.projectMembership`: Exposes CRUD operations for the **ProjectMembership** model.
@@ -611,6 +672,16 @@ export class PrismaClient<
     * ```
     */
   get events(): Prisma.EventsDelegate<ExtArgs>;
+
+  /**
+   * `prisma.comment`: Exposes CRUD operations for the **Comment** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Comments
+    * const comments = await prisma.comment.findMany()
+    * ```
+    */
+  get comment(): Prisma.CommentDelegate<ExtArgs>;
 
   /**
    * `prisma.prompt`: Exposes CRUD operations for the **Prompt** model.
@@ -778,8 +849,8 @@ export namespace Prisma {
   export import Exact = $Public.Exact
 
   /**
-   * Prisma Client JS version: 5.17.0
-   * Query Engine version: 393aa359c9ad4a4bb28630fb5613f9c281cde053
+   * Prisma Client JS version: 5.18.0
+   * Query Engine version: 4c784e32044a8a016d99474bd02a3b6123742169
    */
   export type PrismaVersion = {
     client: string
@@ -1202,9 +1273,11 @@ export namespace Prisma {
     Session: 'Session',
     User: 'User',
     VerificationToken: 'VerificationToken',
+    Organization: 'Organization',
     Project: 'Project',
     ApiKey: 'ApiKey',
     LlmApiKeys: 'LlmApiKeys',
+    OrganizationMembership: 'OrganizationMembership',
     ProjectMembership: 'ProjectMembership',
     MembershipInvitation: 'MembershipInvitation',
     TraceSession: 'TraceSession',
@@ -1218,6 +1291,7 @@ export namespace Prisma {
     DatasetRuns: 'DatasetRuns',
     DatasetRunItems: 'DatasetRunItems',
     Events: 'Events',
+    Comment: 'Comment',
     Prompt: 'Prompt',
     Model: 'Model',
     AuditLog: 'AuditLog',
@@ -1244,7 +1318,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "account" | "session" | "user" | "verificationToken" | "project" | "apiKey" | "llmApiKeys" | "projectMembership" | "membershipInvitation" | "traceSession" | "trace" | "observation" | "score" | "scoreConfig" | "cronJobs" | "dataset" | "datasetItem" | "datasetRuns" | "datasetRunItems" | "events" | "prompt" | "model" | "auditLog" | "evalTemplate" | "jobConfiguration" | "jobExecution" | "ssoConfig" | "posthogIntegration" | "batchExport" | "traceView" | "observationView"
+      modelProps: "account" | "session" | "user" | "verificationToken" | "organization" | "project" | "apiKey" | "llmApiKeys" | "organizationMembership" | "projectMembership" | "membershipInvitation" | "traceSession" | "trace" | "observation" | "score" | "scoreConfig" | "cronJobs" | "dataset" | "datasetItem" | "datasetRuns" | "datasetRunItems" | "events" | "comment" | "prompt" | "model" | "auditLog" | "evalTemplate" | "jobConfiguration" | "jobExecution" | "ssoConfig" | "posthogIntegration" | "batchExport" | "traceView" | "observationView"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1528,6 +1602,76 @@ export namespace Prisma {
           }
         }
       }
+      Organization: {
+        payload: Prisma.$OrganizationPayload<ExtArgs>
+        fields: Prisma.OrganizationFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.OrganizationFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrganizationPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.OrganizationFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrganizationPayload>
+          }
+          findFirst: {
+            args: Prisma.OrganizationFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrganizationPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.OrganizationFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrganizationPayload>
+          }
+          findMany: {
+            args: Prisma.OrganizationFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrganizationPayload>[]
+          }
+          create: {
+            args: Prisma.OrganizationCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrganizationPayload>
+          }
+          createMany: {
+            args: Prisma.OrganizationCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.OrganizationCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrganizationPayload>[]
+          }
+          delete: {
+            args: Prisma.OrganizationDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrganizationPayload>
+          }
+          update: {
+            args: Prisma.OrganizationUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrganizationPayload>
+          }
+          deleteMany: {
+            args: Prisma.OrganizationDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.OrganizationUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.OrganizationUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrganizationPayload>
+          }
+          aggregate: {
+            args: Prisma.OrganizationAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateOrganization>
+          }
+          groupBy: {
+            args: Prisma.OrganizationGroupByArgs<ExtArgs>
+            result: $Utils.Optional<OrganizationGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.OrganizationCountArgs<ExtArgs>
+            result: $Utils.Optional<OrganizationCountAggregateOutputType> | number
+          }
+        }
+      }
       Project: {
         payload: Prisma.$ProjectPayload<ExtArgs>
         fields: Prisma.ProjectFieldRefs
@@ -1735,6 +1879,76 @@ export namespace Prisma {
           count: {
             args: Prisma.LlmApiKeysCountArgs<ExtArgs>
             result: $Utils.Optional<LlmApiKeysCountAggregateOutputType> | number
+          }
+        }
+      }
+      OrganizationMembership: {
+        payload: Prisma.$OrganizationMembershipPayload<ExtArgs>
+        fields: Prisma.OrganizationMembershipFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.OrganizationMembershipFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrganizationMembershipPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.OrganizationMembershipFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrganizationMembershipPayload>
+          }
+          findFirst: {
+            args: Prisma.OrganizationMembershipFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrganizationMembershipPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.OrganizationMembershipFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrganizationMembershipPayload>
+          }
+          findMany: {
+            args: Prisma.OrganizationMembershipFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrganizationMembershipPayload>[]
+          }
+          create: {
+            args: Prisma.OrganizationMembershipCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrganizationMembershipPayload>
+          }
+          createMany: {
+            args: Prisma.OrganizationMembershipCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.OrganizationMembershipCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrganizationMembershipPayload>[]
+          }
+          delete: {
+            args: Prisma.OrganizationMembershipDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrganizationMembershipPayload>
+          }
+          update: {
+            args: Prisma.OrganizationMembershipUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrganizationMembershipPayload>
+          }
+          deleteMany: {
+            args: Prisma.OrganizationMembershipDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.OrganizationMembershipUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.OrganizationMembershipUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrganizationMembershipPayload>
+          }
+          aggregate: {
+            args: Prisma.OrganizationMembershipAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateOrganizationMembership>
+          }
+          groupBy: {
+            args: Prisma.OrganizationMembershipGroupByArgs<ExtArgs>
+            result: $Utils.Optional<OrganizationMembershipGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.OrganizationMembershipCountArgs<ExtArgs>
+            result: $Utils.Optional<OrganizationMembershipCountAggregateOutputType> | number
           }
         }
       }
@@ -2645,6 +2859,76 @@ export namespace Prisma {
           count: {
             args: Prisma.EventsCountArgs<ExtArgs>
             result: $Utils.Optional<EventsCountAggregateOutputType> | number
+          }
+        }
+      }
+      Comment: {
+        payload: Prisma.$CommentPayload<ExtArgs>
+        fields: Prisma.CommentFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.CommentFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommentPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.CommentFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommentPayload>
+          }
+          findFirst: {
+            args: Prisma.CommentFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommentPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.CommentFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommentPayload>
+          }
+          findMany: {
+            args: Prisma.CommentFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommentPayload>[]
+          }
+          create: {
+            args: Prisma.CommentCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommentPayload>
+          }
+          createMany: {
+            args: Prisma.CommentCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.CommentCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommentPayload>[]
+          }
+          delete: {
+            args: Prisma.CommentDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommentPayload>
+          }
+          update: {
+            args: Prisma.CommentUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommentPayload>
+          }
+          deleteMany: {
+            args: Prisma.CommentDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.CommentUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.CommentUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommentPayload>
+          }
+          aggregate: {
+            args: Prisma.CommentAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateComment>
+          }
+          groupBy: {
+            args: Prisma.CommentGroupByArgs<ExtArgs>
+            result: $Utils.Optional<CommentGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.CommentCountArgs<ExtArgs>
+            result: $Utils.Optional<CommentCountAggregateOutputType> | number
           }
         }
       }
@@ -3581,17 +3865,17 @@ export namespace Prisma {
   export type UserCountOutputType = {
     accounts: number
     sessions: number
+    organizationMemberships: number
     projectMemberships: number
     invitations: number
-    AuditLog: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     accounts?: boolean | UserCountOutputTypeCountAccountsArgs
     sessions?: boolean | UserCountOutputTypeCountSessionsArgs
+    organizationMemberships?: boolean | UserCountOutputTypeCountOrganizationMembershipsArgs
     projectMemberships?: boolean | UserCountOutputTypeCountProjectMembershipsArgs
     invitations?: boolean | UserCountOutputTypeCountInvitationsArgs
-    AuditLog?: boolean | UserCountOutputTypeCountAuditLogArgs
   }
 
   // Custom InputTypes
@@ -3622,6 +3906,13 @@ export namespace Prisma {
   /**
    * UserCountOutputType without action
    */
+  export type UserCountOutputTypeCountOrganizationMembershipsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: OrganizationMembershipWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
   export type UserCountOutputTypeCountProjectMembershipsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ProjectMembershipWhereInput
   }
@@ -3633,11 +3924,53 @@ export namespace Prisma {
     where?: MembershipInvitationWhereInput
   }
 
+
   /**
-   * UserCountOutputType without action
+   * Count Type OrganizationCountOutputType
    */
-  export type UserCountOutputTypeCountAuditLogArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: AuditLogWhereInput
+
+  export type OrganizationCountOutputType = {
+    organizationMemberships: number
+    projects: number
+    MembershipInvitation: number
+  }
+
+  export type OrganizationCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organizationMemberships?: boolean | OrganizationCountOutputTypeCountOrganizationMembershipsArgs
+    projects?: boolean | OrganizationCountOutputTypeCountProjectsArgs
+    MembershipInvitation?: boolean | OrganizationCountOutputTypeCountMembershipInvitationArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * OrganizationCountOutputType without action
+   */
+  export type OrganizationCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrganizationCountOutputType
+     */
+    select?: OrganizationCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * OrganizationCountOutputType without action
+   */
+  export type OrganizationCountOutputTypeCountOrganizationMembershipsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: OrganizationMembershipWhereInput
+  }
+
+  /**
+   * OrganizationCountOutputType without action
+   */
+  export type OrganizationCountOutputTypeCountProjectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ProjectWhereInput
+  }
+
+  /**
+   * OrganizationCountOutputType without action
+   */
+  export type OrganizationCountOutputTypeCountMembershipInvitationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: MembershipInvitationWhereInput
   }
 
 
@@ -3656,7 +3989,6 @@ export namespace Prisma {
     sessions: number
     Prompt: number
     Model: number
-    AuditLog: number
     EvalTemplate: number
     JobConfiguration: number
     JobExecution: number
@@ -3665,6 +3997,7 @@ export namespace Prisma {
     Score: number
     scoreConfig: number
     BatchExport: number
+    comment: number
   }
 
   export type ProjectCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3678,7 +4011,6 @@ export namespace Prisma {
     sessions?: boolean | ProjectCountOutputTypeCountSessionsArgs
     Prompt?: boolean | ProjectCountOutputTypeCountPromptArgs
     Model?: boolean | ProjectCountOutputTypeCountModelArgs
-    AuditLog?: boolean | ProjectCountOutputTypeCountAuditLogArgs
     EvalTemplate?: boolean | ProjectCountOutputTypeCountEvalTemplateArgs
     JobConfiguration?: boolean | ProjectCountOutputTypeCountJobConfigurationArgs
     JobExecution?: boolean | ProjectCountOutputTypeCountJobExecutionArgs
@@ -3687,6 +4019,7 @@ export namespace Prisma {
     Score?: boolean | ProjectCountOutputTypeCountScoreArgs
     scoreConfig?: boolean | ProjectCountOutputTypeCountScoreConfigArgs
     BatchExport?: boolean | ProjectCountOutputTypeCountBatchExportArgs
+    comment?: boolean | ProjectCountOutputTypeCountCommentArgs
   }
 
   // Custom InputTypes
@@ -3773,13 +4106,6 @@ export namespace Prisma {
   /**
    * ProjectCountOutputType without action
    */
-  export type ProjectCountOutputTypeCountAuditLogArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: AuditLogWhereInput
-  }
-
-  /**
-   * ProjectCountOutputType without action
-   */
   export type ProjectCountOutputTypeCountEvalTemplateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: EvalTemplateWhereInput
   }
@@ -3833,6 +4159,44 @@ export namespace Prisma {
     where?: BatchExportWhereInput
   }
 
+  /**
+   * ProjectCountOutputType without action
+   */
+  export type ProjectCountOutputTypeCountCommentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CommentWhereInput
+  }
+
+
+  /**
+   * Count Type OrganizationMembershipCountOutputType
+   */
+
+  export type OrganizationMembershipCountOutputType = {
+    ProjectMemberships: number
+  }
+
+  export type OrganizationMembershipCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    ProjectMemberships?: boolean | OrganizationMembershipCountOutputTypeCountProjectMembershipsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * OrganizationMembershipCountOutputType without action
+   */
+  export type OrganizationMembershipCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrganizationMembershipCountOutputType
+     */
+    select?: OrganizationMembershipCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * OrganizationMembershipCountOutputType without action
+   */
+  export type OrganizationMembershipCountOutputTypeCountProjectMembershipsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ProjectMembershipWhereInput
+  }
+
 
   /**
    * Count Type TraceSessionCountOutputType
@@ -3870,12 +4234,10 @@ export namespace Prisma {
    */
 
   export type TraceCountOutputType = {
-    DatasetItem: number
     JobExecution: number
   }
 
   export type TraceCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    DatasetItem?: boolean | TraceCountOutputTypeCountDatasetItemArgs
     JobExecution?: boolean | TraceCountOutputTypeCountJobExecutionArgs
   }
 
@@ -3893,46 +4255,8 @@ export namespace Prisma {
   /**
    * TraceCountOutputType without action
    */
-  export type TraceCountOutputTypeCountDatasetItemArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: DatasetItemWhereInput
-  }
-
-  /**
-   * TraceCountOutputType without action
-   */
   export type TraceCountOutputTypeCountJobExecutionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: JobExecutionWhereInput
-  }
-
-
-  /**
-   * Count Type ObservationCountOutputType
-   */
-
-  export type ObservationCountOutputType = {
-    derivedDatasetItems: number
-  }
-
-  export type ObservationCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    derivedDatasetItems?: boolean | ObservationCountOutputTypeCountDerivedDatasetItemsArgs
-  }
-
-  // Custom InputTypes
-  /**
-   * ObservationCountOutputType without action
-   */
-  export type ObservationCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ObservationCountOutputType
-     */
-    select?: ObservationCountOutputTypeSelect<ExtArgs> | null
-  }
-
-  /**
-   * ObservationCountOutputType without action
-   */
-  export type ObservationCountOutputTypeCountDerivedDatasetItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: DatasetItemWhereInput
   }
 
 
@@ -6390,9 +6714,9 @@ export namespace Prisma {
     featureFlags?: boolean
     accounts?: boolean | User$accountsArgs<ExtArgs>
     sessions?: boolean | User$sessionsArgs<ExtArgs>
+    organizationMemberships?: boolean | User$organizationMembershipsArgs<ExtArgs>
     projectMemberships?: boolean | User$projectMembershipsArgs<ExtArgs>
     invitations?: boolean | User$invitationsArgs<ExtArgs>
-    AuditLog?: boolean | User$AuditLogArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -6425,9 +6749,9 @@ export namespace Prisma {
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     accounts?: boolean | User$accountsArgs<ExtArgs>
     sessions?: boolean | User$sessionsArgs<ExtArgs>
+    organizationMemberships?: boolean | User$organizationMembershipsArgs<ExtArgs>
     projectMemberships?: boolean | User$projectMembershipsArgs<ExtArgs>
     invitations?: boolean | User$invitationsArgs<ExtArgs>
-    AuditLog?: boolean | User$AuditLogArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -6437,9 +6761,9 @@ export namespace Prisma {
     objects: {
       accounts: Prisma.$AccountPayload<ExtArgs>[]
       sessions: Prisma.$SessionPayload<ExtArgs>[]
+      organizationMemberships: Prisma.$OrganizationMembershipPayload<ExtArgs>[]
       projectMemberships: Prisma.$ProjectMembershipPayload<ExtArgs>[]
       invitations: Prisma.$MembershipInvitationPayload<ExtArgs>[]
-      AuditLog: Prisma.$AuditLogPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -6818,9 +7142,9 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     accounts<T extends User$accountsArgs<ExtArgs> = {}>(args?: Subset<T, User$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany"> | Null>
     sessions<T extends User$sessionsArgs<ExtArgs> = {}>(args?: Subset<T, User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany"> | Null>
+    organizationMemberships<T extends User$organizationMembershipsArgs<ExtArgs> = {}>(args?: Subset<T, User$organizationMembershipsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrganizationMembershipPayload<ExtArgs>, T, "findMany"> | Null>
     projectMemberships<T extends User$projectMembershipsArgs<ExtArgs> = {}>(args?: Subset<T, User$projectMembershipsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectMembershipPayload<ExtArgs>, T, "findMany"> | Null>
     invitations<T extends User$invitationsArgs<ExtArgs> = {}>(args?: Subset<T, User$invitationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MembershipInvitationPayload<ExtArgs>, T, "findMany"> | Null>
-    AuditLog<T extends User$AuditLogArgs<ExtArgs> = {}>(args?: Subset<T, User$AuditLogArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -7223,6 +7547,26 @@ export namespace Prisma {
   }
 
   /**
+   * User.organizationMemberships
+   */
+  export type User$organizationMembershipsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrganizationMembership
+     */
+    select?: OrganizationMembershipSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrganizationMembershipInclude<ExtArgs> | null
+    where?: OrganizationMembershipWhereInput
+    orderBy?: OrganizationMembershipOrderByWithRelationInput | OrganizationMembershipOrderByWithRelationInput[]
+    cursor?: OrganizationMembershipWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: OrganizationMembershipScalarFieldEnum | OrganizationMembershipScalarFieldEnum[]
+  }
+
+  /**
    * User.projectMemberships
    */
   export type User$projectMembershipsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -7260,26 +7604,6 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: MembershipInvitationScalarFieldEnum | MembershipInvitationScalarFieldEnum[]
-  }
-
-  /**
-   * User.AuditLog
-   */
-  export type User$AuditLogArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the AuditLog
-     */
-    select?: AuditLogSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: AuditLogInclude<ExtArgs> | null
-    where?: AuditLogWhereInput
-    orderBy?: AuditLogOrderByWithRelationInput | AuditLogOrderByWithRelationInput[]
-    cursor?: AuditLogWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: AuditLogScalarFieldEnum | AuditLogScalarFieldEnum[]
   }
 
   /**
@@ -8161,6 +8485,1007 @@ export namespace Prisma {
 
 
   /**
+   * Model Organization
+   */
+
+  export type AggregateOrganization = {
+    _count: OrganizationCountAggregateOutputType | null
+    _min: OrganizationMinAggregateOutputType | null
+    _max: OrganizationMaxAggregateOutputType | null
+  }
+
+  export type OrganizationMinAggregateOutputType = {
+    id: string | null
+    name: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type OrganizationMaxAggregateOutputType = {
+    id: string | null
+    name: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type OrganizationCountAggregateOutputType = {
+    id: number
+    name: number
+    createdAt: number
+    updatedAt: number
+    cloudConfig: number
+    _all: number
+  }
+
+
+  export type OrganizationMinAggregateInputType = {
+    id?: true
+    name?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type OrganizationMaxAggregateInputType = {
+    id?: true
+    name?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type OrganizationCountAggregateInputType = {
+    id?: true
+    name?: true
+    createdAt?: true
+    updatedAt?: true
+    cloudConfig?: true
+    _all?: true
+  }
+
+  export type OrganizationAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Organization to aggregate.
+     */
+    where?: OrganizationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Organizations to fetch.
+     */
+    orderBy?: OrganizationOrderByWithRelationInput | OrganizationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: OrganizationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Organizations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Organizations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Organizations
+    **/
+    _count?: true | OrganizationCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: OrganizationMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: OrganizationMaxAggregateInputType
+  }
+
+  export type GetOrganizationAggregateType<T extends OrganizationAggregateArgs> = {
+        [P in keyof T & keyof AggregateOrganization]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateOrganization[P]>
+      : GetScalarType<T[P], AggregateOrganization[P]>
+  }
+
+
+
+
+  export type OrganizationGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: OrganizationWhereInput
+    orderBy?: OrganizationOrderByWithAggregationInput | OrganizationOrderByWithAggregationInput[]
+    by: OrganizationScalarFieldEnum[] | OrganizationScalarFieldEnum
+    having?: OrganizationScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: OrganizationCountAggregateInputType | true
+    _min?: OrganizationMinAggregateInputType
+    _max?: OrganizationMaxAggregateInputType
+  }
+
+  export type OrganizationGroupByOutputType = {
+    id: string
+    name: string
+    createdAt: Date
+    updatedAt: Date
+    cloudConfig: JsonValue | null
+    _count: OrganizationCountAggregateOutputType | null
+    _min: OrganizationMinAggregateOutputType | null
+    _max: OrganizationMaxAggregateOutputType | null
+  }
+
+  type GetOrganizationGroupByPayload<T extends OrganizationGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<OrganizationGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof OrganizationGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], OrganizationGroupByOutputType[P]>
+            : GetScalarType<T[P], OrganizationGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type OrganizationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    cloudConfig?: boolean
+    organizationMemberships?: boolean | Organization$organizationMembershipsArgs<ExtArgs>
+    projects?: boolean | Organization$projectsArgs<ExtArgs>
+    MembershipInvitation?: boolean | Organization$MembershipInvitationArgs<ExtArgs>
+    _count?: boolean | OrganizationCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["organization"]>
+
+  export type OrganizationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    cloudConfig?: boolean
+  }, ExtArgs["result"]["organization"]>
+
+  export type OrganizationSelectScalar = {
+    id?: boolean
+    name?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    cloudConfig?: boolean
+  }
+
+  export type OrganizationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organizationMemberships?: boolean | Organization$organizationMembershipsArgs<ExtArgs>
+    projects?: boolean | Organization$projectsArgs<ExtArgs>
+    MembershipInvitation?: boolean | Organization$MembershipInvitationArgs<ExtArgs>
+    _count?: boolean | OrganizationCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type OrganizationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
+  export type $OrganizationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Organization"
+    objects: {
+      organizationMemberships: Prisma.$OrganizationMembershipPayload<ExtArgs>[]
+      projects: Prisma.$ProjectPayload<ExtArgs>[]
+      MembershipInvitation: Prisma.$MembershipInvitationPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      name: string
+      createdAt: Date
+      updatedAt: Date
+      cloudConfig: Prisma.JsonValue | null
+    }, ExtArgs["result"]["organization"]>
+    composites: {}
+  }
+
+  type OrganizationGetPayload<S extends boolean | null | undefined | OrganizationDefaultArgs> = $Result.GetResult<Prisma.$OrganizationPayload, S>
+
+  type OrganizationCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<OrganizationFindManyArgs, 'select' | 'include' | 'distinct' | 'relationLoadStrategy'> & {
+      select?: OrganizationCountAggregateInputType | true
+    }
+
+  export interface OrganizationDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Organization'], meta: { name: 'Organization' } }
+    /**
+     * Find zero or one Organization that matches the filter.
+     * @param {OrganizationFindUniqueArgs} args - Arguments to find a Organization
+     * @example
+     * // Get one Organization
+     * const organization = await prisma.organization.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends OrganizationFindUniqueArgs>(args: SelectSubset<T, OrganizationFindUniqueArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one Organization that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {OrganizationFindUniqueOrThrowArgs} args - Arguments to find a Organization
+     * @example
+     * // Get one Organization
+     * const organization = await prisma.organization.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends OrganizationFindUniqueOrThrowArgs>(args: SelectSubset<T, OrganizationFindUniqueOrThrowArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first Organization that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrganizationFindFirstArgs} args - Arguments to find a Organization
+     * @example
+     * // Get one Organization
+     * const organization = await prisma.organization.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends OrganizationFindFirstArgs>(args?: SelectSubset<T, OrganizationFindFirstArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first Organization that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrganizationFindFirstOrThrowArgs} args - Arguments to find a Organization
+     * @example
+     * // Get one Organization
+     * const organization = await prisma.organization.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends OrganizationFindFirstOrThrowArgs>(args?: SelectSubset<T, OrganizationFindFirstOrThrowArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more Organizations that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrganizationFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Organizations
+     * const organizations = await prisma.organization.findMany()
+     * 
+     * // Get first 10 Organizations
+     * const organizations = await prisma.organization.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const organizationWithIdOnly = await prisma.organization.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends OrganizationFindManyArgs>(args?: SelectSubset<T, OrganizationFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a Organization.
+     * @param {OrganizationCreateArgs} args - Arguments to create a Organization.
+     * @example
+     * // Create one Organization
+     * const Organization = await prisma.organization.create({
+     *   data: {
+     *     // ... data to create a Organization
+     *   }
+     * })
+     * 
+     */
+    create<T extends OrganizationCreateArgs>(args: SelectSubset<T, OrganizationCreateArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many Organizations.
+     * @param {OrganizationCreateManyArgs} args - Arguments to create many Organizations.
+     * @example
+     * // Create many Organizations
+     * const organization = await prisma.organization.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends OrganizationCreateManyArgs>(args?: SelectSubset<T, OrganizationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Organizations and returns the data saved in the database.
+     * @param {OrganizationCreateManyAndReturnArgs} args - Arguments to create many Organizations.
+     * @example
+     * // Create many Organizations
+     * const organization = await prisma.organization.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Organizations and only return the `id`
+     * const organizationWithIdOnly = await prisma.organization.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends OrganizationCreateManyAndReturnArgs>(args?: SelectSubset<T, OrganizationCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a Organization.
+     * @param {OrganizationDeleteArgs} args - Arguments to delete one Organization.
+     * @example
+     * // Delete one Organization
+     * const Organization = await prisma.organization.delete({
+     *   where: {
+     *     // ... filter to delete one Organization
+     *   }
+     * })
+     * 
+     */
+    delete<T extends OrganizationDeleteArgs>(args: SelectSubset<T, OrganizationDeleteArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one Organization.
+     * @param {OrganizationUpdateArgs} args - Arguments to update one Organization.
+     * @example
+     * // Update one Organization
+     * const organization = await prisma.organization.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends OrganizationUpdateArgs>(args: SelectSubset<T, OrganizationUpdateArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more Organizations.
+     * @param {OrganizationDeleteManyArgs} args - Arguments to filter Organizations to delete.
+     * @example
+     * // Delete a few Organizations
+     * const { count } = await prisma.organization.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends OrganizationDeleteManyArgs>(args?: SelectSubset<T, OrganizationDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Organizations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrganizationUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Organizations
+     * const organization = await prisma.organization.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends OrganizationUpdateManyArgs>(args: SelectSubset<T, OrganizationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Organization.
+     * @param {OrganizationUpsertArgs} args - Arguments to update or create a Organization.
+     * @example
+     * // Update or create a Organization
+     * const organization = await prisma.organization.upsert({
+     *   create: {
+     *     // ... data to create a Organization
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Organization we want to update
+     *   }
+     * })
+     */
+    upsert<T extends OrganizationUpsertArgs>(args: SelectSubset<T, OrganizationUpsertArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of Organizations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrganizationCountArgs} args - Arguments to filter Organizations to count.
+     * @example
+     * // Count the number of Organizations
+     * const count = await prisma.organization.count({
+     *   where: {
+     *     // ... the filter for the Organizations we want to count
+     *   }
+     * })
+    **/
+    count<T extends OrganizationCountArgs>(
+      args?: Subset<T, OrganizationCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], OrganizationCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Organization.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrganizationAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends OrganizationAggregateArgs>(args: Subset<T, OrganizationAggregateArgs>): Prisma.PrismaPromise<GetOrganizationAggregateType<T>>
+
+    /**
+     * Group by Organization.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrganizationGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends OrganizationGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: OrganizationGroupByArgs['orderBy'] }
+        : { orderBy?: OrganizationGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, OrganizationGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetOrganizationGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Organization model
+   */
+  readonly fields: OrganizationFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Organization.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__OrganizationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    organizationMemberships<T extends Organization$organizationMembershipsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$organizationMembershipsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrganizationMembershipPayload<ExtArgs>, T, "findMany"> | Null>
+    projects<T extends Organization$projectsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$projectsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findMany"> | Null>
+    MembershipInvitation<T extends Organization$MembershipInvitationArgs<ExtArgs> = {}>(args?: Subset<T, Organization$MembershipInvitationArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MembershipInvitationPayload<ExtArgs>, T, "findMany"> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Organization model
+   */ 
+  interface OrganizationFieldRefs {
+    readonly id: FieldRef<"Organization", 'String'>
+    readonly name: FieldRef<"Organization", 'String'>
+    readonly createdAt: FieldRef<"Organization", 'DateTime'>
+    readonly updatedAt: FieldRef<"Organization", 'DateTime'>
+    readonly cloudConfig: FieldRef<"Organization", 'Json'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Organization findUnique
+   */
+  export type OrganizationFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Organization
+     */
+    select?: OrganizationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrganizationInclude<ExtArgs> | null
+    /**
+     * Filter, which Organization to fetch.
+     */
+    where: OrganizationWhereUniqueInput
+    relationLoadStrategy?: RelationLoadStrategy
+  }
+
+  /**
+   * Organization findUniqueOrThrow
+   */
+  export type OrganizationFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Organization
+     */
+    select?: OrganizationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrganizationInclude<ExtArgs> | null
+    /**
+     * Filter, which Organization to fetch.
+     */
+    where: OrganizationWhereUniqueInput
+    relationLoadStrategy?: RelationLoadStrategy
+  }
+
+  /**
+   * Organization findFirst
+   */
+  export type OrganizationFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Organization
+     */
+    select?: OrganizationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrganizationInclude<ExtArgs> | null
+    /**
+     * Filter, which Organization to fetch.
+     */
+    where?: OrganizationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Organizations to fetch.
+     */
+    orderBy?: OrganizationOrderByWithRelationInput | OrganizationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Organizations.
+     */
+    cursor?: OrganizationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Organizations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Organizations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Organizations.
+     */
+    distinct?: OrganizationScalarFieldEnum | OrganizationScalarFieldEnum[]
+    relationLoadStrategy?: RelationLoadStrategy
+  }
+
+  /**
+   * Organization findFirstOrThrow
+   */
+  export type OrganizationFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Organization
+     */
+    select?: OrganizationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrganizationInclude<ExtArgs> | null
+    /**
+     * Filter, which Organization to fetch.
+     */
+    where?: OrganizationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Organizations to fetch.
+     */
+    orderBy?: OrganizationOrderByWithRelationInput | OrganizationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Organizations.
+     */
+    cursor?: OrganizationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Organizations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Organizations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Organizations.
+     */
+    distinct?: OrganizationScalarFieldEnum | OrganizationScalarFieldEnum[]
+    relationLoadStrategy?: RelationLoadStrategy
+  }
+
+  /**
+   * Organization findMany
+   */
+  export type OrganizationFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Organization
+     */
+    select?: OrganizationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrganizationInclude<ExtArgs> | null
+    /**
+     * Filter, which Organizations to fetch.
+     */
+    where?: OrganizationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Organizations to fetch.
+     */
+    orderBy?: OrganizationOrderByWithRelationInput | OrganizationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Organizations.
+     */
+    cursor?: OrganizationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Organizations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Organizations.
+     */
+    skip?: number
+    distinct?: OrganizationScalarFieldEnum | OrganizationScalarFieldEnum[]
+    relationLoadStrategy?: RelationLoadStrategy
+  }
+
+  /**
+   * Organization create
+   */
+  export type OrganizationCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Organization
+     */
+    select?: OrganizationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrganizationInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Organization.
+     */
+    data: XOR<OrganizationCreateInput, OrganizationUncheckedCreateInput>
+    relationLoadStrategy?: RelationLoadStrategy
+  }
+
+  /**
+   * Organization createMany
+   */
+  export type OrganizationCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Organizations.
+     */
+    data: OrganizationCreateManyInput | OrganizationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Organization createManyAndReturn
+   */
+  export type OrganizationCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Organization
+     */
+    select?: OrganizationSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many Organizations.
+     */
+    data: OrganizationCreateManyInput | OrganizationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Organization update
+   */
+  export type OrganizationUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Organization
+     */
+    select?: OrganizationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrganizationInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Organization.
+     */
+    data: XOR<OrganizationUpdateInput, OrganizationUncheckedUpdateInput>
+    /**
+     * Choose, which Organization to update.
+     */
+    where: OrganizationWhereUniqueInput
+    relationLoadStrategy?: RelationLoadStrategy
+  }
+
+  /**
+   * Organization updateMany
+   */
+  export type OrganizationUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Organizations.
+     */
+    data: XOR<OrganizationUpdateManyMutationInput, OrganizationUncheckedUpdateManyInput>
+    /**
+     * Filter which Organizations to update
+     */
+    where?: OrganizationWhereInput
+  }
+
+  /**
+   * Organization upsert
+   */
+  export type OrganizationUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Organization
+     */
+    select?: OrganizationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrganizationInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Organization to update in case it exists.
+     */
+    where: OrganizationWhereUniqueInput
+    /**
+     * In case the Organization found by the `where` argument doesn't exist, create a new Organization with this data.
+     */
+    create: XOR<OrganizationCreateInput, OrganizationUncheckedCreateInput>
+    /**
+     * In case the Organization was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<OrganizationUpdateInput, OrganizationUncheckedUpdateInput>
+    relationLoadStrategy?: RelationLoadStrategy
+  }
+
+  /**
+   * Organization delete
+   */
+  export type OrganizationDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Organization
+     */
+    select?: OrganizationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrganizationInclude<ExtArgs> | null
+    /**
+     * Filter which Organization to delete.
+     */
+    where: OrganizationWhereUniqueInput
+    relationLoadStrategy?: RelationLoadStrategy
+  }
+
+  /**
+   * Organization deleteMany
+   */
+  export type OrganizationDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Organizations to delete
+     */
+    where?: OrganizationWhereInput
+  }
+
+  /**
+   * Organization.organizationMemberships
+   */
+  export type Organization$organizationMembershipsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrganizationMembership
+     */
+    select?: OrganizationMembershipSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrganizationMembershipInclude<ExtArgs> | null
+    where?: OrganizationMembershipWhereInput
+    orderBy?: OrganizationMembershipOrderByWithRelationInput | OrganizationMembershipOrderByWithRelationInput[]
+    cursor?: OrganizationMembershipWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: OrganizationMembershipScalarFieldEnum | OrganizationMembershipScalarFieldEnum[]
+  }
+
+  /**
+   * Organization.projects
+   */
+  export type Organization$projectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Project
+     */
+    select?: ProjectSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectInclude<ExtArgs> | null
+    where?: ProjectWhereInput
+    orderBy?: ProjectOrderByWithRelationInput | ProjectOrderByWithRelationInput[]
+    cursor?: ProjectWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ProjectScalarFieldEnum | ProjectScalarFieldEnum[]
+  }
+
+  /**
+   * Organization.MembershipInvitation
+   */
+  export type Organization$MembershipInvitationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MembershipInvitation
+     */
+    select?: MembershipInvitationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MembershipInvitationInclude<ExtArgs> | null
+    where?: MembershipInvitationWhereInput
+    orderBy?: MembershipInvitationOrderByWithRelationInput | MembershipInvitationOrderByWithRelationInput[]
+    cursor?: MembershipInvitationWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: MembershipInvitationScalarFieldEnum | MembershipInvitationScalarFieldEnum[]
+  }
+
+  /**
+   * Organization without action
+   */
+  export type OrganizationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Organization
+     */
+    select?: OrganizationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrganizationInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model Project
    */
 
@@ -8172,6 +9497,7 @@ export namespace Prisma {
 
   export type ProjectMinAggregateOutputType = {
     id: string | null
+    orgId: string | null
     createdAt: Date | null
     updatedAt: Date | null
     name: string | null
@@ -8179,6 +9505,7 @@ export namespace Prisma {
 
   export type ProjectMaxAggregateOutputType = {
     id: string | null
+    orgId: string | null
     createdAt: Date | null
     updatedAt: Date | null
     name: string | null
@@ -8186,16 +9513,17 @@ export namespace Prisma {
 
   export type ProjectCountAggregateOutputType = {
     id: number
+    orgId: number
     createdAt: number
     updatedAt: number
     name: number
-    cloudConfig: number
     _all: number
   }
 
 
   export type ProjectMinAggregateInputType = {
     id?: true
+    orgId?: true
     createdAt?: true
     updatedAt?: true
     name?: true
@@ -8203,6 +9531,7 @@ export namespace Prisma {
 
   export type ProjectMaxAggregateInputType = {
     id?: true
+    orgId?: true
     createdAt?: true
     updatedAt?: true
     name?: true
@@ -8210,10 +9539,10 @@ export namespace Prisma {
 
   export type ProjectCountAggregateInputType = {
     id?: true
+    orgId?: true
     createdAt?: true
     updatedAt?: true
     name?: true
-    cloudConfig?: true
     _all?: true
   }
 
@@ -8291,10 +9620,10 @@ export namespace Prisma {
 
   export type ProjectGroupByOutputType = {
     id: string
+    orgId: string
     createdAt: Date
     updatedAt: Date
     name: string
-    cloudConfig: JsonValue | null
     _count: ProjectCountAggregateOutputType | null
     _min: ProjectMinAggregateOutputType | null
     _max: ProjectMaxAggregateOutputType | null
@@ -8316,11 +9645,12 @@ export namespace Prisma {
 
   export type ProjectSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    orgId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     name?: boolean
-    cloudConfig?: boolean
     projectMembers?: boolean | Project$projectMembersArgs<ExtArgs>
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     traces?: boolean | Project$tracesArgs<ExtArgs>
     observations?: boolean | Project$observationsArgs<ExtArgs>
     apiKeys?: boolean | Project$apiKeysArgs<ExtArgs>
@@ -8330,7 +9660,6 @@ export namespace Prisma {
     sessions?: boolean | Project$sessionsArgs<ExtArgs>
     Prompt?: boolean | Project$PromptArgs<ExtArgs>
     Model?: boolean | Project$ModelArgs<ExtArgs>
-    AuditLog?: boolean | Project$AuditLogArgs<ExtArgs>
     EvalTemplate?: boolean | Project$EvalTemplateArgs<ExtArgs>
     JobConfiguration?: boolean | Project$JobConfigurationArgs<ExtArgs>
     JobExecution?: boolean | Project$JobExecutionArgs<ExtArgs>
@@ -8339,27 +9668,30 @@ export namespace Prisma {
     Score?: boolean | Project$ScoreArgs<ExtArgs>
     scoreConfig?: boolean | Project$scoreConfigArgs<ExtArgs>
     BatchExport?: boolean | Project$BatchExportArgs<ExtArgs>
+    comment?: boolean | Project$commentArgs<ExtArgs>
     _count?: boolean | ProjectCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["project"]>
 
   export type ProjectSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    orgId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     name?: boolean
-    cloudConfig?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["project"]>
 
   export type ProjectSelectScalar = {
     id?: boolean
+    orgId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     name?: boolean
-    cloudConfig?: boolean
   }
 
   export type ProjectInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     projectMembers?: boolean | Project$projectMembersArgs<ExtArgs>
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     traces?: boolean | Project$tracesArgs<ExtArgs>
     observations?: boolean | Project$observationsArgs<ExtArgs>
     apiKeys?: boolean | Project$apiKeysArgs<ExtArgs>
@@ -8369,7 +9701,6 @@ export namespace Prisma {
     sessions?: boolean | Project$sessionsArgs<ExtArgs>
     Prompt?: boolean | Project$PromptArgs<ExtArgs>
     Model?: boolean | Project$ModelArgs<ExtArgs>
-    AuditLog?: boolean | Project$AuditLogArgs<ExtArgs>
     EvalTemplate?: boolean | Project$EvalTemplateArgs<ExtArgs>
     JobConfiguration?: boolean | Project$JobConfigurationArgs<ExtArgs>
     JobExecution?: boolean | Project$JobExecutionArgs<ExtArgs>
@@ -8378,14 +9709,18 @@ export namespace Prisma {
     Score?: boolean | Project$ScoreArgs<ExtArgs>
     scoreConfig?: boolean | Project$scoreConfigArgs<ExtArgs>
     BatchExport?: boolean | Project$BatchExportArgs<ExtArgs>
+    comment?: boolean | Project$commentArgs<ExtArgs>
     _count?: boolean | ProjectCountOutputTypeDefaultArgs<ExtArgs>
   }
-  export type ProjectIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type ProjectIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }
 
   export type $ProjectPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Project"
     objects: {
       projectMembers: Prisma.$ProjectMembershipPayload<ExtArgs>[]
+      organization: Prisma.$OrganizationPayload<ExtArgs>
       traces: Prisma.$TracePayload<ExtArgs>[]
       observations: Prisma.$ObservationPayload<ExtArgs>[]
       apiKeys: Prisma.$ApiKeyPayload<ExtArgs>[]
@@ -8395,7 +9730,6 @@ export namespace Prisma {
       sessions: Prisma.$TraceSessionPayload<ExtArgs>[]
       Prompt: Prisma.$PromptPayload<ExtArgs>[]
       Model: Prisma.$ModelPayload<ExtArgs>[]
-      AuditLog: Prisma.$AuditLogPayload<ExtArgs>[]
       EvalTemplate: Prisma.$EvalTemplatePayload<ExtArgs>[]
       JobConfiguration: Prisma.$JobConfigurationPayload<ExtArgs>[]
       JobExecution: Prisma.$JobExecutionPayload<ExtArgs>[]
@@ -8404,13 +9738,14 @@ export namespace Prisma {
       Score: Prisma.$ScorePayload<ExtArgs>[]
       scoreConfig: Prisma.$ScoreConfigPayload<ExtArgs>[]
       BatchExport: Prisma.$BatchExportPayload<ExtArgs>[]
+      comment: Prisma.$CommentPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
+      orgId: string
       createdAt: Date
       updatedAt: Date
       name: string
-      cloudConfig: Prisma.JsonValue | null
     }, ExtArgs["result"]["project"]>
     composites: {}
   }
@@ -8776,6 +10111,7 @@ export namespace Prisma {
   export interface Prisma__ProjectClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     projectMembers<T extends Project$projectMembersArgs<ExtArgs> = {}>(args?: Subset<T, Project$projectMembersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectMembershipPayload<ExtArgs>, T, "findMany"> | Null>
+    organization<T extends OrganizationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationDefaultArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     traces<T extends Project$tracesArgs<ExtArgs> = {}>(args?: Subset<T, Project$tracesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TracePayload<ExtArgs>, T, "findMany"> | Null>
     observations<T extends Project$observationsArgs<ExtArgs> = {}>(args?: Subset<T, Project$observationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ObservationPayload<ExtArgs>, T, "findMany"> | Null>
     apiKeys<T extends Project$apiKeysArgs<ExtArgs> = {}>(args?: Subset<T, Project$apiKeysArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApiKeyPayload<ExtArgs>, T, "findMany"> | Null>
@@ -8785,7 +10121,6 @@ export namespace Prisma {
     sessions<T extends Project$sessionsArgs<ExtArgs> = {}>(args?: Subset<T, Project$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TraceSessionPayload<ExtArgs>, T, "findMany"> | Null>
     Prompt<T extends Project$PromptArgs<ExtArgs> = {}>(args?: Subset<T, Project$PromptArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PromptPayload<ExtArgs>, T, "findMany"> | Null>
     Model<T extends Project$ModelArgs<ExtArgs> = {}>(args?: Subset<T, Project$ModelArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ModelPayload<ExtArgs>, T, "findMany"> | Null>
-    AuditLog<T extends Project$AuditLogArgs<ExtArgs> = {}>(args?: Subset<T, Project$AuditLogArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany"> | Null>
     EvalTemplate<T extends Project$EvalTemplateArgs<ExtArgs> = {}>(args?: Subset<T, Project$EvalTemplateArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EvalTemplatePayload<ExtArgs>, T, "findMany"> | Null>
     JobConfiguration<T extends Project$JobConfigurationArgs<ExtArgs> = {}>(args?: Subset<T, Project$JobConfigurationArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$JobConfigurationPayload<ExtArgs>, T, "findMany"> | Null>
     JobExecution<T extends Project$JobExecutionArgs<ExtArgs> = {}>(args?: Subset<T, Project$JobExecutionArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$JobExecutionPayload<ExtArgs>, T, "findMany"> | Null>
@@ -8794,6 +10129,7 @@ export namespace Prisma {
     Score<T extends Project$ScoreArgs<ExtArgs> = {}>(args?: Subset<T, Project$ScoreArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ScorePayload<ExtArgs>, T, "findMany"> | Null>
     scoreConfig<T extends Project$scoreConfigArgs<ExtArgs> = {}>(args?: Subset<T, Project$scoreConfigArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ScoreConfigPayload<ExtArgs>, T, "findMany"> | Null>
     BatchExport<T extends Project$BatchExportArgs<ExtArgs> = {}>(args?: Subset<T, Project$BatchExportArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BatchExportPayload<ExtArgs>, T, "findMany"> | Null>
+    comment<T extends Project$commentArgs<ExtArgs> = {}>(args?: Subset<T, Project$commentArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CommentPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -8824,10 +10160,10 @@ export namespace Prisma {
    */ 
   interface ProjectFieldRefs {
     readonly id: FieldRef<"Project", 'String'>
+    readonly orgId: FieldRef<"Project", 'String'>
     readonly createdAt: FieldRef<"Project", 'DateTime'>
     readonly updatedAt: FieldRef<"Project", 'DateTime'>
     readonly name: FieldRef<"Project", 'String'>
-    readonly cloudConfig: FieldRef<"Project", 'Json'>
   }
     
 
@@ -9055,6 +10391,10 @@ export namespace Prisma {
      */
     data: ProjectCreateManyInput | ProjectCreateManyInput[]
     skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -9351,26 +10691,6 @@ export namespace Prisma {
   }
 
   /**
-   * Project.AuditLog
-   */
-  export type Project$AuditLogArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the AuditLog
-     */
-    select?: AuditLogSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: AuditLogInclude<ExtArgs> | null
-    where?: AuditLogWhereInput
-    orderBy?: AuditLogOrderByWithRelationInput | AuditLogOrderByWithRelationInput[]
-    cursor?: AuditLogWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: AuditLogScalarFieldEnum | AuditLogScalarFieldEnum[]
-  }
-
-  /**
    * Project.EvalTemplate
    */
   export type Project$EvalTemplateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -9528,6 +10848,26 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: BatchExportScalarFieldEnum | BatchExportScalarFieldEnum[]
+  }
+
+  /**
+   * Project.comment
+   */
+  export type Project$commentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Comment
+     */
+    select?: CommentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CommentInclude<ExtArgs> | null
+    where?: CommentWhereInput
+    orderBy?: CommentOrderByWithRelationInput | CommentOrderByWithRelationInput[]
+    cursor?: CommentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CommentScalarFieldEnum | CommentScalarFieldEnum[]
   }
 
   /**
@@ -11558,6 +12898,992 @@ export namespace Prisma {
 
 
   /**
+   * Model OrganizationMembership
+   */
+
+  export type AggregateOrganizationMembership = {
+    _count: OrganizationMembershipCountAggregateOutputType | null
+    _min: OrganizationMembershipMinAggregateOutputType | null
+    _max: OrganizationMembershipMaxAggregateOutputType | null
+  }
+
+  export type OrganizationMembershipMinAggregateOutputType = {
+    id: string | null
+    orgId: string | null
+    userId: string | null
+    role: $Enums.Role | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type OrganizationMembershipMaxAggregateOutputType = {
+    id: string | null
+    orgId: string | null
+    userId: string | null
+    role: $Enums.Role | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type OrganizationMembershipCountAggregateOutputType = {
+    id: number
+    orgId: number
+    userId: number
+    role: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type OrganizationMembershipMinAggregateInputType = {
+    id?: true
+    orgId?: true
+    userId?: true
+    role?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type OrganizationMembershipMaxAggregateInputType = {
+    id?: true
+    orgId?: true
+    userId?: true
+    role?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type OrganizationMembershipCountAggregateInputType = {
+    id?: true
+    orgId?: true
+    userId?: true
+    role?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type OrganizationMembershipAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which OrganizationMembership to aggregate.
+     */
+    where?: OrganizationMembershipWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of OrganizationMemberships to fetch.
+     */
+    orderBy?: OrganizationMembershipOrderByWithRelationInput | OrganizationMembershipOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: OrganizationMembershipWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` OrganizationMemberships from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` OrganizationMemberships.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned OrganizationMemberships
+    **/
+    _count?: true | OrganizationMembershipCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: OrganizationMembershipMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: OrganizationMembershipMaxAggregateInputType
+  }
+
+  export type GetOrganizationMembershipAggregateType<T extends OrganizationMembershipAggregateArgs> = {
+        [P in keyof T & keyof AggregateOrganizationMembership]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateOrganizationMembership[P]>
+      : GetScalarType<T[P], AggregateOrganizationMembership[P]>
+  }
+
+
+
+
+  export type OrganizationMembershipGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: OrganizationMembershipWhereInput
+    orderBy?: OrganizationMembershipOrderByWithAggregationInput | OrganizationMembershipOrderByWithAggregationInput[]
+    by: OrganizationMembershipScalarFieldEnum[] | OrganizationMembershipScalarFieldEnum
+    having?: OrganizationMembershipScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: OrganizationMembershipCountAggregateInputType | true
+    _min?: OrganizationMembershipMinAggregateInputType
+    _max?: OrganizationMembershipMaxAggregateInputType
+  }
+
+  export type OrganizationMembershipGroupByOutputType = {
+    id: string
+    orgId: string
+    userId: string
+    role: $Enums.Role
+    createdAt: Date
+    updatedAt: Date
+    _count: OrganizationMembershipCountAggregateOutputType | null
+    _min: OrganizationMembershipMinAggregateOutputType | null
+    _max: OrganizationMembershipMaxAggregateOutputType | null
+  }
+
+  type GetOrganizationMembershipGroupByPayload<T extends OrganizationMembershipGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<OrganizationMembershipGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof OrganizationMembershipGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], OrganizationMembershipGroupByOutputType[P]>
+            : GetScalarType<T[P], OrganizationMembershipGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type OrganizationMembershipSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    orgId?: boolean
+    userId?: boolean
+    role?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    ProjectMemberships?: boolean | OrganizationMembership$ProjectMembershipsArgs<ExtArgs>
+    _count?: boolean | OrganizationMembershipCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["organizationMembership"]>
+
+  export type OrganizationMembershipSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    orgId?: boolean
+    userId?: boolean
+    role?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["organizationMembership"]>
+
+  export type OrganizationMembershipSelectScalar = {
+    id?: boolean
+    orgId?: boolean
+    userId?: boolean
+    role?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type OrganizationMembershipInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    ProjectMemberships?: boolean | OrganizationMembership$ProjectMembershipsArgs<ExtArgs>
+    _count?: boolean | OrganizationMembershipCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type OrganizationMembershipIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $OrganizationMembershipPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "OrganizationMembership"
+    objects: {
+      organization: Prisma.$OrganizationPayload<ExtArgs>
+      user: Prisma.$UserPayload<ExtArgs>
+      ProjectMemberships: Prisma.$ProjectMembershipPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      orgId: string
+      userId: string
+      role: $Enums.Role
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["organizationMembership"]>
+    composites: {}
+  }
+
+  type OrganizationMembershipGetPayload<S extends boolean | null | undefined | OrganizationMembershipDefaultArgs> = $Result.GetResult<Prisma.$OrganizationMembershipPayload, S>
+
+  type OrganizationMembershipCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<OrganizationMembershipFindManyArgs, 'select' | 'include' | 'distinct' | 'relationLoadStrategy'> & {
+      select?: OrganizationMembershipCountAggregateInputType | true
+    }
+
+  export interface OrganizationMembershipDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['OrganizationMembership'], meta: { name: 'OrganizationMembership' } }
+    /**
+     * Find zero or one OrganizationMembership that matches the filter.
+     * @param {OrganizationMembershipFindUniqueArgs} args - Arguments to find a OrganizationMembership
+     * @example
+     * // Get one OrganizationMembership
+     * const organizationMembership = await prisma.organizationMembership.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends OrganizationMembershipFindUniqueArgs>(args: SelectSubset<T, OrganizationMembershipFindUniqueArgs<ExtArgs>>): Prisma__OrganizationMembershipClient<$Result.GetResult<Prisma.$OrganizationMembershipPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one OrganizationMembership that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {OrganizationMembershipFindUniqueOrThrowArgs} args - Arguments to find a OrganizationMembership
+     * @example
+     * // Get one OrganizationMembership
+     * const organizationMembership = await prisma.organizationMembership.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends OrganizationMembershipFindUniqueOrThrowArgs>(args: SelectSubset<T, OrganizationMembershipFindUniqueOrThrowArgs<ExtArgs>>): Prisma__OrganizationMembershipClient<$Result.GetResult<Prisma.$OrganizationMembershipPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first OrganizationMembership that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrganizationMembershipFindFirstArgs} args - Arguments to find a OrganizationMembership
+     * @example
+     * // Get one OrganizationMembership
+     * const organizationMembership = await prisma.organizationMembership.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends OrganizationMembershipFindFirstArgs>(args?: SelectSubset<T, OrganizationMembershipFindFirstArgs<ExtArgs>>): Prisma__OrganizationMembershipClient<$Result.GetResult<Prisma.$OrganizationMembershipPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first OrganizationMembership that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrganizationMembershipFindFirstOrThrowArgs} args - Arguments to find a OrganizationMembership
+     * @example
+     * // Get one OrganizationMembership
+     * const organizationMembership = await prisma.organizationMembership.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends OrganizationMembershipFindFirstOrThrowArgs>(args?: SelectSubset<T, OrganizationMembershipFindFirstOrThrowArgs<ExtArgs>>): Prisma__OrganizationMembershipClient<$Result.GetResult<Prisma.$OrganizationMembershipPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more OrganizationMemberships that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrganizationMembershipFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all OrganizationMemberships
+     * const organizationMemberships = await prisma.organizationMembership.findMany()
+     * 
+     * // Get first 10 OrganizationMemberships
+     * const organizationMemberships = await prisma.organizationMembership.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const organizationMembershipWithIdOnly = await prisma.organizationMembership.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends OrganizationMembershipFindManyArgs>(args?: SelectSubset<T, OrganizationMembershipFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrganizationMembershipPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a OrganizationMembership.
+     * @param {OrganizationMembershipCreateArgs} args - Arguments to create a OrganizationMembership.
+     * @example
+     * // Create one OrganizationMembership
+     * const OrganizationMembership = await prisma.organizationMembership.create({
+     *   data: {
+     *     // ... data to create a OrganizationMembership
+     *   }
+     * })
+     * 
+     */
+    create<T extends OrganizationMembershipCreateArgs>(args: SelectSubset<T, OrganizationMembershipCreateArgs<ExtArgs>>): Prisma__OrganizationMembershipClient<$Result.GetResult<Prisma.$OrganizationMembershipPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many OrganizationMemberships.
+     * @param {OrganizationMembershipCreateManyArgs} args - Arguments to create many OrganizationMemberships.
+     * @example
+     * // Create many OrganizationMemberships
+     * const organizationMembership = await prisma.organizationMembership.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends OrganizationMembershipCreateManyArgs>(args?: SelectSubset<T, OrganizationMembershipCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many OrganizationMemberships and returns the data saved in the database.
+     * @param {OrganizationMembershipCreateManyAndReturnArgs} args - Arguments to create many OrganizationMemberships.
+     * @example
+     * // Create many OrganizationMemberships
+     * const organizationMembership = await prisma.organizationMembership.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many OrganizationMemberships and only return the `id`
+     * const organizationMembershipWithIdOnly = await prisma.organizationMembership.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends OrganizationMembershipCreateManyAndReturnArgs>(args?: SelectSubset<T, OrganizationMembershipCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrganizationMembershipPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a OrganizationMembership.
+     * @param {OrganizationMembershipDeleteArgs} args - Arguments to delete one OrganizationMembership.
+     * @example
+     * // Delete one OrganizationMembership
+     * const OrganizationMembership = await prisma.organizationMembership.delete({
+     *   where: {
+     *     // ... filter to delete one OrganizationMembership
+     *   }
+     * })
+     * 
+     */
+    delete<T extends OrganizationMembershipDeleteArgs>(args: SelectSubset<T, OrganizationMembershipDeleteArgs<ExtArgs>>): Prisma__OrganizationMembershipClient<$Result.GetResult<Prisma.$OrganizationMembershipPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one OrganizationMembership.
+     * @param {OrganizationMembershipUpdateArgs} args - Arguments to update one OrganizationMembership.
+     * @example
+     * // Update one OrganizationMembership
+     * const organizationMembership = await prisma.organizationMembership.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends OrganizationMembershipUpdateArgs>(args: SelectSubset<T, OrganizationMembershipUpdateArgs<ExtArgs>>): Prisma__OrganizationMembershipClient<$Result.GetResult<Prisma.$OrganizationMembershipPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more OrganizationMemberships.
+     * @param {OrganizationMembershipDeleteManyArgs} args - Arguments to filter OrganizationMemberships to delete.
+     * @example
+     * // Delete a few OrganizationMemberships
+     * const { count } = await prisma.organizationMembership.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends OrganizationMembershipDeleteManyArgs>(args?: SelectSubset<T, OrganizationMembershipDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more OrganizationMemberships.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrganizationMembershipUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many OrganizationMemberships
+     * const organizationMembership = await prisma.organizationMembership.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends OrganizationMembershipUpdateManyArgs>(args: SelectSubset<T, OrganizationMembershipUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one OrganizationMembership.
+     * @param {OrganizationMembershipUpsertArgs} args - Arguments to update or create a OrganizationMembership.
+     * @example
+     * // Update or create a OrganizationMembership
+     * const organizationMembership = await prisma.organizationMembership.upsert({
+     *   create: {
+     *     // ... data to create a OrganizationMembership
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the OrganizationMembership we want to update
+     *   }
+     * })
+     */
+    upsert<T extends OrganizationMembershipUpsertArgs>(args: SelectSubset<T, OrganizationMembershipUpsertArgs<ExtArgs>>): Prisma__OrganizationMembershipClient<$Result.GetResult<Prisma.$OrganizationMembershipPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of OrganizationMemberships.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrganizationMembershipCountArgs} args - Arguments to filter OrganizationMemberships to count.
+     * @example
+     * // Count the number of OrganizationMemberships
+     * const count = await prisma.organizationMembership.count({
+     *   where: {
+     *     // ... the filter for the OrganizationMemberships we want to count
+     *   }
+     * })
+    **/
+    count<T extends OrganizationMembershipCountArgs>(
+      args?: Subset<T, OrganizationMembershipCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], OrganizationMembershipCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a OrganizationMembership.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrganizationMembershipAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends OrganizationMembershipAggregateArgs>(args: Subset<T, OrganizationMembershipAggregateArgs>): Prisma.PrismaPromise<GetOrganizationMembershipAggregateType<T>>
+
+    /**
+     * Group by OrganizationMembership.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrganizationMembershipGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends OrganizationMembershipGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: OrganizationMembershipGroupByArgs['orderBy'] }
+        : { orderBy?: OrganizationMembershipGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, OrganizationMembershipGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetOrganizationMembershipGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the OrganizationMembership model
+   */
+  readonly fields: OrganizationMembershipFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for OrganizationMembership.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__OrganizationMembershipClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    organization<T extends OrganizationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationDefaultArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    ProjectMemberships<T extends OrganizationMembership$ProjectMembershipsArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationMembership$ProjectMembershipsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectMembershipPayload<ExtArgs>, T, "findMany"> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the OrganizationMembership model
+   */ 
+  interface OrganizationMembershipFieldRefs {
+    readonly id: FieldRef<"OrganizationMembership", 'String'>
+    readonly orgId: FieldRef<"OrganizationMembership", 'String'>
+    readonly userId: FieldRef<"OrganizationMembership", 'String'>
+    readonly role: FieldRef<"OrganizationMembership", 'Role'>
+    readonly createdAt: FieldRef<"OrganizationMembership", 'DateTime'>
+    readonly updatedAt: FieldRef<"OrganizationMembership", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * OrganizationMembership findUnique
+   */
+  export type OrganizationMembershipFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrganizationMembership
+     */
+    select?: OrganizationMembershipSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrganizationMembershipInclude<ExtArgs> | null
+    /**
+     * Filter, which OrganizationMembership to fetch.
+     */
+    where: OrganizationMembershipWhereUniqueInput
+    relationLoadStrategy?: RelationLoadStrategy
+  }
+
+  /**
+   * OrganizationMembership findUniqueOrThrow
+   */
+  export type OrganizationMembershipFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrganizationMembership
+     */
+    select?: OrganizationMembershipSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrganizationMembershipInclude<ExtArgs> | null
+    /**
+     * Filter, which OrganizationMembership to fetch.
+     */
+    where: OrganizationMembershipWhereUniqueInput
+    relationLoadStrategy?: RelationLoadStrategy
+  }
+
+  /**
+   * OrganizationMembership findFirst
+   */
+  export type OrganizationMembershipFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrganizationMembership
+     */
+    select?: OrganizationMembershipSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrganizationMembershipInclude<ExtArgs> | null
+    /**
+     * Filter, which OrganizationMembership to fetch.
+     */
+    where?: OrganizationMembershipWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of OrganizationMemberships to fetch.
+     */
+    orderBy?: OrganizationMembershipOrderByWithRelationInput | OrganizationMembershipOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for OrganizationMemberships.
+     */
+    cursor?: OrganizationMembershipWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` OrganizationMemberships from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` OrganizationMemberships.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of OrganizationMemberships.
+     */
+    distinct?: OrganizationMembershipScalarFieldEnum | OrganizationMembershipScalarFieldEnum[]
+    relationLoadStrategy?: RelationLoadStrategy
+  }
+
+  /**
+   * OrganizationMembership findFirstOrThrow
+   */
+  export type OrganizationMembershipFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrganizationMembership
+     */
+    select?: OrganizationMembershipSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrganizationMembershipInclude<ExtArgs> | null
+    /**
+     * Filter, which OrganizationMembership to fetch.
+     */
+    where?: OrganizationMembershipWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of OrganizationMemberships to fetch.
+     */
+    orderBy?: OrganizationMembershipOrderByWithRelationInput | OrganizationMembershipOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for OrganizationMemberships.
+     */
+    cursor?: OrganizationMembershipWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` OrganizationMemberships from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` OrganizationMemberships.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of OrganizationMemberships.
+     */
+    distinct?: OrganizationMembershipScalarFieldEnum | OrganizationMembershipScalarFieldEnum[]
+    relationLoadStrategy?: RelationLoadStrategy
+  }
+
+  /**
+   * OrganizationMembership findMany
+   */
+  export type OrganizationMembershipFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrganizationMembership
+     */
+    select?: OrganizationMembershipSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrganizationMembershipInclude<ExtArgs> | null
+    /**
+     * Filter, which OrganizationMemberships to fetch.
+     */
+    where?: OrganizationMembershipWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of OrganizationMemberships to fetch.
+     */
+    orderBy?: OrganizationMembershipOrderByWithRelationInput | OrganizationMembershipOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing OrganizationMemberships.
+     */
+    cursor?: OrganizationMembershipWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` OrganizationMemberships from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` OrganizationMemberships.
+     */
+    skip?: number
+    distinct?: OrganizationMembershipScalarFieldEnum | OrganizationMembershipScalarFieldEnum[]
+    relationLoadStrategy?: RelationLoadStrategy
+  }
+
+  /**
+   * OrganizationMembership create
+   */
+  export type OrganizationMembershipCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrganizationMembership
+     */
+    select?: OrganizationMembershipSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrganizationMembershipInclude<ExtArgs> | null
+    /**
+     * The data needed to create a OrganizationMembership.
+     */
+    data: XOR<OrganizationMembershipCreateInput, OrganizationMembershipUncheckedCreateInput>
+    relationLoadStrategy?: RelationLoadStrategy
+  }
+
+  /**
+   * OrganizationMembership createMany
+   */
+  export type OrganizationMembershipCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many OrganizationMemberships.
+     */
+    data: OrganizationMembershipCreateManyInput | OrganizationMembershipCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * OrganizationMembership createManyAndReturn
+   */
+  export type OrganizationMembershipCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrganizationMembership
+     */
+    select?: OrganizationMembershipSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many OrganizationMemberships.
+     */
+    data: OrganizationMembershipCreateManyInput | OrganizationMembershipCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrganizationMembershipIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * OrganizationMembership update
+   */
+  export type OrganizationMembershipUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrganizationMembership
+     */
+    select?: OrganizationMembershipSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrganizationMembershipInclude<ExtArgs> | null
+    /**
+     * The data needed to update a OrganizationMembership.
+     */
+    data: XOR<OrganizationMembershipUpdateInput, OrganizationMembershipUncheckedUpdateInput>
+    /**
+     * Choose, which OrganizationMembership to update.
+     */
+    where: OrganizationMembershipWhereUniqueInput
+    relationLoadStrategy?: RelationLoadStrategy
+  }
+
+  /**
+   * OrganizationMembership updateMany
+   */
+  export type OrganizationMembershipUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update OrganizationMemberships.
+     */
+    data: XOR<OrganizationMembershipUpdateManyMutationInput, OrganizationMembershipUncheckedUpdateManyInput>
+    /**
+     * Filter which OrganizationMemberships to update
+     */
+    where?: OrganizationMembershipWhereInput
+  }
+
+  /**
+   * OrganizationMembership upsert
+   */
+  export type OrganizationMembershipUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrganizationMembership
+     */
+    select?: OrganizationMembershipSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrganizationMembershipInclude<ExtArgs> | null
+    /**
+     * The filter to search for the OrganizationMembership to update in case it exists.
+     */
+    where: OrganizationMembershipWhereUniqueInput
+    /**
+     * In case the OrganizationMembership found by the `where` argument doesn't exist, create a new OrganizationMembership with this data.
+     */
+    create: XOR<OrganizationMembershipCreateInput, OrganizationMembershipUncheckedCreateInput>
+    /**
+     * In case the OrganizationMembership was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<OrganizationMembershipUpdateInput, OrganizationMembershipUncheckedUpdateInput>
+    relationLoadStrategy?: RelationLoadStrategy
+  }
+
+  /**
+   * OrganizationMembership delete
+   */
+  export type OrganizationMembershipDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrganizationMembership
+     */
+    select?: OrganizationMembershipSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrganizationMembershipInclude<ExtArgs> | null
+    /**
+     * Filter which OrganizationMembership to delete.
+     */
+    where: OrganizationMembershipWhereUniqueInput
+    relationLoadStrategy?: RelationLoadStrategy
+  }
+
+  /**
+   * OrganizationMembership deleteMany
+   */
+  export type OrganizationMembershipDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which OrganizationMemberships to delete
+     */
+    where?: OrganizationMembershipWhereInput
+  }
+
+  /**
+   * OrganizationMembership.ProjectMemberships
+   */
+  export type OrganizationMembership$ProjectMembershipsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectMembership
+     */
+    select?: ProjectMembershipSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectMembershipInclude<ExtArgs> | null
+    where?: ProjectMembershipWhereInput
+    orderBy?: ProjectMembershipOrderByWithRelationInput | ProjectMembershipOrderByWithRelationInput[]
+    cursor?: ProjectMembershipWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ProjectMembershipScalarFieldEnum | ProjectMembershipScalarFieldEnum[]
+  }
+
+  /**
+   * OrganizationMembership without action
+   */
+  export type OrganizationMembershipDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrganizationMembership
+     */
+    select?: OrganizationMembershipSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrganizationMembershipInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model ProjectMembership
    */
 
@@ -11568,22 +13894,25 @@ export namespace Prisma {
   }
 
   export type ProjectMembershipMinAggregateOutputType = {
+    orgMembershipId: string | null
     projectId: string | null
     userId: string | null
-    role: $Enums.ProjectRole | null
+    role: $Enums.Role | null
     createdAt: Date | null
     updatedAt: Date | null
   }
 
   export type ProjectMembershipMaxAggregateOutputType = {
+    orgMembershipId: string | null
     projectId: string | null
     userId: string | null
-    role: $Enums.ProjectRole | null
+    role: $Enums.Role | null
     createdAt: Date | null
     updatedAt: Date | null
   }
 
   export type ProjectMembershipCountAggregateOutputType = {
+    orgMembershipId: number
     projectId: number
     userId: number
     role: number
@@ -11594,6 +13923,7 @@ export namespace Prisma {
 
 
   export type ProjectMembershipMinAggregateInputType = {
+    orgMembershipId?: true
     projectId?: true
     userId?: true
     role?: true
@@ -11602,6 +13932,7 @@ export namespace Prisma {
   }
 
   export type ProjectMembershipMaxAggregateInputType = {
+    orgMembershipId?: true
     projectId?: true
     userId?: true
     role?: true
@@ -11610,6 +13941,7 @@ export namespace Prisma {
   }
 
   export type ProjectMembershipCountAggregateInputType = {
+    orgMembershipId?: true
     projectId?: true
     userId?: true
     role?: true
@@ -11691,9 +14023,10 @@ export namespace Prisma {
   }
 
   export type ProjectMembershipGroupByOutputType = {
+    orgMembershipId: string
     projectId: string
     userId: string
-    role: $Enums.ProjectRole
+    role: $Enums.Role
     createdAt: Date
     updatedAt: Date
     _count: ProjectMembershipCountAggregateOutputType | null
@@ -11716,26 +14049,31 @@ export namespace Prisma {
 
 
   export type ProjectMembershipSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    orgMembershipId?: boolean
     projectId?: boolean
     userId?: boolean
     role?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    organizationMembership?: boolean | OrganizationMembershipDefaultArgs<ExtArgs>
     project?: boolean | ProjectDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["projectMembership"]>
 
   export type ProjectMembershipSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    orgMembershipId?: boolean
     projectId?: boolean
     userId?: boolean
     role?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    organizationMembership?: boolean | OrganizationMembershipDefaultArgs<ExtArgs>
     project?: boolean | ProjectDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["projectMembership"]>
 
   export type ProjectMembershipSelectScalar = {
+    orgMembershipId?: boolean
     projectId?: boolean
     userId?: boolean
     role?: boolean
@@ -11744,10 +14082,12 @@ export namespace Prisma {
   }
 
   export type ProjectMembershipInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organizationMembership?: boolean | OrganizationMembershipDefaultArgs<ExtArgs>
     project?: boolean | ProjectDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
   export type ProjectMembershipIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organizationMembership?: boolean | OrganizationMembershipDefaultArgs<ExtArgs>
     project?: boolean | ProjectDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
@@ -11755,13 +14095,15 @@ export namespace Prisma {
   export type $ProjectMembershipPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "ProjectMembership"
     objects: {
+      organizationMembership: Prisma.$OrganizationMembershipPayload<ExtArgs>
       project: Prisma.$ProjectPayload<ExtArgs>
       user: Prisma.$UserPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
+      orgMembershipId: string
       projectId: string
       userId: string
-      role: $Enums.ProjectRole
+      role: $Enums.Role
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["projectMembership"]>
@@ -11847,8 +14189,8 @@ export namespace Prisma {
      * // Get first 10 ProjectMemberships
      * const projectMemberships = await prisma.projectMembership.findMany({ take: 10 })
      * 
-     * // Only select the `projectId`
-     * const projectMembershipWithProjectIdOnly = await prisma.projectMembership.findMany({ select: { projectId: true } })
+     * // Only select the `orgMembershipId`
+     * const projectMembershipWithOrgMembershipIdOnly = await prisma.projectMembership.findMany({ select: { orgMembershipId: true } })
      * 
      */
     findMany<T extends ProjectMembershipFindManyArgs>(args?: SelectSubset<T, ProjectMembershipFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectMembershipPayload<ExtArgs>, T, "findMany">>
@@ -11892,9 +14234,9 @@ export namespace Prisma {
      *   ]
      * })
      * 
-     * // Create many ProjectMemberships and only return the `projectId`
-     * const projectMembershipWithProjectIdOnly = await prisma.projectMembership.createManyAndReturn({ 
-     *   select: { projectId: true },
+     * // Create many ProjectMemberships and only return the `orgMembershipId`
+     * const projectMembershipWithOrgMembershipIdOnly = await prisma.projectMembership.createManyAndReturn({ 
+     *   select: { orgMembershipId: true },
      *   data: [
      *     // ... provide data here
      *   ]
@@ -12128,6 +14470,7 @@ export namespace Prisma {
    */
   export interface Prisma__ProjectMembershipClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    organizationMembership<T extends OrganizationMembershipDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationMembershipDefaultArgs<ExtArgs>>): Prisma__OrganizationMembershipClient<$Result.GetResult<Prisma.$OrganizationMembershipPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     project<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     /**
@@ -12159,9 +14502,10 @@ export namespace Prisma {
    * Fields of the ProjectMembership model
    */ 
   interface ProjectMembershipFieldRefs {
+    readonly orgMembershipId: FieldRef<"ProjectMembership", 'String'>
     readonly projectId: FieldRef<"ProjectMembership", 'String'>
     readonly userId: FieldRef<"ProjectMembership", 'String'>
-    readonly role: FieldRef<"ProjectMembership", 'ProjectRole'>
+    readonly role: FieldRef<"ProjectMembership", 'Role'>
     readonly createdAt: FieldRef<"ProjectMembership", 'DateTime'>
     readonly updatedAt: FieldRef<"ProjectMembership", 'DateTime'>
   }
@@ -12518,9 +14862,11 @@ export namespace Prisma {
   export type MembershipInvitationMinAggregateOutputType = {
     id: string | null
     email: string | null
-    role: $Enums.ProjectRole | null
+    orgId: string | null
+    orgRole: $Enums.Role | null
     projectId: string | null
-    senderId: string | null
+    projectRole: $Enums.Role | null
+    invitedByUserId: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -12528,9 +14874,11 @@ export namespace Prisma {
   export type MembershipInvitationMaxAggregateOutputType = {
     id: string | null
     email: string | null
-    role: $Enums.ProjectRole | null
+    orgId: string | null
+    orgRole: $Enums.Role | null
     projectId: string | null
-    senderId: string | null
+    projectRole: $Enums.Role | null
+    invitedByUserId: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -12538,9 +14886,11 @@ export namespace Prisma {
   export type MembershipInvitationCountAggregateOutputType = {
     id: number
     email: number
-    role: number
+    orgId: number
+    orgRole: number
     projectId: number
-    senderId: number
+    projectRole: number
+    invitedByUserId: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -12550,9 +14900,11 @@ export namespace Prisma {
   export type MembershipInvitationMinAggregateInputType = {
     id?: true
     email?: true
-    role?: true
+    orgId?: true
+    orgRole?: true
     projectId?: true
-    senderId?: true
+    projectRole?: true
+    invitedByUserId?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -12560,9 +14912,11 @@ export namespace Prisma {
   export type MembershipInvitationMaxAggregateInputType = {
     id?: true
     email?: true
-    role?: true
+    orgId?: true
+    orgRole?: true
     projectId?: true
-    senderId?: true
+    projectRole?: true
+    invitedByUserId?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -12570,9 +14924,11 @@ export namespace Prisma {
   export type MembershipInvitationCountAggregateInputType = {
     id?: true
     email?: true
-    role?: true
+    orgId?: true
+    orgRole?: true
     projectId?: true
-    senderId?: true
+    projectRole?: true
+    invitedByUserId?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -12653,9 +15009,11 @@ export namespace Prisma {
   export type MembershipInvitationGroupByOutputType = {
     id: string
     email: string
-    role: $Enums.ProjectRole
-    projectId: string
-    senderId: string | null
+    orgId: string
+    orgRole: $Enums.Role
+    projectId: string | null
+    projectRole: $Enums.Role | null
+    invitedByUserId: string | null
     createdAt: Date
     updatedAt: Date
     _count: MembershipInvitationCountAggregateOutputType | null
@@ -12680,58 +15038,71 @@ export namespace Prisma {
   export type MembershipInvitationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     email?: boolean
-    role?: boolean
+    orgId?: boolean
+    orgRole?: boolean
     projectId?: boolean
-    senderId?: boolean
+    projectRole?: boolean
+    invitedByUserId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    project?: boolean | ProjectDefaultArgs<ExtArgs>
-    sender?: boolean | MembershipInvitation$senderArgs<ExtArgs>
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    project?: boolean | MembershipInvitation$projectArgs<ExtArgs>
+    invitedByUser?: boolean | MembershipInvitation$invitedByUserArgs<ExtArgs>
   }, ExtArgs["result"]["membershipInvitation"]>
 
   export type MembershipInvitationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     email?: boolean
-    role?: boolean
+    orgId?: boolean
+    orgRole?: boolean
     projectId?: boolean
-    senderId?: boolean
+    projectRole?: boolean
+    invitedByUserId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    project?: boolean | ProjectDefaultArgs<ExtArgs>
-    sender?: boolean | MembershipInvitation$senderArgs<ExtArgs>
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    project?: boolean | MembershipInvitation$projectArgs<ExtArgs>
+    invitedByUser?: boolean | MembershipInvitation$invitedByUserArgs<ExtArgs>
   }, ExtArgs["result"]["membershipInvitation"]>
 
   export type MembershipInvitationSelectScalar = {
     id?: boolean
     email?: boolean
-    role?: boolean
+    orgId?: boolean
+    orgRole?: boolean
     projectId?: boolean
-    senderId?: boolean
+    projectRole?: boolean
+    invitedByUserId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
   export type MembershipInvitationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    project?: boolean | ProjectDefaultArgs<ExtArgs>
-    sender?: boolean | MembershipInvitation$senderArgs<ExtArgs>
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    project?: boolean | MembershipInvitation$projectArgs<ExtArgs>
+    invitedByUser?: boolean | MembershipInvitation$invitedByUserArgs<ExtArgs>
   }
   export type MembershipInvitationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    project?: boolean | ProjectDefaultArgs<ExtArgs>
-    sender?: boolean | MembershipInvitation$senderArgs<ExtArgs>
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    project?: boolean | MembershipInvitation$projectArgs<ExtArgs>
+    invitedByUser?: boolean | MembershipInvitation$invitedByUserArgs<ExtArgs>
   }
 
   export type $MembershipInvitationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "MembershipInvitation"
     objects: {
-      project: Prisma.$ProjectPayload<ExtArgs>
-      sender: Prisma.$UserPayload<ExtArgs> | null
+      organization: Prisma.$OrganizationPayload<ExtArgs>
+      project: Prisma.$ProjectPayload<ExtArgs> | null
+      invitedByUser: Prisma.$UserPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       email: string
-      role: $Enums.ProjectRole
-      projectId: string
-      senderId: string | null
+      orgId: string
+      orgRole: $Enums.Role
+      projectId: string | null
+      projectRole: $Enums.Role | null
+      invitedByUserId: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["membershipInvitation"]>
@@ -13098,8 +15469,9 @@ export namespace Prisma {
    */
   export interface Prisma__MembershipInvitationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    project<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
-    sender<T extends MembershipInvitation$senderArgs<ExtArgs> = {}>(args?: Subset<T, MembershipInvitation$senderArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    organization<T extends OrganizationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationDefaultArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    project<T extends MembershipInvitation$projectArgs<ExtArgs> = {}>(args?: Subset<T, MembershipInvitation$projectArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    invitedByUser<T extends MembershipInvitation$invitedByUserArgs<ExtArgs> = {}>(args?: Subset<T, MembershipInvitation$invitedByUserArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -13131,9 +15503,11 @@ export namespace Prisma {
   interface MembershipInvitationFieldRefs {
     readonly id: FieldRef<"MembershipInvitation", 'String'>
     readonly email: FieldRef<"MembershipInvitation", 'String'>
-    readonly role: FieldRef<"MembershipInvitation", 'ProjectRole'>
+    readonly orgId: FieldRef<"MembershipInvitation", 'String'>
+    readonly orgRole: FieldRef<"MembershipInvitation", 'Role'>
     readonly projectId: FieldRef<"MembershipInvitation", 'String'>
-    readonly senderId: FieldRef<"MembershipInvitation", 'String'>
+    readonly projectRole: FieldRef<"MembershipInvitation", 'Role'>
+    readonly invitedByUserId: FieldRef<"MembershipInvitation", 'String'>
     readonly createdAt: FieldRef<"MembershipInvitation", 'DateTime'>
     readonly updatedAt: FieldRef<"MembershipInvitation", 'DateTime'>
   }
@@ -13463,9 +15837,24 @@ export namespace Prisma {
   }
 
   /**
-   * MembershipInvitation.sender
+   * MembershipInvitation.project
    */
-  export type MembershipInvitation$senderArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type MembershipInvitation$projectArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Project
+     */
+    select?: ProjectSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectInclude<ExtArgs> | null
+    where?: ProjectWhereInput
+  }
+
+  /**
+   * MembershipInvitation.invitedByUser
+   */
+  export type MembershipInvitation$invitedByUserArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the User
      */
@@ -14718,7 +17107,6 @@ export namespace Prisma {
     updatedAt?: boolean
     project?: boolean | ProjectDefaultArgs<ExtArgs>
     session?: boolean | Trace$sessionArgs<ExtArgs>
-    DatasetItem?: boolean | Trace$DatasetItemArgs<ExtArgs>
     JobExecution?: boolean | Trace$JobExecutionArgs<ExtArgs>
     _count?: boolean | TraceCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["trace"]>
@@ -14768,7 +17156,6 @@ export namespace Prisma {
   export type TraceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     project?: boolean | ProjectDefaultArgs<ExtArgs>
     session?: boolean | Trace$sessionArgs<ExtArgs>
-    DatasetItem?: boolean | Trace$DatasetItemArgs<ExtArgs>
     JobExecution?: boolean | Trace$JobExecutionArgs<ExtArgs>
     _count?: boolean | TraceCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -14782,7 +17169,6 @@ export namespace Prisma {
     objects: {
       project: Prisma.$ProjectPayload<ExtArgs>
       session: Prisma.$TraceSessionPayload<ExtArgs> | null
-      DatasetItem: Prisma.$DatasetItemPayload<ExtArgs>[]
       JobExecution: Prisma.$JobExecutionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -15169,7 +17555,6 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     project<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     session<T extends Trace$sessionArgs<ExtArgs> = {}>(args?: Subset<T, Trace$sessionArgs<ExtArgs>>): Prisma__TraceSessionClient<$Result.GetResult<Prisma.$TraceSessionPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
-    DatasetItem<T extends Trace$DatasetItemArgs<ExtArgs> = {}>(args?: Subset<T, Trace$DatasetItemArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DatasetItemPayload<ExtArgs>, T, "findMany"> | Null>
     JobExecution<T extends Trace$JobExecutionArgs<ExtArgs> = {}>(args?: Subset<T, Trace$JobExecutionArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$JobExecutionPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -15556,26 +17941,6 @@ export namespace Prisma {
      */
     include?: TraceSessionInclude<ExtArgs> | null
     where?: TraceSessionWhereInput
-  }
-
-  /**
-   * Trace.DatasetItem
-   */
-  export type Trace$DatasetItemArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the DatasetItem
-     */
-    select?: DatasetItemSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: DatasetItemInclude<ExtArgs> | null
-    where?: DatasetItemWhereInput
-    orderBy?: DatasetItemOrderByWithRelationInput | DatasetItemOrderByWithRelationInput[]
-    cursor?: DatasetItemWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: DatasetItemScalarFieldEnum | DatasetItemScalarFieldEnum[]
   }
 
   /**
@@ -16044,8 +18409,6 @@ export namespace Prisma {
     completionStartTime?: boolean
     promptId?: boolean
     project?: boolean | ProjectDefaultArgs<ExtArgs>
-    derivedDatasetItems?: boolean | Observation$derivedDatasetItemsArgs<ExtArgs>
-    _count?: boolean | ObservationCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["observation"]>
 
   export type ObservationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -16121,8 +18484,6 @@ export namespace Prisma {
 
   export type ObservationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     project?: boolean | ProjectDefaultArgs<ExtArgs>
-    derivedDatasetItems?: boolean | Observation$derivedDatasetItemsArgs<ExtArgs>
-    _count?: boolean | ObservationCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ObservationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     project?: boolean | ProjectDefaultArgs<ExtArgs>
@@ -16132,7 +18493,6 @@ export namespace Prisma {
     name: "Observation"
     objects: {
       project: Prisma.$ProjectPayload<ExtArgs>
-      derivedDatasetItems: Prisma.$DatasetItemPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -16532,7 +18892,6 @@ export namespace Prisma {
   export interface Prisma__ObservationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     project<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
-    derivedDatasetItems<T extends Observation$derivedDatasetItemsArgs<ExtArgs> = {}>(args?: Subset<T, Observation$derivedDatasetItemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DatasetItemPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -16918,26 +19277,6 @@ export namespace Prisma {
      * Filter which Observations to delete
      */
     where?: ObservationWhereInput
-  }
-
-  /**
-   * Observation.derivedDatasetItems
-   */
-  export type Observation$derivedDatasetItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the DatasetItem
-     */
-    select?: DatasetItemSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: DatasetItemInclude<ExtArgs> | null
-    where?: DatasetItemWhereInput
-    orderBy?: DatasetItemOrderByWithRelationInput | DatasetItemOrderByWithRelationInput[]
-    cursor?: DatasetItemWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: DatasetItemScalarFieldEnum | DatasetItemScalarFieldEnum[]
   }
 
   /**
@@ -20059,28 +22398,28 @@ export namespace Prisma {
 
   export type DatasetMinAggregateOutputType = {
     id: string | null
+    projectId: string | null
     name: string | null
     description: string | null
-    projectId: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
 
   export type DatasetMaxAggregateOutputType = {
     id: string | null
+    projectId: string | null
     name: string | null
     description: string | null
-    projectId: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
 
   export type DatasetCountAggregateOutputType = {
     id: number
+    projectId: number
     name: number
     description: number
     metadata: number
-    projectId: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -20089,28 +22428,28 @@ export namespace Prisma {
 
   export type DatasetMinAggregateInputType = {
     id?: true
+    projectId?: true
     name?: true
     description?: true
-    projectId?: true
     createdAt?: true
     updatedAt?: true
   }
 
   export type DatasetMaxAggregateInputType = {
     id?: true
+    projectId?: true
     name?: true
     description?: true
-    projectId?: true
     createdAt?: true
     updatedAt?: true
   }
 
   export type DatasetCountAggregateInputType = {
     id?: true
+    projectId?: true
     name?: true
     description?: true
     metadata?: true
-    projectId?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -20190,10 +22529,10 @@ export namespace Prisma {
 
   export type DatasetGroupByOutputType = {
     id: string
+    projectId: string
     name: string
     description: string | null
     metadata: JsonValue | null
-    projectId: string
     createdAt: Date
     updatedAt: Date
     _count: DatasetCountAggregateOutputType | null
@@ -20217,10 +22556,10 @@ export namespace Prisma {
 
   export type DatasetSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    projectId?: boolean
     name?: boolean
     description?: boolean
     metadata?: boolean
-    projectId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     project?: boolean | ProjectDefaultArgs<ExtArgs>
@@ -20231,10 +22570,10 @@ export namespace Prisma {
 
   export type DatasetSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    projectId?: boolean
     name?: boolean
     description?: boolean
     metadata?: boolean
-    projectId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     project?: boolean | ProjectDefaultArgs<ExtArgs>
@@ -20242,10 +22581,10 @@ export namespace Prisma {
 
   export type DatasetSelectScalar = {
     id?: boolean
+    projectId?: boolean
     name?: boolean
     description?: boolean
     metadata?: boolean
-    projectId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
@@ -20269,10 +22608,10 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
+      projectId: string
       name: string
       description: string | null
       metadata: Prisma.JsonValue | null
-      projectId: string
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["dataset"]>
@@ -20672,10 +23011,10 @@ export namespace Prisma {
    */ 
   interface DatasetFieldRefs {
     readonly id: FieldRef<"Dataset", 'String'>
+    readonly projectId: FieldRef<"Dataset", 'String'>
     readonly name: FieldRef<"Dataset", 'String'>
     readonly description: FieldRef<"Dataset", 'String'>
     readonly metadata: FieldRef<"Dataset", 'Json'>
-    readonly projectId: FieldRef<"Dataset", 'String'>
     readonly createdAt: FieldRef<"Dataset", 'DateTime'>
     readonly updatedAt: FieldRef<"Dataset", 'DateTime'>
   }
@@ -21071,6 +23410,7 @@ export namespace Prisma {
 
   export type DatasetItemMinAggregateOutputType = {
     id: string | null
+    projectId: string | null
     status: $Enums.DatasetStatus | null
     sourceTraceId: string | null
     sourceObservationId: string | null
@@ -21081,6 +23421,7 @@ export namespace Prisma {
 
   export type DatasetItemMaxAggregateOutputType = {
     id: string | null
+    projectId: string | null
     status: $Enums.DatasetStatus | null
     sourceTraceId: string | null
     sourceObservationId: string | null
@@ -21091,6 +23432,7 @@ export namespace Prisma {
 
   export type DatasetItemCountAggregateOutputType = {
     id: number
+    projectId: number
     status: number
     input: number
     expectedOutput: number
@@ -21106,6 +23448,7 @@ export namespace Prisma {
 
   export type DatasetItemMinAggregateInputType = {
     id?: true
+    projectId?: true
     status?: true
     sourceTraceId?: true
     sourceObservationId?: true
@@ -21116,6 +23459,7 @@ export namespace Prisma {
 
   export type DatasetItemMaxAggregateInputType = {
     id?: true
+    projectId?: true
     status?: true
     sourceTraceId?: true
     sourceObservationId?: true
@@ -21126,6 +23470,7 @@ export namespace Prisma {
 
   export type DatasetItemCountAggregateInputType = {
     id?: true
+    projectId?: true
     status?: true
     input?: true
     expectedOutput?: true
@@ -21212,6 +23557,7 @@ export namespace Prisma {
 
   export type DatasetItemGroupByOutputType = {
     id: string
+    projectId: string
     status: $Enums.DatasetStatus
     input: JsonValue | null
     expectedOutput: JsonValue | null
@@ -21242,6 +23588,7 @@ export namespace Prisma {
 
   export type DatasetItemSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    projectId?: boolean
     status?: boolean
     input?: boolean
     expectedOutput?: boolean
@@ -21251,8 +23598,6 @@ export namespace Prisma {
     datasetId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    sourceTrace?: boolean | DatasetItem$sourceTraceArgs<ExtArgs>
-    sourceObservation?: boolean | DatasetItem$sourceObservationArgs<ExtArgs>
     dataset?: boolean | DatasetDefaultArgs<ExtArgs>
     datasetRunItems?: boolean | DatasetItem$datasetRunItemsArgs<ExtArgs>
     _count?: boolean | DatasetItemCountOutputTypeDefaultArgs<ExtArgs>
@@ -21260,6 +23605,7 @@ export namespace Prisma {
 
   export type DatasetItemSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    projectId?: boolean
     status?: boolean
     input?: boolean
     expectedOutput?: boolean
@@ -21269,13 +23615,12 @@ export namespace Prisma {
     datasetId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    sourceTrace?: boolean | DatasetItem$sourceTraceArgs<ExtArgs>
-    sourceObservation?: boolean | DatasetItem$sourceObservationArgs<ExtArgs>
     dataset?: boolean | DatasetDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["datasetItem"]>
 
   export type DatasetItemSelectScalar = {
     id?: boolean
+    projectId?: boolean
     status?: boolean
     input?: boolean
     expectedOutput?: boolean
@@ -21288,28 +23633,23 @@ export namespace Prisma {
   }
 
   export type DatasetItemInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    sourceTrace?: boolean | DatasetItem$sourceTraceArgs<ExtArgs>
-    sourceObservation?: boolean | DatasetItem$sourceObservationArgs<ExtArgs>
     dataset?: boolean | DatasetDefaultArgs<ExtArgs>
     datasetRunItems?: boolean | DatasetItem$datasetRunItemsArgs<ExtArgs>
     _count?: boolean | DatasetItemCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type DatasetItemIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    sourceTrace?: boolean | DatasetItem$sourceTraceArgs<ExtArgs>
-    sourceObservation?: boolean | DatasetItem$sourceObservationArgs<ExtArgs>
     dataset?: boolean | DatasetDefaultArgs<ExtArgs>
   }
 
   export type $DatasetItemPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "DatasetItem"
     objects: {
-      sourceTrace: Prisma.$TracePayload<ExtArgs> | null
-      sourceObservation: Prisma.$ObservationPayload<ExtArgs> | null
       dataset: Prisma.$DatasetPayload<ExtArgs>
       datasetRunItems: Prisma.$DatasetRunItemsPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
+      projectId: string
       status: $Enums.DatasetStatus
       input: Prisma.JsonValue | null
       expectedOutput: Prisma.JsonValue | null
@@ -21683,8 +24023,6 @@ export namespace Prisma {
    */
   export interface Prisma__DatasetItemClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    sourceTrace<T extends DatasetItem$sourceTraceArgs<ExtArgs> = {}>(args?: Subset<T, DatasetItem$sourceTraceArgs<ExtArgs>>): Prisma__TraceClient<$Result.GetResult<Prisma.$TracePayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
-    sourceObservation<T extends DatasetItem$sourceObservationArgs<ExtArgs> = {}>(args?: Subset<T, DatasetItem$sourceObservationArgs<ExtArgs>>): Prisma__ObservationClient<$Result.GetResult<Prisma.$ObservationPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     dataset<T extends DatasetDefaultArgs<ExtArgs> = {}>(args?: Subset<T, DatasetDefaultArgs<ExtArgs>>): Prisma__DatasetClient<$Result.GetResult<Prisma.$DatasetPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     datasetRunItems<T extends DatasetItem$datasetRunItemsArgs<ExtArgs> = {}>(args?: Subset<T, DatasetItem$datasetRunItemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DatasetRunItemsPayload<ExtArgs>, T, "findMany"> | Null>
     /**
@@ -21717,6 +24055,7 @@ export namespace Prisma {
    */ 
   interface DatasetItemFieldRefs {
     readonly id: FieldRef<"DatasetItem", 'String'>
+    readonly projectId: FieldRef<"DatasetItem", 'String'>
     readonly status: FieldRef<"DatasetItem", 'DatasetStatus'>
     readonly input: FieldRef<"DatasetItem", 'Json'>
     readonly expectedOutput: FieldRef<"DatasetItem", 'Json'>
@@ -22053,36 +24392,6 @@ export namespace Prisma {
   }
 
   /**
-   * DatasetItem.sourceTrace
-   */
-  export type DatasetItem$sourceTraceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Trace
-     */
-    select?: TraceSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: TraceInclude<ExtArgs> | null
-    where?: TraceWhereInput
-  }
-
-  /**
-   * DatasetItem.sourceObservation
-   */
-  export type DatasetItem$sourceObservationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Observation
-     */
-    select?: ObservationSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ObservationInclude<ExtArgs> | null
-    where?: ObservationWhereInput
-  }
-
-  /**
    * DatasetItem.datasetRunItems
    */
   export type DatasetItem$datasetRunItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -22129,6 +24438,7 @@ export namespace Prisma {
 
   export type DatasetRunsMinAggregateOutputType = {
     id: string | null
+    projectId: string | null
     name: string | null
     description: string | null
     datasetId: string | null
@@ -22138,6 +24448,7 @@ export namespace Prisma {
 
   export type DatasetRunsMaxAggregateOutputType = {
     id: string | null
+    projectId: string | null
     name: string | null
     description: string | null
     datasetId: string | null
@@ -22147,6 +24458,7 @@ export namespace Prisma {
 
   export type DatasetRunsCountAggregateOutputType = {
     id: number
+    projectId: number
     name: number
     description: number
     metadata: number
@@ -22159,6 +24471,7 @@ export namespace Prisma {
 
   export type DatasetRunsMinAggregateInputType = {
     id?: true
+    projectId?: true
     name?: true
     description?: true
     datasetId?: true
@@ -22168,6 +24481,7 @@ export namespace Prisma {
 
   export type DatasetRunsMaxAggregateInputType = {
     id?: true
+    projectId?: true
     name?: true
     description?: true
     datasetId?: true
@@ -22177,6 +24491,7 @@ export namespace Prisma {
 
   export type DatasetRunsCountAggregateInputType = {
     id?: true
+    projectId?: true
     name?: true
     description?: true
     metadata?: true
@@ -22260,6 +24575,7 @@ export namespace Prisma {
 
   export type DatasetRunsGroupByOutputType = {
     id: string
+    projectId: string
     name: string
     description: string | null
     metadata: JsonValue | null
@@ -22287,6 +24603,7 @@ export namespace Prisma {
 
   export type DatasetRunsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    projectId?: boolean
     name?: boolean
     description?: boolean
     metadata?: boolean
@@ -22300,6 +24617,7 @@ export namespace Prisma {
 
   export type DatasetRunsSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    projectId?: boolean
     name?: boolean
     description?: boolean
     metadata?: boolean
@@ -22311,6 +24629,7 @@ export namespace Prisma {
 
   export type DatasetRunsSelectScalar = {
     id?: boolean
+    projectId?: boolean
     name?: boolean
     description?: boolean
     metadata?: boolean
@@ -22336,6 +24655,7 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
+      projectId: string
       name: string
       description: string | null
       metadata: Prisma.JsonValue | null
@@ -22738,6 +25058,7 @@ export namespace Prisma {
    */ 
   interface DatasetRunsFieldRefs {
     readonly id: FieldRef<"DatasetRuns", 'String'>
+    readonly projectId: FieldRef<"DatasetRuns", 'String'>
     readonly name: FieldRef<"DatasetRuns", 'String'>
     readonly description: FieldRef<"DatasetRuns", 'String'>
     readonly metadata: FieldRef<"DatasetRuns", 'Json'>
@@ -23117,6 +25438,7 @@ export namespace Prisma {
 
   export type DatasetRunItemsMinAggregateOutputType = {
     id: string | null
+    projectId: string | null
     datasetRunId: string | null
     datasetItemId: string | null
     traceId: string | null
@@ -23127,6 +25449,7 @@ export namespace Prisma {
 
   export type DatasetRunItemsMaxAggregateOutputType = {
     id: string | null
+    projectId: string | null
     datasetRunId: string | null
     datasetItemId: string | null
     traceId: string | null
@@ -23137,6 +25460,7 @@ export namespace Prisma {
 
   export type DatasetRunItemsCountAggregateOutputType = {
     id: number
+    projectId: number
     datasetRunId: number
     datasetItemId: number
     traceId: number
@@ -23149,6 +25473,7 @@ export namespace Prisma {
 
   export type DatasetRunItemsMinAggregateInputType = {
     id?: true
+    projectId?: true
     datasetRunId?: true
     datasetItemId?: true
     traceId?: true
@@ -23159,6 +25484,7 @@ export namespace Prisma {
 
   export type DatasetRunItemsMaxAggregateInputType = {
     id?: true
+    projectId?: true
     datasetRunId?: true
     datasetItemId?: true
     traceId?: true
@@ -23169,6 +25495,7 @@ export namespace Prisma {
 
   export type DatasetRunItemsCountAggregateInputType = {
     id?: true
+    projectId?: true
     datasetRunId?: true
     datasetItemId?: true
     traceId?: true
@@ -23252,6 +25579,7 @@ export namespace Prisma {
 
   export type DatasetRunItemsGroupByOutputType = {
     id: string
+    projectId: string
     datasetRunId: string
     datasetItemId: string
     traceId: string
@@ -23279,6 +25607,7 @@ export namespace Prisma {
 
   export type DatasetRunItemsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    projectId?: boolean
     datasetRunId?: boolean
     datasetItemId?: boolean
     traceId?: boolean
@@ -23291,6 +25620,7 @@ export namespace Prisma {
 
   export type DatasetRunItemsSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    projectId?: boolean
     datasetRunId?: boolean
     datasetItemId?: boolean
     traceId?: boolean
@@ -23303,6 +25633,7 @@ export namespace Prisma {
 
   export type DatasetRunItemsSelectScalar = {
     id?: boolean
+    projectId?: boolean
     datasetRunId?: boolean
     datasetItemId?: boolean
     traceId?: boolean
@@ -23328,6 +25659,7 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
+      projectId: string
       datasetRunId: string
       datasetItemId: string
       traceId: string
@@ -23730,6 +26062,7 @@ export namespace Prisma {
    */ 
   interface DatasetRunItemsFieldRefs {
     readonly id: FieldRef<"DatasetRunItems", 'String'>
+    readonly projectId: FieldRef<"DatasetRunItems", 'String'>
     readonly datasetRunId: FieldRef<"DatasetRunItems", 'String'>
     readonly datasetItemId: FieldRef<"DatasetRunItems", 'String'>
     readonly traceId: FieldRef<"DatasetRunItems", 'String'>
@@ -25044,6 +27377,984 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: EventsInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Comment
+   */
+
+  export type AggregateComment = {
+    _count: CommentCountAggregateOutputType | null
+    _min: CommentMinAggregateOutputType | null
+    _max: CommentMaxAggregateOutputType | null
+  }
+
+  export type CommentMinAggregateOutputType = {
+    id: string | null
+    projectId: string | null
+    objectType: $Enums.CommentObjectType | null
+    objectId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    content: string | null
+    authorUserId: string | null
+  }
+
+  export type CommentMaxAggregateOutputType = {
+    id: string | null
+    projectId: string | null
+    objectType: $Enums.CommentObjectType | null
+    objectId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    content: string | null
+    authorUserId: string | null
+  }
+
+  export type CommentCountAggregateOutputType = {
+    id: number
+    projectId: number
+    objectType: number
+    objectId: number
+    createdAt: number
+    updatedAt: number
+    content: number
+    authorUserId: number
+    _all: number
+  }
+
+
+  export type CommentMinAggregateInputType = {
+    id?: true
+    projectId?: true
+    objectType?: true
+    objectId?: true
+    createdAt?: true
+    updatedAt?: true
+    content?: true
+    authorUserId?: true
+  }
+
+  export type CommentMaxAggregateInputType = {
+    id?: true
+    projectId?: true
+    objectType?: true
+    objectId?: true
+    createdAt?: true
+    updatedAt?: true
+    content?: true
+    authorUserId?: true
+  }
+
+  export type CommentCountAggregateInputType = {
+    id?: true
+    projectId?: true
+    objectType?: true
+    objectId?: true
+    createdAt?: true
+    updatedAt?: true
+    content?: true
+    authorUserId?: true
+    _all?: true
+  }
+
+  export type CommentAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Comment to aggregate.
+     */
+    where?: CommentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Comments to fetch.
+     */
+    orderBy?: CommentOrderByWithRelationInput | CommentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: CommentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Comments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Comments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Comments
+    **/
+    _count?: true | CommentCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: CommentMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: CommentMaxAggregateInputType
+  }
+
+  export type GetCommentAggregateType<T extends CommentAggregateArgs> = {
+        [P in keyof T & keyof AggregateComment]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateComment[P]>
+      : GetScalarType<T[P], AggregateComment[P]>
+  }
+
+
+
+
+  export type CommentGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CommentWhereInput
+    orderBy?: CommentOrderByWithAggregationInput | CommentOrderByWithAggregationInput[]
+    by: CommentScalarFieldEnum[] | CommentScalarFieldEnum
+    having?: CommentScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: CommentCountAggregateInputType | true
+    _min?: CommentMinAggregateInputType
+    _max?: CommentMaxAggregateInputType
+  }
+
+  export type CommentGroupByOutputType = {
+    id: string
+    projectId: string
+    objectType: $Enums.CommentObjectType
+    objectId: string
+    createdAt: Date
+    updatedAt: Date
+    content: string
+    authorUserId: string | null
+    _count: CommentCountAggregateOutputType | null
+    _min: CommentMinAggregateOutputType | null
+    _max: CommentMaxAggregateOutputType | null
+  }
+
+  type GetCommentGroupByPayload<T extends CommentGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<CommentGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof CommentGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], CommentGroupByOutputType[P]>
+            : GetScalarType<T[P], CommentGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type CommentSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    projectId?: boolean
+    objectType?: boolean
+    objectId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    content?: boolean
+    authorUserId?: boolean
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["comment"]>
+
+  export type CommentSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    projectId?: boolean
+    objectType?: boolean
+    objectId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    content?: boolean
+    authorUserId?: boolean
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["comment"]>
+
+  export type CommentSelectScalar = {
+    id?: boolean
+    projectId?: boolean
+    objectType?: boolean
+    objectId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    content?: boolean
+    authorUserId?: boolean
+  }
+
+  export type CommentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+  }
+  export type CommentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+  }
+
+  export type $CommentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Comment"
+    objects: {
+      project: Prisma.$ProjectPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      projectId: string
+      objectType: $Enums.CommentObjectType
+      objectId: string
+      createdAt: Date
+      updatedAt: Date
+      content: string
+      authorUserId: string | null
+    }, ExtArgs["result"]["comment"]>
+    composites: {}
+  }
+
+  type CommentGetPayload<S extends boolean | null | undefined | CommentDefaultArgs> = $Result.GetResult<Prisma.$CommentPayload, S>
+
+  type CommentCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<CommentFindManyArgs, 'select' | 'include' | 'distinct' | 'relationLoadStrategy'> & {
+      select?: CommentCountAggregateInputType | true
+    }
+
+  export interface CommentDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Comment'], meta: { name: 'Comment' } }
+    /**
+     * Find zero or one Comment that matches the filter.
+     * @param {CommentFindUniqueArgs} args - Arguments to find a Comment
+     * @example
+     * // Get one Comment
+     * const comment = await prisma.comment.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends CommentFindUniqueArgs>(args: SelectSubset<T, CommentFindUniqueArgs<ExtArgs>>): Prisma__CommentClient<$Result.GetResult<Prisma.$CommentPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one Comment that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {CommentFindUniqueOrThrowArgs} args - Arguments to find a Comment
+     * @example
+     * // Get one Comment
+     * const comment = await prisma.comment.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends CommentFindUniqueOrThrowArgs>(args: SelectSubset<T, CommentFindUniqueOrThrowArgs<ExtArgs>>): Prisma__CommentClient<$Result.GetResult<Prisma.$CommentPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first Comment that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CommentFindFirstArgs} args - Arguments to find a Comment
+     * @example
+     * // Get one Comment
+     * const comment = await prisma.comment.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends CommentFindFirstArgs>(args?: SelectSubset<T, CommentFindFirstArgs<ExtArgs>>): Prisma__CommentClient<$Result.GetResult<Prisma.$CommentPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first Comment that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CommentFindFirstOrThrowArgs} args - Arguments to find a Comment
+     * @example
+     * // Get one Comment
+     * const comment = await prisma.comment.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends CommentFindFirstOrThrowArgs>(args?: SelectSubset<T, CommentFindFirstOrThrowArgs<ExtArgs>>): Prisma__CommentClient<$Result.GetResult<Prisma.$CommentPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more Comments that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CommentFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Comments
+     * const comments = await prisma.comment.findMany()
+     * 
+     * // Get first 10 Comments
+     * const comments = await prisma.comment.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const commentWithIdOnly = await prisma.comment.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends CommentFindManyArgs>(args?: SelectSubset<T, CommentFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CommentPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a Comment.
+     * @param {CommentCreateArgs} args - Arguments to create a Comment.
+     * @example
+     * // Create one Comment
+     * const Comment = await prisma.comment.create({
+     *   data: {
+     *     // ... data to create a Comment
+     *   }
+     * })
+     * 
+     */
+    create<T extends CommentCreateArgs>(args: SelectSubset<T, CommentCreateArgs<ExtArgs>>): Prisma__CommentClient<$Result.GetResult<Prisma.$CommentPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many Comments.
+     * @param {CommentCreateManyArgs} args - Arguments to create many Comments.
+     * @example
+     * // Create many Comments
+     * const comment = await prisma.comment.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends CommentCreateManyArgs>(args?: SelectSubset<T, CommentCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Comments and returns the data saved in the database.
+     * @param {CommentCreateManyAndReturnArgs} args - Arguments to create many Comments.
+     * @example
+     * // Create many Comments
+     * const comment = await prisma.comment.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Comments and only return the `id`
+     * const commentWithIdOnly = await prisma.comment.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends CommentCreateManyAndReturnArgs>(args?: SelectSubset<T, CommentCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CommentPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a Comment.
+     * @param {CommentDeleteArgs} args - Arguments to delete one Comment.
+     * @example
+     * // Delete one Comment
+     * const Comment = await prisma.comment.delete({
+     *   where: {
+     *     // ... filter to delete one Comment
+     *   }
+     * })
+     * 
+     */
+    delete<T extends CommentDeleteArgs>(args: SelectSubset<T, CommentDeleteArgs<ExtArgs>>): Prisma__CommentClient<$Result.GetResult<Prisma.$CommentPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one Comment.
+     * @param {CommentUpdateArgs} args - Arguments to update one Comment.
+     * @example
+     * // Update one Comment
+     * const comment = await prisma.comment.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends CommentUpdateArgs>(args: SelectSubset<T, CommentUpdateArgs<ExtArgs>>): Prisma__CommentClient<$Result.GetResult<Prisma.$CommentPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more Comments.
+     * @param {CommentDeleteManyArgs} args - Arguments to filter Comments to delete.
+     * @example
+     * // Delete a few Comments
+     * const { count } = await prisma.comment.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends CommentDeleteManyArgs>(args?: SelectSubset<T, CommentDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Comments.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CommentUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Comments
+     * const comment = await prisma.comment.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends CommentUpdateManyArgs>(args: SelectSubset<T, CommentUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Comment.
+     * @param {CommentUpsertArgs} args - Arguments to update or create a Comment.
+     * @example
+     * // Update or create a Comment
+     * const comment = await prisma.comment.upsert({
+     *   create: {
+     *     // ... data to create a Comment
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Comment we want to update
+     *   }
+     * })
+     */
+    upsert<T extends CommentUpsertArgs>(args: SelectSubset<T, CommentUpsertArgs<ExtArgs>>): Prisma__CommentClient<$Result.GetResult<Prisma.$CommentPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of Comments.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CommentCountArgs} args - Arguments to filter Comments to count.
+     * @example
+     * // Count the number of Comments
+     * const count = await prisma.comment.count({
+     *   where: {
+     *     // ... the filter for the Comments we want to count
+     *   }
+     * })
+    **/
+    count<T extends CommentCountArgs>(
+      args?: Subset<T, CommentCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], CommentCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Comment.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CommentAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends CommentAggregateArgs>(args: Subset<T, CommentAggregateArgs>): Prisma.PrismaPromise<GetCommentAggregateType<T>>
+
+    /**
+     * Group by Comment.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CommentGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends CommentGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: CommentGroupByArgs['orderBy'] }
+        : { orderBy?: CommentGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, CommentGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetCommentGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Comment model
+   */
+  readonly fields: CommentFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Comment.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__CommentClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    project<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Comment model
+   */ 
+  interface CommentFieldRefs {
+    readonly id: FieldRef<"Comment", 'String'>
+    readonly projectId: FieldRef<"Comment", 'String'>
+    readonly objectType: FieldRef<"Comment", 'CommentObjectType'>
+    readonly objectId: FieldRef<"Comment", 'String'>
+    readonly createdAt: FieldRef<"Comment", 'DateTime'>
+    readonly updatedAt: FieldRef<"Comment", 'DateTime'>
+    readonly content: FieldRef<"Comment", 'String'>
+    readonly authorUserId: FieldRef<"Comment", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Comment findUnique
+   */
+  export type CommentFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Comment
+     */
+    select?: CommentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CommentInclude<ExtArgs> | null
+    /**
+     * Filter, which Comment to fetch.
+     */
+    where: CommentWhereUniqueInput
+    relationLoadStrategy?: RelationLoadStrategy
+  }
+
+  /**
+   * Comment findUniqueOrThrow
+   */
+  export type CommentFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Comment
+     */
+    select?: CommentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CommentInclude<ExtArgs> | null
+    /**
+     * Filter, which Comment to fetch.
+     */
+    where: CommentWhereUniqueInput
+    relationLoadStrategy?: RelationLoadStrategy
+  }
+
+  /**
+   * Comment findFirst
+   */
+  export type CommentFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Comment
+     */
+    select?: CommentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CommentInclude<ExtArgs> | null
+    /**
+     * Filter, which Comment to fetch.
+     */
+    where?: CommentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Comments to fetch.
+     */
+    orderBy?: CommentOrderByWithRelationInput | CommentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Comments.
+     */
+    cursor?: CommentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Comments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Comments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Comments.
+     */
+    distinct?: CommentScalarFieldEnum | CommentScalarFieldEnum[]
+    relationLoadStrategy?: RelationLoadStrategy
+  }
+
+  /**
+   * Comment findFirstOrThrow
+   */
+  export type CommentFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Comment
+     */
+    select?: CommentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CommentInclude<ExtArgs> | null
+    /**
+     * Filter, which Comment to fetch.
+     */
+    where?: CommentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Comments to fetch.
+     */
+    orderBy?: CommentOrderByWithRelationInput | CommentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Comments.
+     */
+    cursor?: CommentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Comments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Comments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Comments.
+     */
+    distinct?: CommentScalarFieldEnum | CommentScalarFieldEnum[]
+    relationLoadStrategy?: RelationLoadStrategy
+  }
+
+  /**
+   * Comment findMany
+   */
+  export type CommentFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Comment
+     */
+    select?: CommentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CommentInclude<ExtArgs> | null
+    /**
+     * Filter, which Comments to fetch.
+     */
+    where?: CommentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Comments to fetch.
+     */
+    orderBy?: CommentOrderByWithRelationInput | CommentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Comments.
+     */
+    cursor?: CommentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Comments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Comments.
+     */
+    skip?: number
+    distinct?: CommentScalarFieldEnum | CommentScalarFieldEnum[]
+    relationLoadStrategy?: RelationLoadStrategy
+  }
+
+  /**
+   * Comment create
+   */
+  export type CommentCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Comment
+     */
+    select?: CommentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CommentInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Comment.
+     */
+    data: XOR<CommentCreateInput, CommentUncheckedCreateInput>
+    relationLoadStrategy?: RelationLoadStrategy
+  }
+
+  /**
+   * Comment createMany
+   */
+  export type CommentCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Comments.
+     */
+    data: CommentCreateManyInput | CommentCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Comment createManyAndReturn
+   */
+  export type CommentCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Comment
+     */
+    select?: CommentSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many Comments.
+     */
+    data: CommentCreateManyInput | CommentCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CommentIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Comment update
+   */
+  export type CommentUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Comment
+     */
+    select?: CommentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CommentInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Comment.
+     */
+    data: XOR<CommentUpdateInput, CommentUncheckedUpdateInput>
+    /**
+     * Choose, which Comment to update.
+     */
+    where: CommentWhereUniqueInput
+    relationLoadStrategy?: RelationLoadStrategy
+  }
+
+  /**
+   * Comment updateMany
+   */
+  export type CommentUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Comments.
+     */
+    data: XOR<CommentUpdateManyMutationInput, CommentUncheckedUpdateManyInput>
+    /**
+     * Filter which Comments to update
+     */
+    where?: CommentWhereInput
+  }
+
+  /**
+   * Comment upsert
+   */
+  export type CommentUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Comment
+     */
+    select?: CommentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CommentInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Comment to update in case it exists.
+     */
+    where: CommentWhereUniqueInput
+    /**
+     * In case the Comment found by the `where` argument doesn't exist, create a new Comment with this data.
+     */
+    create: XOR<CommentCreateInput, CommentUncheckedCreateInput>
+    /**
+     * In case the Comment was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<CommentUpdateInput, CommentUncheckedUpdateInput>
+    relationLoadStrategy?: RelationLoadStrategy
+  }
+
+  /**
+   * Comment delete
+   */
+  export type CommentDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Comment
+     */
+    select?: CommentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CommentInclude<ExtArgs> | null
+    /**
+     * Filter which Comment to delete.
+     */
+    where: CommentWhereUniqueInput
+    relationLoadStrategy?: RelationLoadStrategy
+  }
+
+  /**
+   * Comment deleteMany
+   */
+  export type CommentDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Comments to delete
+     */
+    where?: CommentWhereInput
+  }
+
+  /**
+   * Comment without action
+   */
+  export type CommentDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Comment
+     */
+    select?: CommentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CommentInclude<ExtArgs> | null
   }
 
 
@@ -27209,8 +30520,10 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     userId: string | null
+    orgId: string | null
+    userOrgRole: string | null
     projectId: string | null
-    userProjectRole: $Enums.ProjectRole | null
+    userProjectRole: string | null
     resourceType: string | null
     resourceId: string | null
     action: string | null
@@ -27223,8 +30536,10 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     userId: string | null
+    orgId: string | null
+    userOrgRole: string | null
     projectId: string | null
-    userProjectRole: $Enums.ProjectRole | null
+    userProjectRole: string | null
     resourceType: string | null
     resourceId: string | null
     action: string | null
@@ -27237,6 +30552,8 @@ export namespace Prisma {
     createdAt: number
     updatedAt: number
     userId: number
+    orgId: number
+    userOrgRole: number
     projectId: number
     userProjectRole: number
     resourceType: number
@@ -27253,6 +30570,8 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     userId?: true
+    orgId?: true
+    userOrgRole?: true
     projectId?: true
     userProjectRole?: true
     resourceType?: true
@@ -27267,6 +30586,8 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     userId?: true
+    orgId?: true
+    userOrgRole?: true
     projectId?: true
     userProjectRole?: true
     resourceType?: true
@@ -27281,6 +30602,8 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     userId?: true
+    orgId?: true
+    userOrgRole?: true
     projectId?: true
     userProjectRole?: true
     resourceType?: true
@@ -27368,8 +30691,10 @@ export namespace Prisma {
     createdAt: Date
     updatedAt: Date
     userId: string
-    projectId: string
-    userProjectRole: $Enums.ProjectRole
+    orgId: string
+    userOrgRole: string
+    projectId: string | null
+    userProjectRole: string | null
     resourceType: string
     resourceId: string
     action: string
@@ -27399,6 +30724,8 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     userId?: boolean
+    orgId?: boolean
+    userOrgRole?: boolean
     projectId?: boolean
     userProjectRole?: boolean
     resourceType?: boolean
@@ -27406,8 +30733,6 @@ export namespace Prisma {
     action?: boolean
     before?: boolean
     after?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
-    project?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["auditLog"]>
 
   export type AuditLogSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -27415,6 +30740,8 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     userId?: boolean
+    orgId?: boolean
+    userOrgRole?: boolean
     projectId?: boolean
     userProjectRole?: boolean
     resourceType?: boolean
@@ -27422,8 +30749,6 @@ export namespace Prisma {
     action?: boolean
     before?: boolean
     after?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
-    project?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["auditLog"]>
 
   export type AuditLogSelectScalar = {
@@ -27431,6 +30756,8 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     userId?: boolean
+    orgId?: boolean
+    userOrgRole?: boolean
     projectId?: boolean
     userProjectRole?: boolean
     resourceType?: boolean
@@ -27440,28 +30767,19 @@ export namespace Prisma {
     after?: boolean
   }
 
-  export type AuditLogInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
-    project?: boolean | ProjectDefaultArgs<ExtArgs>
-  }
-  export type AuditLogIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
-    project?: boolean | ProjectDefaultArgs<ExtArgs>
-  }
 
   export type $AuditLogPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "AuditLog"
-    objects: {
-      user: Prisma.$UserPayload<ExtArgs>
-      project: Prisma.$ProjectPayload<ExtArgs>
-    }
+    objects: {}
     scalars: $Extensions.GetPayloadResult<{
       id: string
       createdAt: Date
       updatedAt: Date
       userId: string
-      projectId: string
-      userProjectRole: $Enums.ProjectRole
+      orgId: string
+      userOrgRole: string
+      projectId: string | null
+      userProjectRole: string | null
       resourceType: string
       resourceId: string
       action: string
@@ -27831,8 +31149,6 @@ export namespace Prisma {
    */
   export interface Prisma__AuditLogClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
-    project<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -27866,8 +31182,10 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"AuditLog", 'DateTime'>
     readonly updatedAt: FieldRef<"AuditLog", 'DateTime'>
     readonly userId: FieldRef<"AuditLog", 'String'>
+    readonly orgId: FieldRef<"AuditLog", 'String'>
+    readonly userOrgRole: FieldRef<"AuditLog", 'String'>
     readonly projectId: FieldRef<"AuditLog", 'String'>
-    readonly userProjectRole: FieldRef<"AuditLog", 'ProjectRole'>
+    readonly userProjectRole: FieldRef<"AuditLog", 'String'>
     readonly resourceType: FieldRef<"AuditLog", 'String'>
     readonly resourceId: FieldRef<"AuditLog", 'String'>
     readonly action: FieldRef<"AuditLog", 'String'>
@@ -27886,10 +31204,6 @@ export namespace Prisma {
      */
     select?: AuditLogSelect<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: AuditLogInclude<ExtArgs> | null
-    /**
      * Filter, which AuditLog to fetch.
      */
     where: AuditLogWhereUniqueInput
@@ -27905,10 +31219,6 @@ export namespace Prisma {
      */
     select?: AuditLogSelect<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: AuditLogInclude<ExtArgs> | null
-    /**
      * Filter, which AuditLog to fetch.
      */
     where: AuditLogWhereUniqueInput
@@ -27923,10 +31233,6 @@ export namespace Prisma {
      * Select specific fields to fetch from the AuditLog
      */
     select?: AuditLogSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: AuditLogInclude<ExtArgs> | null
     /**
      * Filter, which AuditLog to fetch.
      */
@@ -27973,10 +31279,6 @@ export namespace Prisma {
      */
     select?: AuditLogSelect<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: AuditLogInclude<ExtArgs> | null
-    /**
      * Filter, which AuditLog to fetch.
      */
     where?: AuditLogWhereInput
@@ -28022,10 +31324,6 @@ export namespace Prisma {
      */
     select?: AuditLogSelect<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: AuditLogInclude<ExtArgs> | null
-    /**
      * Filter, which AuditLogs to fetch.
      */
     where?: AuditLogWhereInput
@@ -28066,10 +31364,6 @@ export namespace Prisma {
      */
     select?: AuditLogSelect<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: AuditLogInclude<ExtArgs> | null
-    /**
      * The data needed to create a AuditLog.
      */
     data: XOR<AuditLogCreateInput, AuditLogUncheckedCreateInput>
@@ -28100,10 +31394,6 @@ export namespace Prisma {
      */
     data: AuditLogCreateManyInput | AuditLogCreateManyInput[]
     skipDuplicates?: boolean
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: AuditLogIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -28114,10 +31404,6 @@ export namespace Prisma {
      * Select specific fields to fetch from the AuditLog
      */
     select?: AuditLogSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: AuditLogInclude<ExtArgs> | null
     /**
      * The data needed to update a AuditLog.
      */
@@ -28152,10 +31438,6 @@ export namespace Prisma {
      */
     select?: AuditLogSelect<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: AuditLogInclude<ExtArgs> | null
-    /**
      * The filter to search for the AuditLog to update in case it exists.
      */
     where: AuditLogWhereUniqueInput
@@ -28178,10 +31460,6 @@ export namespace Prisma {
      * Select specific fields to fetch from the AuditLog
      */
     select?: AuditLogSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: AuditLogInclude<ExtArgs> | null
     /**
      * Filter which AuditLog to delete.
      */
@@ -28207,10 +31485,6 @@ export namespace Prisma {
      * Select specific fields to fetch from the AuditLog
      */
     select?: AuditLogSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: AuditLogInclude<ExtArgs> | null
   }
 
 
@@ -35413,6 +38687,7 @@ export namespace Prisma {
     promptTokens: number | null
     completionTokens: number | null
     totalTokens: number | null
+    promptVersion: number | null
     inputPrice: Decimal | null
     outputPrice: Decimal | null
     totalPrice: Decimal | null
@@ -35427,6 +38702,7 @@ export namespace Prisma {
     promptTokens: number | null
     completionTokens: number | null
     totalTokens: number | null
+    promptVersion: number | null
     inputPrice: Decimal | null
     outputPrice: Decimal | null
     totalPrice: Decimal | null
@@ -35458,6 +38734,8 @@ export namespace Prisma {
     unit: string | null
     completionStartTime: Date | null
     promptId: string | null
+    promptName: string | null
+    promptVersion: number | null
     modelId: string | null
     inputPrice: Decimal | null
     outputPrice: Decimal | null
@@ -35490,6 +38768,8 @@ export namespace Prisma {
     unit: string | null
     completionStartTime: Date | null
     promptId: string | null
+    promptName: string | null
+    promptVersion: number | null
     modelId: string | null
     inputPrice: Decimal | null
     outputPrice: Decimal | null
@@ -35526,6 +38806,8 @@ export namespace Prisma {
     unit: number
     completionStartTime: number
     promptId: number
+    promptName: number
+    promptVersion: number
     modelId: number
     inputPrice: number
     outputPrice: number
@@ -35543,6 +38825,7 @@ export namespace Prisma {
     promptTokens?: true
     completionTokens?: true
     totalTokens?: true
+    promptVersion?: true
     inputPrice?: true
     outputPrice?: true
     totalPrice?: true
@@ -35557,6 +38840,7 @@ export namespace Prisma {
     promptTokens?: true
     completionTokens?: true
     totalTokens?: true
+    promptVersion?: true
     inputPrice?: true
     outputPrice?: true
     totalPrice?: true
@@ -35588,6 +38872,8 @@ export namespace Prisma {
     unit?: true
     completionStartTime?: true
     promptId?: true
+    promptName?: true
+    promptVersion?: true
     modelId?: true
     inputPrice?: true
     outputPrice?: true
@@ -35620,6 +38906,8 @@ export namespace Prisma {
     unit?: true
     completionStartTime?: true
     promptId?: true
+    promptName?: true
+    promptVersion?: true
     modelId?: true
     inputPrice?: true
     outputPrice?: true
@@ -35656,6 +38944,8 @@ export namespace Prisma {
     unit?: true
     completionStartTime?: true
     promptId?: true
+    promptName?: true
+    promptVersion?: true
     modelId?: true
     inputPrice?: true
     outputPrice?: true
@@ -35779,6 +39069,8 @@ export namespace Prisma {
     unit: string | null
     completionStartTime: Date | null
     promptId: string | null
+    promptName: string | null
+    promptVersion: number | null
     modelId: string | null
     inputPrice: Decimal | null
     outputPrice: Decimal | null
@@ -35834,6 +39126,8 @@ export namespace Prisma {
     unit?: boolean
     completionStartTime?: boolean
     promptId?: boolean
+    promptName?: boolean
+    promptVersion?: boolean
     modelId?: boolean
     inputPrice?: boolean
     outputPrice?: boolean
@@ -35870,6 +39164,8 @@ export namespace Prisma {
     unit?: boolean
     completionStartTime?: boolean
     promptId?: boolean
+    promptName?: boolean
+    promptVersion?: boolean
     modelId?: boolean
     inputPrice?: boolean
     outputPrice?: boolean
@@ -35906,6 +39202,8 @@ export namespace Prisma {
     unit?: boolean
     completionStartTime?: boolean
     promptId?: boolean
+    promptName?: boolean
+    promptVersion?: boolean
     modelId?: boolean
     inputPrice?: boolean
     outputPrice?: boolean
@@ -35946,6 +39244,8 @@ export namespace Prisma {
       unit: string | null
       completionStartTime: Date | null
       promptId: string | null
+      promptName: string | null
+      promptVersion: number | null
       modelId: string | null
       inputPrice: Prisma.Decimal | null
       outputPrice: Prisma.Decimal | null
@@ -36372,6 +39672,8 @@ export namespace Prisma {
     readonly unit: FieldRef<"ObservationView", 'String'>
     readonly completionStartTime: FieldRef<"ObservationView", 'DateTime'>
     readonly promptId: FieldRef<"ObservationView", 'String'>
+    readonly promptName: FieldRef<"ObservationView", 'String'>
+    readonly promptVersion: FieldRef<"ObservationView", 'Int'>
     readonly modelId: FieldRef<"ObservationView", 'String'>
     readonly inputPrice: FieldRef<"ObservationView", 'Decimal'>
     readonly outputPrice: FieldRef<"ObservationView", 'Decimal'>
@@ -36755,12 +40057,23 @@ export namespace Prisma {
   export type VerificationTokenScalarFieldEnum = (typeof VerificationTokenScalarFieldEnum)[keyof typeof VerificationTokenScalarFieldEnum]
 
 
-  export const ProjectScalarFieldEnum: {
+  export const OrganizationScalarFieldEnum: {
     id: 'id',
+    name: 'name',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
-    name: 'name',
     cloudConfig: 'cloudConfig'
+  };
+
+  export type OrganizationScalarFieldEnum = (typeof OrganizationScalarFieldEnum)[keyof typeof OrganizationScalarFieldEnum]
+
+
+  export const ProjectScalarFieldEnum: {
+    id: 'id',
+    orgId: 'orgId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+    name: 'name'
   };
 
   export type ProjectScalarFieldEnum = (typeof ProjectScalarFieldEnum)[keyof typeof ProjectScalarFieldEnum]
@@ -36799,7 +40112,20 @@ export namespace Prisma {
   export type LlmApiKeysScalarFieldEnum = (typeof LlmApiKeysScalarFieldEnum)[keyof typeof LlmApiKeysScalarFieldEnum]
 
 
+  export const OrganizationMembershipScalarFieldEnum: {
+    id: 'id',
+    orgId: 'orgId',
+    userId: 'userId',
+    role: 'role',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type OrganizationMembershipScalarFieldEnum = (typeof OrganizationMembershipScalarFieldEnum)[keyof typeof OrganizationMembershipScalarFieldEnum]
+
+
   export const ProjectMembershipScalarFieldEnum: {
+    orgMembershipId: 'orgMembershipId',
     projectId: 'projectId',
     userId: 'userId',
     role: 'role',
@@ -36813,9 +40139,11 @@ export namespace Prisma {
   export const MembershipInvitationScalarFieldEnum: {
     id: 'id',
     email: 'email',
-    role: 'role',
+    orgId: 'orgId',
+    orgRole: 'orgRole',
     projectId: 'projectId',
-    senderId: 'senderId',
+    projectRole: 'projectRole',
+    invitedByUserId: 'invitedByUserId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -36946,10 +40274,10 @@ export namespace Prisma {
 
   export const DatasetScalarFieldEnum: {
     id: 'id',
+    projectId: 'projectId',
     name: 'name',
     description: 'description',
     metadata: 'metadata',
-    projectId: 'projectId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -36959,6 +40287,7 @@ export namespace Prisma {
 
   export const DatasetItemScalarFieldEnum: {
     id: 'id',
+    projectId: 'projectId',
     status: 'status',
     input: 'input',
     expectedOutput: 'expectedOutput',
@@ -36975,6 +40304,7 @@ export namespace Prisma {
 
   export const DatasetRunsScalarFieldEnum: {
     id: 'id',
+    projectId: 'projectId',
     name: 'name',
     description: 'description',
     metadata: 'metadata',
@@ -36988,6 +40318,7 @@ export namespace Prisma {
 
   export const DatasetRunItemsScalarFieldEnum: {
     id: 'id',
+    projectId: 'projectId',
     datasetRunId: 'datasetRunId',
     datasetItemId: 'datasetItemId',
     traceId: 'traceId',
@@ -37011,6 +40342,20 @@ export namespace Prisma {
   };
 
   export type EventsScalarFieldEnum = (typeof EventsScalarFieldEnum)[keyof typeof EventsScalarFieldEnum]
+
+
+  export const CommentScalarFieldEnum: {
+    id: 'id',
+    projectId: 'projectId',
+    objectType: 'objectType',
+    objectId: 'objectId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+    content: 'content',
+    authorUserId: 'authorUserId'
+  };
+
+  export type CommentScalarFieldEnum = (typeof CommentScalarFieldEnum)[keyof typeof CommentScalarFieldEnum]
 
 
   export const PromptScalarFieldEnum: {
@@ -37056,6 +40401,8 @@ export namespace Prisma {
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     userId: 'userId',
+    orgId: 'orgId',
+    userOrgRole: 'userOrgRole',
     projectId: 'projectId',
     userProjectRole: 'userProjectRole',
     resourceType: 'resourceType',
@@ -37213,6 +40560,8 @@ export namespace Prisma {
     unit: 'unit',
     completionStartTime: 'completionStartTime',
     promptId: 'promptId',
+    promptName: 'promptName',
+    promptVersion: 'promptVersion',
     modelId: 'modelId',
     inputPrice: 'inputPrice',
     outputPrice: 'outputPrice',
@@ -37337,16 +40686,16 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'ProjectRole'
+   * Reference to a field of type 'Role'
    */
-  export type EnumProjectRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProjectRole'>
+  export type EnumRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Role'>
     
 
 
   /**
-   * Reference to a field of type 'ProjectRole[]'
+   * Reference to a field of type 'Role[]'
    */
-  export type ListEnumProjectRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProjectRole[]'>
+  export type ListEnumRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Role[]'>
     
 
 
@@ -37445,6 +40794,20 @@ export namespace Prisma {
    * Reference to a field of type 'DatasetStatus[]'
    */
   export type ListEnumDatasetStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DatasetStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'CommentObjectType'
+   */
+  export type EnumCommentObjectTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CommentObjectType'>
+    
+
+
+  /**
+   * Reference to a field of type 'CommentObjectType[]'
+   */
+  export type ListEnumCommentObjectTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CommentObjectType[]'>
     
 
 
@@ -37662,9 +41025,9 @@ export namespace Prisma {
     featureFlags?: StringNullableListFilter<"User">
     accounts?: AccountListRelationFilter
     sessions?: SessionListRelationFilter
+    organizationMemberships?: OrganizationMembershipListRelationFilter
     projectMemberships?: ProjectMembershipListRelationFilter
     invitations?: MembershipInvitationListRelationFilter
-    AuditLog?: AuditLogListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -37680,9 +41043,9 @@ export namespace Prisma {
     featureFlags?: SortOrder
     accounts?: AccountOrderByRelationAggregateInput
     sessions?: SessionOrderByRelationAggregateInput
+    organizationMemberships?: OrganizationMembershipOrderByRelationAggregateInput
     projectMemberships?: ProjectMembershipOrderByRelationAggregateInput
     invitations?: MembershipInvitationOrderByRelationAggregateInput
-    AuditLog?: AuditLogOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -37701,9 +41064,9 @@ export namespace Prisma {
     featureFlags?: StringNullableListFilter<"User">
     accounts?: AccountListRelationFilter
     sessions?: SessionListRelationFilter
+    organizationMemberships?: OrganizationMembershipListRelationFilter
     projectMemberships?: ProjectMembershipListRelationFilter
     invitations?: MembershipInvitationListRelationFilter
-    AuditLog?: AuditLogListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -37781,16 +41144,78 @@ export namespace Prisma {
     expires?: DateTimeWithAggregatesFilter<"VerificationToken"> | Date | string
   }
 
+  export type OrganizationWhereInput = {
+    AND?: OrganizationWhereInput | OrganizationWhereInput[]
+    OR?: OrganizationWhereInput[]
+    NOT?: OrganizationWhereInput | OrganizationWhereInput[]
+    id?: StringFilter<"Organization"> | string
+    name?: StringFilter<"Organization"> | string
+    createdAt?: DateTimeFilter<"Organization"> | Date | string
+    updatedAt?: DateTimeFilter<"Organization"> | Date | string
+    cloudConfig?: JsonNullableFilter<"Organization">
+    organizationMemberships?: OrganizationMembershipListRelationFilter
+    projects?: ProjectListRelationFilter
+    MembershipInvitation?: MembershipInvitationListRelationFilter
+  }
+
+  export type OrganizationOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    cloudConfig?: SortOrderInput | SortOrder
+    organizationMemberships?: OrganizationMembershipOrderByRelationAggregateInput
+    projects?: ProjectOrderByRelationAggregateInput
+    MembershipInvitation?: MembershipInvitationOrderByRelationAggregateInput
+  }
+
+  export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: OrganizationWhereInput | OrganizationWhereInput[]
+    OR?: OrganizationWhereInput[]
+    NOT?: OrganizationWhereInput | OrganizationWhereInput[]
+    name?: StringFilter<"Organization"> | string
+    createdAt?: DateTimeFilter<"Organization"> | Date | string
+    updatedAt?: DateTimeFilter<"Organization"> | Date | string
+    cloudConfig?: JsonNullableFilter<"Organization">
+    organizationMemberships?: OrganizationMembershipListRelationFilter
+    projects?: ProjectListRelationFilter
+    MembershipInvitation?: MembershipInvitationListRelationFilter
+  }, "id">
+
+  export type OrganizationOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    cloudConfig?: SortOrderInput | SortOrder
+    _count?: OrganizationCountOrderByAggregateInput
+    _max?: OrganizationMaxOrderByAggregateInput
+    _min?: OrganizationMinOrderByAggregateInput
+  }
+
+  export type OrganizationScalarWhereWithAggregatesInput = {
+    AND?: OrganizationScalarWhereWithAggregatesInput | OrganizationScalarWhereWithAggregatesInput[]
+    OR?: OrganizationScalarWhereWithAggregatesInput[]
+    NOT?: OrganizationScalarWhereWithAggregatesInput | OrganizationScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Organization"> | string
+    name?: StringWithAggregatesFilter<"Organization"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"Organization"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Organization"> | Date | string
+    cloudConfig?: JsonNullableWithAggregatesFilter<"Organization">
+  }
+
   export type ProjectWhereInput = {
     AND?: ProjectWhereInput | ProjectWhereInput[]
     OR?: ProjectWhereInput[]
     NOT?: ProjectWhereInput | ProjectWhereInput[]
     id?: StringFilter<"Project"> | string
+    orgId?: StringFilter<"Project"> | string
     createdAt?: DateTimeFilter<"Project"> | Date | string
     updatedAt?: DateTimeFilter<"Project"> | Date | string
     name?: StringFilter<"Project"> | string
-    cloudConfig?: JsonNullableFilter<"Project">
     projectMembers?: ProjectMembershipListRelationFilter
+    organization?: XOR<OrganizationRelationFilter, OrganizationWhereInput>
     traces?: TraceListRelationFilter
     observations?: ObservationListRelationFilter
     apiKeys?: ApiKeyListRelationFilter
@@ -37800,7 +41225,6 @@ export namespace Prisma {
     sessions?: TraceSessionListRelationFilter
     Prompt?: PromptListRelationFilter
     Model?: ModelListRelationFilter
-    AuditLog?: AuditLogListRelationFilter
     EvalTemplate?: EvalTemplateListRelationFilter
     JobConfiguration?: JobConfigurationListRelationFilter
     JobExecution?: JobExecutionListRelationFilter
@@ -37809,15 +41233,17 @@ export namespace Prisma {
     Score?: ScoreListRelationFilter
     scoreConfig?: ScoreConfigListRelationFilter
     BatchExport?: BatchExportListRelationFilter
+    comment?: CommentListRelationFilter
   }
 
   export type ProjectOrderByWithRelationInput = {
     id?: SortOrder
+    orgId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     name?: SortOrder
-    cloudConfig?: SortOrderInput | SortOrder
     projectMembers?: ProjectMembershipOrderByRelationAggregateInput
+    organization?: OrganizationOrderByWithRelationInput
     traces?: TraceOrderByRelationAggregateInput
     observations?: ObservationOrderByRelationAggregateInput
     apiKeys?: ApiKeyOrderByRelationAggregateInput
@@ -37827,7 +41253,6 @@ export namespace Prisma {
     sessions?: TraceSessionOrderByRelationAggregateInput
     Prompt?: PromptOrderByRelationAggregateInput
     Model?: ModelOrderByRelationAggregateInput
-    AuditLog?: AuditLogOrderByRelationAggregateInput
     EvalTemplate?: EvalTemplateOrderByRelationAggregateInput
     JobConfiguration?: JobConfigurationOrderByRelationAggregateInput
     JobExecution?: JobExecutionOrderByRelationAggregateInput
@@ -37836,6 +41261,7 @@ export namespace Prisma {
     Score?: ScoreOrderByRelationAggregateInput
     scoreConfig?: ScoreConfigOrderByRelationAggregateInput
     BatchExport?: BatchExportOrderByRelationAggregateInput
+    comment?: CommentOrderByRelationAggregateInput
   }
 
   export type ProjectWhereUniqueInput = Prisma.AtLeast<{
@@ -37843,11 +41269,12 @@ export namespace Prisma {
     AND?: ProjectWhereInput | ProjectWhereInput[]
     OR?: ProjectWhereInput[]
     NOT?: ProjectWhereInput | ProjectWhereInput[]
+    orgId?: StringFilter<"Project"> | string
     createdAt?: DateTimeFilter<"Project"> | Date | string
     updatedAt?: DateTimeFilter<"Project"> | Date | string
     name?: StringFilter<"Project"> | string
-    cloudConfig?: JsonNullableFilter<"Project">
     projectMembers?: ProjectMembershipListRelationFilter
+    organization?: XOR<OrganizationRelationFilter, OrganizationWhereInput>
     traces?: TraceListRelationFilter
     observations?: ObservationListRelationFilter
     apiKeys?: ApiKeyListRelationFilter
@@ -37857,7 +41284,6 @@ export namespace Prisma {
     sessions?: TraceSessionListRelationFilter
     Prompt?: PromptListRelationFilter
     Model?: ModelListRelationFilter
-    AuditLog?: AuditLogListRelationFilter
     EvalTemplate?: EvalTemplateListRelationFilter
     JobConfiguration?: JobConfigurationListRelationFilter
     JobExecution?: JobExecutionListRelationFilter
@@ -37866,14 +41292,15 @@ export namespace Prisma {
     Score?: ScoreListRelationFilter
     scoreConfig?: ScoreConfigListRelationFilter
     BatchExport?: BatchExportListRelationFilter
+    comment?: CommentListRelationFilter
   }, "id">
 
   export type ProjectOrderByWithAggregationInput = {
     id?: SortOrder
+    orgId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     name?: SortOrder
-    cloudConfig?: SortOrderInput | SortOrder
     _count?: ProjectCountOrderByAggregateInput
     _max?: ProjectMaxOrderByAggregateInput
     _min?: ProjectMinOrderByAggregateInput
@@ -37884,10 +41311,10 @@ export namespace Prisma {
     OR?: ProjectScalarWhereWithAggregatesInput[]
     NOT?: ProjectScalarWhereWithAggregatesInput | ProjectScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Project"> | string
+    orgId?: StringWithAggregatesFilter<"Project"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Project"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Project"> | Date | string
     name?: StringWithAggregatesFilter<"Project"> | string
-    cloudConfig?: JsonNullableWithAggregatesFilter<"Project">
   }
 
   export type ApiKeyWhereInput = {
@@ -38056,25 +41483,96 @@ export namespace Prisma {
     projectId?: StringWithAggregatesFilter<"LlmApiKeys"> | string
   }
 
+  export type OrganizationMembershipWhereInput = {
+    AND?: OrganizationMembershipWhereInput | OrganizationMembershipWhereInput[]
+    OR?: OrganizationMembershipWhereInput[]
+    NOT?: OrganizationMembershipWhereInput | OrganizationMembershipWhereInput[]
+    id?: StringFilter<"OrganizationMembership"> | string
+    orgId?: StringFilter<"OrganizationMembership"> | string
+    userId?: StringFilter<"OrganizationMembership"> | string
+    role?: EnumRoleFilter<"OrganizationMembership"> | $Enums.Role
+    createdAt?: DateTimeFilter<"OrganizationMembership"> | Date | string
+    updatedAt?: DateTimeFilter<"OrganizationMembership"> | Date | string
+    organization?: XOR<OrganizationRelationFilter, OrganizationWhereInput>
+    user?: XOR<UserRelationFilter, UserWhereInput>
+    ProjectMemberships?: ProjectMembershipListRelationFilter
+  }
+
+  export type OrganizationMembershipOrderByWithRelationInput = {
+    id?: SortOrder
+    orgId?: SortOrder
+    userId?: SortOrder
+    role?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    organization?: OrganizationOrderByWithRelationInput
+    user?: UserOrderByWithRelationInput
+    ProjectMemberships?: ProjectMembershipOrderByRelationAggregateInput
+  }
+
+  export type OrganizationMembershipWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    orgId_userId?: OrganizationMembershipOrgIdUserIdCompoundUniqueInput
+    AND?: OrganizationMembershipWhereInput | OrganizationMembershipWhereInput[]
+    OR?: OrganizationMembershipWhereInput[]
+    NOT?: OrganizationMembershipWhereInput | OrganizationMembershipWhereInput[]
+    orgId?: StringFilter<"OrganizationMembership"> | string
+    userId?: StringFilter<"OrganizationMembership"> | string
+    role?: EnumRoleFilter<"OrganizationMembership"> | $Enums.Role
+    createdAt?: DateTimeFilter<"OrganizationMembership"> | Date | string
+    updatedAt?: DateTimeFilter<"OrganizationMembership"> | Date | string
+    organization?: XOR<OrganizationRelationFilter, OrganizationWhereInput>
+    user?: XOR<UserRelationFilter, UserWhereInput>
+    ProjectMemberships?: ProjectMembershipListRelationFilter
+  }, "id" | "orgId_userId">
+
+  export type OrganizationMembershipOrderByWithAggregationInput = {
+    id?: SortOrder
+    orgId?: SortOrder
+    userId?: SortOrder
+    role?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: OrganizationMembershipCountOrderByAggregateInput
+    _max?: OrganizationMembershipMaxOrderByAggregateInput
+    _min?: OrganizationMembershipMinOrderByAggregateInput
+  }
+
+  export type OrganizationMembershipScalarWhereWithAggregatesInput = {
+    AND?: OrganizationMembershipScalarWhereWithAggregatesInput | OrganizationMembershipScalarWhereWithAggregatesInput[]
+    OR?: OrganizationMembershipScalarWhereWithAggregatesInput[]
+    NOT?: OrganizationMembershipScalarWhereWithAggregatesInput | OrganizationMembershipScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"OrganizationMembership"> | string
+    orgId?: StringWithAggregatesFilter<"OrganizationMembership"> | string
+    userId?: StringWithAggregatesFilter<"OrganizationMembership"> | string
+    role?: EnumRoleWithAggregatesFilter<"OrganizationMembership"> | $Enums.Role
+    createdAt?: DateTimeWithAggregatesFilter<"OrganizationMembership"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"OrganizationMembership"> | Date | string
+  }
+
   export type ProjectMembershipWhereInput = {
     AND?: ProjectMembershipWhereInput | ProjectMembershipWhereInput[]
     OR?: ProjectMembershipWhereInput[]
     NOT?: ProjectMembershipWhereInput | ProjectMembershipWhereInput[]
+    orgMembershipId?: StringFilter<"ProjectMembership"> | string
     projectId?: StringFilter<"ProjectMembership"> | string
     userId?: StringFilter<"ProjectMembership"> | string
-    role?: EnumProjectRoleFilter<"ProjectMembership"> | $Enums.ProjectRole
+    role?: EnumRoleFilter<"ProjectMembership"> | $Enums.Role
     createdAt?: DateTimeFilter<"ProjectMembership"> | Date | string
     updatedAt?: DateTimeFilter<"ProjectMembership"> | Date | string
+    organizationMembership?: XOR<OrganizationMembershipRelationFilter, OrganizationMembershipWhereInput>
     project?: XOR<ProjectRelationFilter, ProjectWhereInput>
     user?: XOR<UserRelationFilter, UserWhereInput>
   }
 
   export type ProjectMembershipOrderByWithRelationInput = {
+    orgMembershipId?: SortOrder
     projectId?: SortOrder
     userId?: SortOrder
     role?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    organizationMembership?: OrganizationMembershipOrderByWithRelationInput
     project?: ProjectOrderByWithRelationInput
     user?: UserOrderByWithRelationInput
   }
@@ -38084,16 +41582,19 @@ export namespace Prisma {
     AND?: ProjectMembershipWhereInput | ProjectMembershipWhereInput[]
     OR?: ProjectMembershipWhereInput[]
     NOT?: ProjectMembershipWhereInput | ProjectMembershipWhereInput[]
+    orgMembershipId?: StringFilter<"ProjectMembership"> | string
     projectId?: StringFilter<"ProjectMembership"> | string
     userId?: StringFilter<"ProjectMembership"> | string
-    role?: EnumProjectRoleFilter<"ProjectMembership"> | $Enums.ProjectRole
+    role?: EnumRoleFilter<"ProjectMembership"> | $Enums.Role
     createdAt?: DateTimeFilter<"ProjectMembership"> | Date | string
     updatedAt?: DateTimeFilter<"ProjectMembership"> | Date | string
+    organizationMembership?: XOR<OrganizationMembershipRelationFilter, OrganizationMembershipWhereInput>
     project?: XOR<ProjectRelationFilter, ProjectWhereInput>
     user?: XOR<UserRelationFilter, UserWhereInput>
   }, "projectId_userId">
 
   export type ProjectMembershipOrderByWithAggregationInput = {
+    orgMembershipId?: SortOrder
     projectId?: SortOrder
     userId?: SortOrder
     role?: SortOrder
@@ -38108,9 +41609,10 @@ export namespace Prisma {
     AND?: ProjectMembershipScalarWhereWithAggregatesInput | ProjectMembershipScalarWhereWithAggregatesInput[]
     OR?: ProjectMembershipScalarWhereWithAggregatesInput[]
     NOT?: ProjectMembershipScalarWhereWithAggregatesInput | ProjectMembershipScalarWhereWithAggregatesInput[]
+    orgMembershipId?: StringWithAggregatesFilter<"ProjectMembership"> | string
     projectId?: StringWithAggregatesFilter<"ProjectMembership"> | string
     userId?: StringWithAggregatesFilter<"ProjectMembership"> | string
-    role?: EnumProjectRoleWithAggregatesFilter<"ProjectMembership"> | $Enums.ProjectRole
+    role?: EnumRoleWithAggregatesFilter<"ProjectMembership"> | $Enums.Role
     createdAt?: DateTimeWithAggregatesFilter<"ProjectMembership"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"ProjectMembership"> | Date | string
   }
@@ -38121,25 +41623,31 @@ export namespace Prisma {
     NOT?: MembershipInvitationWhereInput | MembershipInvitationWhereInput[]
     id?: StringFilter<"MembershipInvitation"> | string
     email?: StringFilter<"MembershipInvitation"> | string
-    role?: EnumProjectRoleFilter<"MembershipInvitation"> | $Enums.ProjectRole
-    projectId?: StringFilter<"MembershipInvitation"> | string
-    senderId?: StringNullableFilter<"MembershipInvitation"> | string | null
+    orgId?: StringFilter<"MembershipInvitation"> | string
+    orgRole?: EnumRoleFilter<"MembershipInvitation"> | $Enums.Role
+    projectId?: StringNullableFilter<"MembershipInvitation"> | string | null
+    projectRole?: EnumRoleNullableFilter<"MembershipInvitation"> | $Enums.Role | null
+    invitedByUserId?: StringNullableFilter<"MembershipInvitation"> | string | null
     createdAt?: DateTimeFilter<"MembershipInvitation"> | Date | string
     updatedAt?: DateTimeFilter<"MembershipInvitation"> | Date | string
-    project?: XOR<ProjectRelationFilter, ProjectWhereInput>
-    sender?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+    organization?: XOR<OrganizationRelationFilter, OrganizationWhereInput>
+    project?: XOR<ProjectNullableRelationFilter, ProjectWhereInput> | null
+    invitedByUser?: XOR<UserNullableRelationFilter, UserWhereInput> | null
   }
 
   export type MembershipInvitationOrderByWithRelationInput = {
     id?: SortOrder
     email?: SortOrder
-    role?: SortOrder
-    projectId?: SortOrder
-    senderId?: SortOrderInput | SortOrder
+    orgId?: SortOrder
+    orgRole?: SortOrder
+    projectId?: SortOrderInput | SortOrder
+    projectRole?: SortOrderInput | SortOrder
+    invitedByUserId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    organization?: OrganizationOrderByWithRelationInput
     project?: ProjectOrderByWithRelationInput
-    sender?: UserOrderByWithRelationInput
+    invitedByUser?: UserOrderByWithRelationInput
   }
 
   export type MembershipInvitationWhereUniqueInput = Prisma.AtLeast<{
@@ -38148,21 +41656,26 @@ export namespace Prisma {
     OR?: MembershipInvitationWhereInput[]
     NOT?: MembershipInvitationWhereInput | MembershipInvitationWhereInput[]
     email?: StringFilter<"MembershipInvitation"> | string
-    role?: EnumProjectRoleFilter<"MembershipInvitation"> | $Enums.ProjectRole
-    projectId?: StringFilter<"MembershipInvitation"> | string
-    senderId?: StringNullableFilter<"MembershipInvitation"> | string | null
+    orgId?: StringFilter<"MembershipInvitation"> | string
+    orgRole?: EnumRoleFilter<"MembershipInvitation"> | $Enums.Role
+    projectId?: StringNullableFilter<"MembershipInvitation"> | string | null
+    projectRole?: EnumRoleNullableFilter<"MembershipInvitation"> | $Enums.Role | null
+    invitedByUserId?: StringNullableFilter<"MembershipInvitation"> | string | null
     createdAt?: DateTimeFilter<"MembershipInvitation"> | Date | string
     updatedAt?: DateTimeFilter<"MembershipInvitation"> | Date | string
-    project?: XOR<ProjectRelationFilter, ProjectWhereInput>
-    sender?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+    organization?: XOR<OrganizationRelationFilter, OrganizationWhereInput>
+    project?: XOR<ProjectNullableRelationFilter, ProjectWhereInput> | null
+    invitedByUser?: XOR<UserNullableRelationFilter, UserWhereInput> | null
   }, "id" | "id">
 
   export type MembershipInvitationOrderByWithAggregationInput = {
     id?: SortOrder
     email?: SortOrder
-    role?: SortOrder
-    projectId?: SortOrder
-    senderId?: SortOrderInput | SortOrder
+    orgId?: SortOrder
+    orgRole?: SortOrder
+    projectId?: SortOrderInput | SortOrder
+    projectRole?: SortOrderInput | SortOrder
+    invitedByUserId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: MembershipInvitationCountOrderByAggregateInput
@@ -38176,9 +41689,11 @@ export namespace Prisma {
     NOT?: MembershipInvitationScalarWhereWithAggregatesInput | MembershipInvitationScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"MembershipInvitation"> | string
     email?: StringWithAggregatesFilter<"MembershipInvitation"> | string
-    role?: EnumProjectRoleWithAggregatesFilter<"MembershipInvitation"> | $Enums.ProjectRole
-    projectId?: StringWithAggregatesFilter<"MembershipInvitation"> | string
-    senderId?: StringNullableWithAggregatesFilter<"MembershipInvitation"> | string | null
+    orgId?: StringWithAggregatesFilter<"MembershipInvitation"> | string
+    orgRole?: EnumRoleWithAggregatesFilter<"MembershipInvitation"> | $Enums.Role
+    projectId?: StringNullableWithAggregatesFilter<"MembershipInvitation"> | string | null
+    projectRole?: EnumRoleNullableWithAggregatesFilter<"MembershipInvitation"> | $Enums.Role | null
+    invitedByUserId?: StringNullableWithAggregatesFilter<"MembershipInvitation"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"MembershipInvitation"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"MembershipInvitation"> | Date | string
   }
@@ -38270,7 +41785,6 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Trace"> | Date | string
     project?: XOR<ProjectRelationFilter, ProjectWhereInput>
     session?: XOR<TraceSessionNullableRelationFilter, TraceSessionWhereInput> | null
-    DatasetItem?: DatasetItemListRelationFilter
     JobExecution?: JobExecutionListRelationFilter
   }
 
@@ -38294,7 +41808,6 @@ export namespace Prisma {
     updatedAt?: SortOrder
     project?: ProjectOrderByWithRelationInput
     session?: TraceSessionOrderByWithRelationInput
-    DatasetItem?: DatasetItemOrderByRelationAggregateInput
     JobExecution?: JobExecutionOrderByRelationAggregateInput
   }
 
@@ -38321,7 +41834,6 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Trace"> | Date | string
     project?: XOR<ProjectRelationFilter, ProjectWhereInput>
     session?: XOR<TraceSessionNullableRelationFilter, TraceSessionWhereInput> | null
-    DatasetItem?: DatasetItemListRelationFilter
     JobExecution?: JobExecutionListRelationFilter
   }, "id">
 
@@ -38408,7 +41920,6 @@ export namespace Prisma {
     completionStartTime?: DateTimeNullableFilter<"Observation"> | Date | string | null
     promptId?: StringNullableFilter<"Observation"> | string | null
     project?: XOR<ProjectRelationFilter, ProjectWhereInput>
-    derivedDatasetItems?: DatasetItemListRelationFilter
   }
 
   export type ObservationOrderByWithRelationInput = {
@@ -38445,7 +41956,6 @@ export namespace Prisma {
     completionStartTime?: SortOrderInput | SortOrder
     promptId?: SortOrderInput | SortOrder
     project?: ProjectOrderByWithRelationInput
-    derivedDatasetItems?: DatasetItemOrderByRelationAggregateInput
   }
 
   export type ObservationWhereUniqueInput = Prisma.AtLeast<{
@@ -38486,7 +41996,6 @@ export namespace Prisma {
     completionStartTime?: DateTimeNullableFilter<"Observation"> | Date | string | null
     promptId?: StringNullableFilter<"Observation"> | string | null
     project?: XOR<ProjectRelationFilter, ProjectWhereInput>
-    derivedDatasetItems?: DatasetItemListRelationFilter
   }, "id" | "id_projectId">
 
   export type ObservationOrderByWithAggregationInput = {
@@ -38824,10 +42333,10 @@ export namespace Prisma {
     OR?: DatasetWhereInput[]
     NOT?: DatasetWhereInput | DatasetWhereInput[]
     id?: StringFilter<"Dataset"> | string
+    projectId?: StringFilter<"Dataset"> | string
     name?: StringFilter<"Dataset"> | string
     description?: StringNullableFilter<"Dataset"> | string | null
     metadata?: JsonNullableFilter<"Dataset">
-    projectId?: StringFilter<"Dataset"> | string
     createdAt?: DateTimeFilter<"Dataset"> | Date | string
     updatedAt?: DateTimeFilter<"Dataset"> | Date | string
     project?: XOR<ProjectRelationFilter, ProjectWhereInput>
@@ -38837,10 +42346,10 @@ export namespace Prisma {
 
   export type DatasetOrderByWithRelationInput = {
     id?: SortOrder
+    projectId?: SortOrder
     name?: SortOrder
     description?: SortOrderInput | SortOrder
     metadata?: SortOrderInput | SortOrder
-    projectId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     project?: ProjectOrderByWithRelationInput
@@ -38849,28 +42358,29 @@ export namespace Prisma {
   }
 
   export type DatasetWhereUniqueInput = Prisma.AtLeast<{
-    id?: string
     projectId_name?: DatasetProjectIdNameCompoundUniqueInput
+    id_projectId?: DatasetIdProjectIdCompoundUniqueInput
     AND?: DatasetWhereInput | DatasetWhereInput[]
     OR?: DatasetWhereInput[]
     NOT?: DatasetWhereInput | DatasetWhereInput[]
+    id?: StringFilter<"Dataset"> | string
+    projectId?: StringFilter<"Dataset"> | string
     name?: StringFilter<"Dataset"> | string
     description?: StringNullableFilter<"Dataset"> | string | null
     metadata?: JsonNullableFilter<"Dataset">
-    projectId?: StringFilter<"Dataset"> | string
     createdAt?: DateTimeFilter<"Dataset"> | Date | string
     updatedAt?: DateTimeFilter<"Dataset"> | Date | string
     project?: XOR<ProjectRelationFilter, ProjectWhereInput>
     datasetItems?: DatasetItemListRelationFilter
     datasetRuns?: DatasetRunsListRelationFilter
-  }, "id" | "projectId_name">
+  }, "id_projectId" | "projectId_name">
 
   export type DatasetOrderByWithAggregationInput = {
     id?: SortOrder
+    projectId?: SortOrder
     name?: SortOrder
     description?: SortOrderInput | SortOrder
     metadata?: SortOrderInput | SortOrder
-    projectId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: DatasetCountOrderByAggregateInput
@@ -38883,10 +42393,10 @@ export namespace Prisma {
     OR?: DatasetScalarWhereWithAggregatesInput[]
     NOT?: DatasetScalarWhereWithAggregatesInput | DatasetScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Dataset"> | string
+    projectId?: StringWithAggregatesFilter<"Dataset"> | string
     name?: StringWithAggregatesFilter<"Dataset"> | string
     description?: StringNullableWithAggregatesFilter<"Dataset"> | string | null
     metadata?: JsonNullableWithAggregatesFilter<"Dataset">
-    projectId?: StringWithAggregatesFilter<"Dataset"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Dataset"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Dataset"> | Date | string
   }
@@ -38896,6 +42406,7 @@ export namespace Prisma {
     OR?: DatasetItemWhereInput[]
     NOT?: DatasetItemWhereInput | DatasetItemWhereInput[]
     id?: StringFilter<"DatasetItem"> | string
+    projectId?: StringFilter<"DatasetItem"> | string
     status?: EnumDatasetStatusFilter<"DatasetItem"> | $Enums.DatasetStatus
     input?: JsonNullableFilter<"DatasetItem">
     expectedOutput?: JsonNullableFilter<"DatasetItem">
@@ -38905,14 +42416,13 @@ export namespace Prisma {
     datasetId?: StringFilter<"DatasetItem"> | string
     createdAt?: DateTimeFilter<"DatasetItem"> | Date | string
     updatedAt?: DateTimeFilter<"DatasetItem"> | Date | string
-    sourceTrace?: XOR<TraceNullableRelationFilter, TraceWhereInput> | null
-    sourceObservation?: XOR<ObservationNullableRelationFilter, ObservationWhereInput> | null
     dataset?: XOR<DatasetRelationFilter, DatasetWhereInput>
     datasetRunItems?: DatasetRunItemsListRelationFilter
   }
 
   export type DatasetItemOrderByWithRelationInput = {
     id?: SortOrder
+    projectId?: SortOrder
     status?: SortOrder
     input?: SortOrderInput | SortOrder
     expectedOutput?: SortOrderInput | SortOrder
@@ -38922,17 +42432,17 @@ export namespace Prisma {
     datasetId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    sourceTrace?: TraceOrderByWithRelationInput
-    sourceObservation?: ObservationOrderByWithRelationInput
     dataset?: DatasetOrderByWithRelationInput
     datasetRunItems?: DatasetRunItemsOrderByRelationAggregateInput
   }
 
   export type DatasetItemWhereUniqueInput = Prisma.AtLeast<{
-    id?: string
+    id_projectId?: DatasetItemIdProjectIdCompoundUniqueInput
     AND?: DatasetItemWhereInput | DatasetItemWhereInput[]
     OR?: DatasetItemWhereInput[]
     NOT?: DatasetItemWhereInput | DatasetItemWhereInput[]
+    id?: StringFilter<"DatasetItem"> | string
+    projectId?: StringFilter<"DatasetItem"> | string
     status?: EnumDatasetStatusFilter<"DatasetItem"> | $Enums.DatasetStatus
     input?: JsonNullableFilter<"DatasetItem">
     expectedOutput?: JsonNullableFilter<"DatasetItem">
@@ -38942,14 +42452,13 @@ export namespace Prisma {
     datasetId?: StringFilter<"DatasetItem"> | string
     createdAt?: DateTimeFilter<"DatasetItem"> | Date | string
     updatedAt?: DateTimeFilter<"DatasetItem"> | Date | string
-    sourceTrace?: XOR<TraceNullableRelationFilter, TraceWhereInput> | null
-    sourceObservation?: XOR<ObservationNullableRelationFilter, ObservationWhereInput> | null
     dataset?: XOR<DatasetRelationFilter, DatasetWhereInput>
     datasetRunItems?: DatasetRunItemsListRelationFilter
-  }, "id">
+  }, "id_projectId">
 
   export type DatasetItemOrderByWithAggregationInput = {
     id?: SortOrder
+    projectId?: SortOrder
     status?: SortOrder
     input?: SortOrderInput | SortOrder
     expectedOutput?: SortOrderInput | SortOrder
@@ -38969,6 +42478,7 @@ export namespace Prisma {
     OR?: DatasetItemScalarWhereWithAggregatesInput[]
     NOT?: DatasetItemScalarWhereWithAggregatesInput | DatasetItemScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"DatasetItem"> | string
+    projectId?: StringWithAggregatesFilter<"DatasetItem"> | string
     status?: EnumDatasetStatusWithAggregatesFilter<"DatasetItem"> | $Enums.DatasetStatus
     input?: JsonNullableWithAggregatesFilter<"DatasetItem">
     expectedOutput?: JsonNullableWithAggregatesFilter<"DatasetItem">
@@ -38985,6 +42495,7 @@ export namespace Prisma {
     OR?: DatasetRunsWhereInput[]
     NOT?: DatasetRunsWhereInput | DatasetRunsWhereInput[]
     id?: StringFilter<"DatasetRuns"> | string
+    projectId?: StringFilter<"DatasetRuns"> | string
     name?: StringFilter<"DatasetRuns"> | string
     description?: StringNullableFilter<"DatasetRuns"> | string | null
     metadata?: JsonNullableFilter<"DatasetRuns">
@@ -38997,6 +42508,7 @@ export namespace Prisma {
 
   export type DatasetRunsOrderByWithRelationInput = {
     id?: SortOrder
+    projectId?: SortOrder
     name?: SortOrder
     description?: SortOrderInput | SortOrder
     metadata?: SortOrderInput | SortOrder
@@ -39008,11 +42520,13 @@ export namespace Prisma {
   }
 
   export type DatasetRunsWhereUniqueInput = Prisma.AtLeast<{
-    id?: string
-    datasetId_name?: DatasetRunsDatasetIdNameCompoundUniqueInput
+    datasetId_projectId_name?: DatasetRunsDatasetIdProjectIdNameCompoundUniqueInput
+    id_projectId?: DatasetRunsIdProjectIdCompoundUniqueInput
     AND?: DatasetRunsWhereInput | DatasetRunsWhereInput[]
     OR?: DatasetRunsWhereInput[]
     NOT?: DatasetRunsWhereInput | DatasetRunsWhereInput[]
+    id?: StringFilter<"DatasetRuns"> | string
+    projectId?: StringFilter<"DatasetRuns"> | string
     name?: StringFilter<"DatasetRuns"> | string
     description?: StringNullableFilter<"DatasetRuns"> | string | null
     metadata?: JsonNullableFilter<"DatasetRuns">
@@ -39021,10 +42535,11 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"DatasetRuns"> | Date | string
     dataset?: XOR<DatasetRelationFilter, DatasetWhereInput>
     datasetRunItems?: DatasetRunItemsListRelationFilter
-  }, "id" | "datasetId_name">
+  }, "id_projectId" | "datasetId_projectId_name">
 
   export type DatasetRunsOrderByWithAggregationInput = {
     id?: SortOrder
+    projectId?: SortOrder
     name?: SortOrder
     description?: SortOrderInput | SortOrder
     metadata?: SortOrderInput | SortOrder
@@ -39041,6 +42556,7 @@ export namespace Prisma {
     OR?: DatasetRunsScalarWhereWithAggregatesInput[]
     NOT?: DatasetRunsScalarWhereWithAggregatesInput | DatasetRunsScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"DatasetRuns"> | string
+    projectId?: StringWithAggregatesFilter<"DatasetRuns"> | string
     name?: StringWithAggregatesFilter<"DatasetRuns"> | string
     description?: StringNullableWithAggregatesFilter<"DatasetRuns"> | string | null
     metadata?: JsonNullableWithAggregatesFilter<"DatasetRuns">
@@ -39054,6 +42570,7 @@ export namespace Prisma {
     OR?: DatasetRunItemsWhereInput[]
     NOT?: DatasetRunItemsWhereInput | DatasetRunItemsWhereInput[]
     id?: StringFilter<"DatasetRunItems"> | string
+    projectId?: StringFilter<"DatasetRunItems"> | string
     datasetRunId?: StringFilter<"DatasetRunItems"> | string
     datasetItemId?: StringFilter<"DatasetRunItems"> | string
     traceId?: StringFilter<"DatasetRunItems"> | string
@@ -39066,6 +42583,7 @@ export namespace Prisma {
 
   export type DatasetRunItemsOrderByWithRelationInput = {
     id?: SortOrder
+    projectId?: SortOrder
     datasetRunId?: SortOrder
     datasetItemId?: SortOrder
     traceId?: SortOrder
@@ -39077,10 +42595,12 @@ export namespace Prisma {
   }
 
   export type DatasetRunItemsWhereUniqueInput = Prisma.AtLeast<{
-    id?: string
+    id_projectId?: DatasetRunItemsIdProjectIdCompoundUniqueInput
     AND?: DatasetRunItemsWhereInput | DatasetRunItemsWhereInput[]
     OR?: DatasetRunItemsWhereInput[]
     NOT?: DatasetRunItemsWhereInput | DatasetRunItemsWhereInput[]
+    id?: StringFilter<"DatasetRunItems"> | string
+    projectId?: StringFilter<"DatasetRunItems"> | string
     datasetRunId?: StringFilter<"DatasetRunItems"> | string
     datasetItemId?: StringFilter<"DatasetRunItems"> | string
     traceId?: StringFilter<"DatasetRunItems"> | string
@@ -39089,10 +42609,11 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"DatasetRunItems"> | Date | string
     datasetRun?: XOR<DatasetRunsRelationFilter, DatasetRunsWhereInput>
     datasetItem?: XOR<DatasetItemRelationFilter, DatasetItemWhereInput>
-  }, "id">
+  }, "id_projectId">
 
   export type DatasetRunItemsOrderByWithAggregationInput = {
     id?: SortOrder
+    projectId?: SortOrder
     datasetRunId?: SortOrder
     datasetItemId?: SortOrder
     traceId?: SortOrder
@@ -39109,6 +42630,7 @@ export namespace Prisma {
     OR?: DatasetRunItemsScalarWhereWithAggregatesInput[]
     NOT?: DatasetRunItemsScalarWhereWithAggregatesInput | DatasetRunItemsScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"DatasetRunItems"> | string
+    projectId?: StringWithAggregatesFilter<"DatasetRunItems"> | string
     datasetRunId?: StringWithAggregatesFilter<"DatasetRunItems"> | string
     datasetItemId?: StringWithAggregatesFilter<"DatasetRunItems"> | string
     traceId?: StringWithAggregatesFilter<"DatasetRunItems"> | string
@@ -39185,6 +42707,76 @@ export namespace Prisma {
     headers?: JsonWithAggregatesFilter<"Events">
     url?: StringNullableWithAggregatesFilter<"Events"> | string | null
     method?: StringNullableWithAggregatesFilter<"Events"> | string | null
+  }
+
+  export type CommentWhereInput = {
+    AND?: CommentWhereInput | CommentWhereInput[]
+    OR?: CommentWhereInput[]
+    NOT?: CommentWhereInput | CommentWhereInput[]
+    id?: StringFilter<"Comment"> | string
+    projectId?: StringFilter<"Comment"> | string
+    objectType?: EnumCommentObjectTypeFilter<"Comment"> | $Enums.CommentObjectType
+    objectId?: StringFilter<"Comment"> | string
+    createdAt?: DateTimeFilter<"Comment"> | Date | string
+    updatedAt?: DateTimeFilter<"Comment"> | Date | string
+    content?: StringFilter<"Comment"> | string
+    authorUserId?: StringNullableFilter<"Comment"> | string | null
+    project?: XOR<ProjectRelationFilter, ProjectWhereInput>
+  }
+
+  export type CommentOrderByWithRelationInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    objectType?: SortOrder
+    objectId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    content?: SortOrder
+    authorUserId?: SortOrderInput | SortOrder
+    project?: ProjectOrderByWithRelationInput
+  }
+
+  export type CommentWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: CommentWhereInput | CommentWhereInput[]
+    OR?: CommentWhereInput[]
+    NOT?: CommentWhereInput | CommentWhereInput[]
+    projectId?: StringFilter<"Comment"> | string
+    objectType?: EnumCommentObjectTypeFilter<"Comment"> | $Enums.CommentObjectType
+    objectId?: StringFilter<"Comment"> | string
+    createdAt?: DateTimeFilter<"Comment"> | Date | string
+    updatedAt?: DateTimeFilter<"Comment"> | Date | string
+    content?: StringFilter<"Comment"> | string
+    authorUserId?: StringNullableFilter<"Comment"> | string | null
+    project?: XOR<ProjectRelationFilter, ProjectWhereInput>
+  }, "id">
+
+  export type CommentOrderByWithAggregationInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    objectType?: SortOrder
+    objectId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    content?: SortOrder
+    authorUserId?: SortOrderInput | SortOrder
+    _count?: CommentCountOrderByAggregateInput
+    _max?: CommentMaxOrderByAggregateInput
+    _min?: CommentMinOrderByAggregateInput
+  }
+
+  export type CommentScalarWhereWithAggregatesInput = {
+    AND?: CommentScalarWhereWithAggregatesInput | CommentScalarWhereWithAggregatesInput[]
+    OR?: CommentScalarWhereWithAggregatesInput[]
+    NOT?: CommentScalarWhereWithAggregatesInput | CommentScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Comment"> | string
+    projectId?: StringWithAggregatesFilter<"Comment"> | string
+    objectType?: EnumCommentObjectTypeWithAggregatesFilter<"Comment"> | $Enums.CommentObjectType
+    objectId?: StringWithAggregatesFilter<"Comment"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"Comment"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Comment"> | Date | string
+    content?: StringWithAggregatesFilter<"Comment"> | string
+    authorUserId?: StringNullableWithAggregatesFilter<"Comment"> | string | null
   }
 
   export type PromptWhereInput = {
@@ -39391,15 +42983,15 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"AuditLog"> | Date | string
     updatedAt?: DateTimeFilter<"AuditLog"> | Date | string
     userId?: StringFilter<"AuditLog"> | string
-    projectId?: StringFilter<"AuditLog"> | string
-    userProjectRole?: EnumProjectRoleFilter<"AuditLog"> | $Enums.ProjectRole
+    orgId?: StringFilter<"AuditLog"> | string
+    userOrgRole?: StringFilter<"AuditLog"> | string
+    projectId?: StringNullableFilter<"AuditLog"> | string | null
+    userProjectRole?: StringNullableFilter<"AuditLog"> | string | null
     resourceType?: StringFilter<"AuditLog"> | string
     resourceId?: StringFilter<"AuditLog"> | string
     action?: StringFilter<"AuditLog"> | string
     before?: StringNullableFilter<"AuditLog"> | string | null
     after?: StringNullableFilter<"AuditLog"> | string | null
-    user?: XOR<UserRelationFilter, UserWhereInput>
-    project?: XOR<ProjectRelationFilter, ProjectWhereInput>
   }
 
   export type AuditLogOrderByWithRelationInput = {
@@ -39407,15 +42999,15 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     userId?: SortOrder
-    projectId?: SortOrder
-    userProjectRole?: SortOrder
+    orgId?: SortOrder
+    userOrgRole?: SortOrder
+    projectId?: SortOrderInput | SortOrder
+    userProjectRole?: SortOrderInput | SortOrder
     resourceType?: SortOrder
     resourceId?: SortOrder
     action?: SortOrder
     before?: SortOrderInput | SortOrder
     after?: SortOrderInput | SortOrder
-    user?: UserOrderByWithRelationInput
-    project?: ProjectOrderByWithRelationInput
   }
 
   export type AuditLogWhereUniqueInput = Prisma.AtLeast<{
@@ -39426,15 +43018,15 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"AuditLog"> | Date | string
     updatedAt?: DateTimeFilter<"AuditLog"> | Date | string
     userId?: StringFilter<"AuditLog"> | string
-    projectId?: StringFilter<"AuditLog"> | string
-    userProjectRole?: EnumProjectRoleFilter<"AuditLog"> | $Enums.ProjectRole
+    orgId?: StringFilter<"AuditLog"> | string
+    userOrgRole?: StringFilter<"AuditLog"> | string
+    projectId?: StringNullableFilter<"AuditLog"> | string | null
+    userProjectRole?: StringNullableFilter<"AuditLog"> | string | null
     resourceType?: StringFilter<"AuditLog"> | string
     resourceId?: StringFilter<"AuditLog"> | string
     action?: StringFilter<"AuditLog"> | string
     before?: StringNullableFilter<"AuditLog"> | string | null
     after?: StringNullableFilter<"AuditLog"> | string | null
-    user?: XOR<UserRelationFilter, UserWhereInput>
-    project?: XOR<ProjectRelationFilter, ProjectWhereInput>
   }, "id">
 
   export type AuditLogOrderByWithAggregationInput = {
@@ -39442,8 +43034,10 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     userId?: SortOrder
-    projectId?: SortOrder
-    userProjectRole?: SortOrder
+    orgId?: SortOrder
+    userOrgRole?: SortOrder
+    projectId?: SortOrderInput | SortOrder
+    userProjectRole?: SortOrderInput | SortOrder
     resourceType?: SortOrder
     resourceId?: SortOrder
     action?: SortOrder
@@ -39462,8 +43056,10 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"AuditLog"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"AuditLog"> | Date | string
     userId?: StringWithAggregatesFilter<"AuditLog"> | string
-    projectId?: StringWithAggregatesFilter<"AuditLog"> | string
-    userProjectRole?: EnumProjectRoleWithAggregatesFilter<"AuditLog"> | $Enums.ProjectRole
+    orgId?: StringWithAggregatesFilter<"AuditLog"> | string
+    userOrgRole?: StringWithAggregatesFilter<"AuditLog"> | string
+    projectId?: StringNullableWithAggregatesFilter<"AuditLog"> | string | null
+    userProjectRole?: StringNullableWithAggregatesFilter<"AuditLog"> | string | null
     resourceType?: StringWithAggregatesFilter<"AuditLog"> | string
     resourceId?: StringWithAggregatesFilter<"AuditLog"> | string
     action?: StringWithAggregatesFilter<"AuditLog"> | string
@@ -40118,6 +43714,8 @@ export namespace Prisma {
     unit?: StringNullableFilter<"ObservationView"> | string | null
     completionStartTime?: DateTimeNullableFilter<"ObservationView"> | Date | string | null
     promptId?: StringNullableFilter<"ObservationView"> | string | null
+    promptName?: StringNullableFilter<"ObservationView"> | string | null
+    promptVersion?: IntNullableFilter<"ObservationView"> | number | null
     modelId?: StringNullableFilter<"ObservationView"> | string | null
     inputPrice?: DecimalNullableFilter<"ObservationView"> | Decimal | DecimalJsLike | number | string | null
     outputPrice?: DecimalNullableFilter<"ObservationView"> | Decimal | DecimalJsLike | number | string | null
@@ -40154,6 +43752,8 @@ export namespace Prisma {
     unit?: SortOrderInput | SortOrder
     completionStartTime?: SortOrderInput | SortOrder
     promptId?: SortOrderInput | SortOrder
+    promptName?: SortOrderInput | SortOrder
+    promptVersion?: SortOrderInput | SortOrder
     modelId?: SortOrderInput | SortOrder
     inputPrice?: SortOrderInput | SortOrder
     outputPrice?: SortOrderInput | SortOrder
@@ -40193,6 +43793,8 @@ export namespace Prisma {
     unit?: StringNullableFilter<"ObservationView"> | string | null
     completionStartTime?: DateTimeNullableFilter<"ObservationView"> | Date | string | null
     promptId?: StringNullableFilter<"ObservationView"> | string | null
+    promptName?: StringNullableFilter<"ObservationView"> | string | null
+    promptVersion?: IntNullableFilter<"ObservationView"> | number | null
     modelId?: StringNullableFilter<"ObservationView"> | string | null
     inputPrice?: DecimalNullableFilter<"ObservationView"> | Decimal | DecimalJsLike | number | string | null
     outputPrice?: DecimalNullableFilter<"ObservationView"> | Decimal | DecimalJsLike | number | string | null
@@ -40229,6 +43831,8 @@ export namespace Prisma {
     unit?: SortOrderInput | SortOrder
     completionStartTime?: SortOrderInput | SortOrder
     promptId?: SortOrderInput | SortOrder
+    promptName?: SortOrderInput | SortOrder
+    promptVersion?: SortOrderInput | SortOrder
     modelId?: SortOrderInput | SortOrder
     inputPrice?: SortOrderInput | SortOrder
     outputPrice?: SortOrderInput | SortOrder
@@ -40273,6 +43877,8 @@ export namespace Prisma {
     unit?: StringNullableWithAggregatesFilter<"ObservationView"> | string | null
     completionStartTime?: DateTimeNullableWithAggregatesFilter<"ObservationView"> | Date | string | null
     promptId?: StringNullableWithAggregatesFilter<"ObservationView"> | string | null
+    promptName?: StringNullableWithAggregatesFilter<"ObservationView"> | string | null
+    promptVersion?: IntNullableWithAggregatesFilter<"ObservationView"> | number | null
     modelId?: StringNullableWithAggregatesFilter<"ObservationView"> | string | null
     inputPrice?: DecimalNullableWithAggregatesFilter<"ObservationView"> | Decimal | DecimalJsLike | number | string | null
     outputPrice?: DecimalNullableWithAggregatesFilter<"ObservationView"> | Decimal | DecimalJsLike | number | string | null
@@ -40463,9 +44069,9 @@ export namespace Prisma {
     featureFlags?: UserCreatefeatureFlagsInput | string[]
     accounts?: AccountCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
+    organizationMemberships?: OrganizationMembershipCreateNestedManyWithoutUserInput
     projectMemberships?: ProjectMembershipCreateNestedManyWithoutUserInput
-    invitations?: MembershipInvitationCreateNestedManyWithoutSenderInput
-    AuditLog?: AuditLogCreateNestedManyWithoutUserInput
+    invitations?: MembershipInvitationCreateNestedManyWithoutInvitedByUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -40481,9 +44087,9 @@ export namespace Prisma {
     featureFlags?: UserCreatefeatureFlagsInput | string[]
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    organizationMemberships?: OrganizationMembershipUncheckedCreateNestedManyWithoutUserInput
     projectMemberships?: ProjectMembershipUncheckedCreateNestedManyWithoutUserInput
-    invitations?: MembershipInvitationUncheckedCreateNestedManyWithoutSenderInput
-    AuditLog?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    invitations?: MembershipInvitationUncheckedCreateNestedManyWithoutInvitedByUserInput
   }
 
   export type UserUpdateInput = {
@@ -40499,9 +44105,9 @@ export namespace Prisma {
     featureFlags?: UserUpdatefeatureFlagsInput | string[]
     accounts?: AccountUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
+    organizationMemberships?: OrganizationMembershipUpdateManyWithoutUserNestedInput
     projectMemberships?: ProjectMembershipUpdateManyWithoutUserNestedInput
-    invitations?: MembershipInvitationUpdateManyWithoutSenderNestedInput
-    AuditLog?: AuditLogUpdateManyWithoutUserNestedInput
+    invitations?: MembershipInvitationUpdateManyWithoutInvitedByUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -40517,9 +44123,9 @@ export namespace Prisma {
     featureFlags?: UserUpdatefeatureFlagsInput | string[]
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    organizationMemberships?: OrganizationMembershipUncheckedUpdateManyWithoutUserNestedInput
     projectMemberships?: ProjectMembershipUncheckedUpdateManyWithoutUserNestedInput
-    invitations?: MembershipInvitationUncheckedUpdateManyWithoutSenderNestedInput
-    AuditLog?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    invitations?: MembershipInvitationUncheckedUpdateManyWithoutInvitedByUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -40603,13 +44209,81 @@ export namespace Prisma {
     expires?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type OrganizationCreateInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
+    organizationMemberships?: OrganizationMembershipCreateNestedManyWithoutOrganizationInput
+    projects?: ProjectCreateNestedManyWithoutOrganizationInput
+    MembershipInvitation?: MembershipInvitationCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationUncheckedCreateInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
+    organizationMemberships?: OrganizationMembershipUncheckedCreateNestedManyWithoutOrganizationInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutOrganizationInput
+    MembershipInvitation?: MembershipInvitationUncheckedCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
+    organizationMemberships?: OrganizationMembershipUpdateManyWithoutOrganizationNestedInput
+    projects?: ProjectUpdateManyWithoutOrganizationNestedInput
+    MembershipInvitation?: MembershipInvitationUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type OrganizationUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
+    organizationMemberships?: OrganizationMembershipUncheckedUpdateManyWithoutOrganizationNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutOrganizationNestedInput
+    MembershipInvitation?: MembershipInvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type OrganizationCreateManyInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type OrganizationUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type OrganizationUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
+  }
+
   export type ProjectCreateInput = {
     id?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     name: string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipCreateNestedManyWithoutProjectInput
+    organization: OrganizationCreateNestedOneWithoutProjectsInput
     traces?: TraceCreateNestedManyWithoutProjectInput
     observations?: ObservationCreateNestedManyWithoutProjectInput
     apiKeys?: ApiKeyCreateNestedManyWithoutProjectInput
@@ -40619,7 +44293,6 @@ export namespace Prisma {
     sessions?: TraceSessionCreateNestedManyWithoutProjectInput
     Prompt?: PromptCreateNestedManyWithoutProjectInput
     Model?: ModelCreateNestedManyWithoutProjectInput
-    AuditLog?: AuditLogCreateNestedManyWithoutProjectInput
     EvalTemplate?: EvalTemplateCreateNestedManyWithoutProjectInput
     JobConfiguration?: JobConfigurationCreateNestedManyWithoutProjectInput
     JobExecution?: JobExecutionCreateNestedManyWithoutProjectInput
@@ -40628,14 +44301,15 @@ export namespace Prisma {
     Score?: ScoreCreateNestedManyWithoutProjectInput
     scoreConfig?: ScoreConfigCreateNestedManyWithoutProjectInput
     BatchExport?: BatchExportCreateNestedManyWithoutProjectInput
+    comment?: CommentCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateInput = {
     id?: string
+    orgId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     name: string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUncheckedCreateNestedManyWithoutProjectInput
     traces?: TraceUncheckedCreateNestedManyWithoutProjectInput
     observations?: ObservationUncheckedCreateNestedManyWithoutProjectInput
@@ -40646,7 +44320,6 @@ export namespace Prisma {
     sessions?: TraceSessionUncheckedCreateNestedManyWithoutProjectInput
     Prompt?: PromptUncheckedCreateNestedManyWithoutProjectInput
     Model?: ModelUncheckedCreateNestedManyWithoutProjectInput
-    AuditLog?: AuditLogUncheckedCreateNestedManyWithoutProjectInput
     EvalTemplate?: EvalTemplateUncheckedCreateNestedManyWithoutProjectInput
     JobConfiguration?: JobConfigurationUncheckedCreateNestedManyWithoutProjectInput
     JobExecution?: JobExecutionUncheckedCreateNestedManyWithoutProjectInput
@@ -40655,6 +44328,7 @@ export namespace Prisma {
     Score?: ScoreUncheckedCreateNestedManyWithoutProjectInput
     scoreConfig?: ScoreConfigUncheckedCreateNestedManyWithoutProjectInput
     BatchExport?: BatchExportUncheckedCreateNestedManyWithoutProjectInput
+    comment?: CommentUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUpdateInput = {
@@ -40662,8 +44336,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUpdateManyWithoutProjectNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutProjectsNestedInput
     traces?: TraceUpdateManyWithoutProjectNestedInput
     observations?: ObservationUpdateManyWithoutProjectNestedInput
     apiKeys?: ApiKeyUpdateManyWithoutProjectNestedInput
@@ -40673,7 +44347,6 @@ export namespace Prisma {
     sessions?: TraceSessionUpdateManyWithoutProjectNestedInput
     Prompt?: PromptUpdateManyWithoutProjectNestedInput
     Model?: ModelUpdateManyWithoutProjectNestedInput
-    AuditLog?: AuditLogUpdateManyWithoutProjectNestedInput
     EvalTemplate?: EvalTemplateUpdateManyWithoutProjectNestedInput
     JobConfiguration?: JobConfigurationUpdateManyWithoutProjectNestedInput
     JobExecution?: JobExecutionUpdateManyWithoutProjectNestedInput
@@ -40682,14 +44355,15 @@ export namespace Prisma {
     Score?: ScoreUpdateManyWithoutProjectNestedInput
     scoreConfig?: ScoreConfigUpdateManyWithoutProjectNestedInput
     BatchExport?: BatchExportUpdateManyWithoutProjectNestedInput
+    comment?: CommentUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUncheckedUpdateManyWithoutProjectNestedInput
     traces?: TraceUncheckedUpdateManyWithoutProjectNestedInput
     observations?: ObservationUncheckedUpdateManyWithoutProjectNestedInput
@@ -40700,7 +44374,6 @@ export namespace Prisma {
     sessions?: TraceSessionUncheckedUpdateManyWithoutProjectNestedInput
     Prompt?: PromptUncheckedUpdateManyWithoutProjectNestedInput
     Model?: ModelUncheckedUpdateManyWithoutProjectNestedInput
-    AuditLog?: AuditLogUncheckedUpdateManyWithoutProjectNestedInput
     EvalTemplate?: EvalTemplateUncheckedUpdateManyWithoutProjectNestedInput
     JobConfiguration?: JobConfigurationUncheckedUpdateManyWithoutProjectNestedInput
     JobExecution?: JobExecutionUncheckedUpdateManyWithoutProjectNestedInput
@@ -40709,14 +44382,15 @@ export namespace Prisma {
     Score?: ScoreUncheckedUpdateManyWithoutProjectNestedInput
     scoreConfig?: ScoreConfigUncheckedUpdateManyWithoutProjectNestedInput
     BatchExport?: BatchExportUncheckedUpdateManyWithoutProjectNestedInput
+    comment?: CommentUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectCreateManyInput = {
     id?: string
+    orgId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     name: string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ProjectUpdateManyMutationInput = {
@@ -40724,15 +44398,14 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ProjectUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ApiKeyCreateInput = {
@@ -40922,56 +44595,127 @@ export namespace Prisma {
     projectId?: StringFieldUpdateOperationsInput | string
   }
 
-  export type ProjectMembershipCreateInput = {
-    role: $Enums.ProjectRole
+  export type OrganizationMembershipCreateInput = {
+    id?: string
+    role: $Enums.Role
     createdAt?: Date | string
     updatedAt?: Date | string
+    organization: OrganizationCreateNestedOneWithoutOrganizationMembershipsInput
+    user: UserCreateNestedOneWithoutOrganizationMembershipsInput
+    ProjectMemberships?: ProjectMembershipCreateNestedManyWithoutOrganizationMembershipInput
+  }
+
+  export type OrganizationMembershipUncheckedCreateInput = {
+    id?: string
+    orgId: string
+    userId: string
+    role: $Enums.Role
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    ProjectMemberships?: ProjectMembershipUncheckedCreateNestedManyWithoutOrganizationMembershipInput
+  }
+
+  export type OrganizationMembershipUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutOrganizationMembershipsNestedInput
+    user?: UserUpdateOneRequiredWithoutOrganizationMembershipsNestedInput
+    ProjectMemberships?: ProjectMembershipUpdateManyWithoutOrganizationMembershipNestedInput
+  }
+
+  export type OrganizationMembershipUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    ProjectMemberships?: ProjectMembershipUncheckedUpdateManyWithoutOrganizationMembershipNestedInput
+  }
+
+  export type OrganizationMembershipCreateManyInput = {
+    id?: string
+    orgId: string
+    userId: string
+    role: $Enums.Role
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type OrganizationMembershipUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OrganizationMembershipUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ProjectMembershipCreateInput = {
+    role: $Enums.Role
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    organizationMembership: OrganizationMembershipCreateNestedOneWithoutProjectMembershipsInput
     project: ProjectCreateNestedOneWithoutProjectMembersInput
     user: UserCreateNestedOneWithoutProjectMembershipsInput
   }
 
   export type ProjectMembershipUncheckedCreateInput = {
+    orgMembershipId: string
     projectId: string
     userId: string
-    role: $Enums.ProjectRole
+    role: $Enums.Role
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
   export type ProjectMembershipUpdateInput = {
-    role?: EnumProjectRoleFieldUpdateOperationsInput | $Enums.ProjectRole
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organizationMembership?: OrganizationMembershipUpdateOneRequiredWithoutProjectMembershipsNestedInput
     project?: ProjectUpdateOneRequiredWithoutProjectMembersNestedInput
     user?: UserUpdateOneRequiredWithoutProjectMembershipsNestedInput
   }
 
   export type ProjectMembershipUncheckedUpdateInput = {
+    orgMembershipId?: StringFieldUpdateOperationsInput | string
     projectId?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
-    role?: EnumProjectRoleFieldUpdateOperationsInput | $Enums.ProjectRole
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ProjectMembershipCreateManyInput = {
+    orgMembershipId: string
     projectId: string
     userId: string
-    role: $Enums.ProjectRole
+    role: $Enums.Role
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
   export type ProjectMembershipUpdateManyMutationInput = {
-    role?: EnumProjectRoleFieldUpdateOperationsInput | $Enums.ProjectRole
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ProjectMembershipUncheckedUpdateManyInput = {
+    orgMembershipId?: StringFieldUpdateOperationsInput | string
     projectId?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
-    role?: EnumProjectRoleFieldUpdateOperationsInput | $Enums.ProjectRole
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -40979,19 +44723,23 @@ export namespace Prisma {
   export type MembershipInvitationCreateInput = {
     id?: string
     email: string
-    role: $Enums.ProjectRole
+    orgRole: $Enums.Role
+    projectRole?: $Enums.Role | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    project: ProjectCreateNestedOneWithoutInvitationsInput
-    sender?: UserCreateNestedOneWithoutInvitationsInput
+    organization: OrganizationCreateNestedOneWithoutMembershipInvitationInput
+    project?: ProjectCreateNestedOneWithoutInvitationsInput
+    invitedByUser?: UserCreateNestedOneWithoutInvitationsInput
   }
 
   export type MembershipInvitationUncheckedCreateInput = {
     id?: string
     email: string
-    role: $Enums.ProjectRole
-    projectId: string
-    senderId?: string | null
+    orgId: string
+    orgRole: $Enums.Role
+    projectId?: string | null
+    projectRole?: $Enums.Role | null
+    invitedByUserId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -40999,19 +44747,23 @@ export namespace Prisma {
   export type MembershipInvitationUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    role?: EnumProjectRoleFieldUpdateOperationsInput | $Enums.ProjectRole
+    orgRole?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    projectRole?: NullableEnumRoleFieldUpdateOperationsInput | $Enums.Role | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    project?: ProjectUpdateOneRequiredWithoutInvitationsNestedInput
-    sender?: UserUpdateOneWithoutInvitationsNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutMembershipInvitationNestedInput
+    project?: ProjectUpdateOneWithoutInvitationsNestedInput
+    invitedByUser?: UserUpdateOneWithoutInvitationsNestedInput
   }
 
   export type MembershipInvitationUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    role?: EnumProjectRoleFieldUpdateOperationsInput | $Enums.ProjectRole
-    projectId?: StringFieldUpdateOperationsInput | string
-    senderId?: NullableStringFieldUpdateOperationsInput | string | null
+    orgId?: StringFieldUpdateOperationsInput | string
+    orgRole?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectRole?: NullableEnumRoleFieldUpdateOperationsInput | $Enums.Role | null
+    invitedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -41019,9 +44771,11 @@ export namespace Prisma {
   export type MembershipInvitationCreateManyInput = {
     id?: string
     email: string
-    role: $Enums.ProjectRole
-    projectId: string
-    senderId?: string | null
+    orgId: string
+    orgRole: $Enums.Role
+    projectId?: string | null
+    projectRole?: $Enums.Role | null
+    invitedByUserId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -41029,7 +44783,8 @@ export namespace Prisma {
   export type MembershipInvitationUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    role?: EnumProjectRoleFieldUpdateOperationsInput | $Enums.ProjectRole
+    orgRole?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    projectRole?: NullableEnumRoleFieldUpdateOperationsInput | $Enums.Role | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -41037,9 +44792,11 @@ export namespace Prisma {
   export type MembershipInvitationUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    role?: EnumProjectRoleFieldUpdateOperationsInput | $Enums.ProjectRole
-    projectId?: StringFieldUpdateOperationsInput | string
-    senderId?: NullableStringFieldUpdateOperationsInput | string | null
+    orgId?: StringFieldUpdateOperationsInput | string
+    orgRole?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectRole?: NullableEnumRoleFieldUpdateOperationsInput | $Enums.Role | null
+    invitedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -41128,7 +44885,6 @@ export namespace Prisma {
     updatedAt?: Date | string
     project: ProjectCreateNestedOneWithoutTracesInput
     session?: TraceSessionCreateNestedOneWithoutTracesInput
-    DatasetItem?: DatasetItemCreateNestedManyWithoutSourceTraceInput
     JobExecution?: JobExecutionCreateNestedManyWithoutTraceInput
   }
 
@@ -41150,7 +44906,6 @@ export namespace Prisma {
     sessionId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    DatasetItem?: DatasetItemUncheckedCreateNestedManyWithoutSourceTraceInput
     JobExecution?: JobExecutionUncheckedCreateNestedManyWithoutTraceInput
   }
 
@@ -41172,7 +44927,6 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     project?: ProjectUpdateOneRequiredWithoutTracesNestedInput
     session?: TraceSessionUpdateOneWithoutTracesNestedInput
-    DatasetItem?: DatasetItemUpdateManyWithoutSourceTraceNestedInput
     JobExecution?: JobExecutionUpdateManyWithoutTraceNestedInput
   }
 
@@ -41194,7 +44948,6 @@ export namespace Prisma {
     sessionId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    DatasetItem?: DatasetItemUncheckedUpdateManyWithoutSourceTraceNestedInput
     JobExecution?: JobExecutionUncheckedUpdateManyWithoutTraceNestedInput
   }
 
@@ -41289,7 +45042,6 @@ export namespace Prisma {
     completionStartTime?: Date | string | null
     promptId?: string | null
     project: ProjectCreateNestedOneWithoutObservationsInput
-    derivedDatasetItems?: DatasetItemCreateNestedManyWithoutSourceObservationInput
   }
 
   export type ObservationUncheckedCreateInput = {
@@ -41325,7 +45077,6 @@ export namespace Prisma {
     calculatedTotalCost?: Decimal | DecimalJsLike | number | string | null
     completionStartTime?: Date | string | null
     promptId?: string | null
-    derivedDatasetItems?: DatasetItemUncheckedCreateNestedManyWithoutSourceObservationInput
   }
 
   export type ObservationUpdateInput = {
@@ -41361,7 +45112,6 @@ export namespace Prisma {
     completionStartTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     promptId?: NullableStringFieldUpdateOperationsInput | string | null
     project?: ProjectUpdateOneRequiredWithoutObservationsNestedInput
-    derivedDatasetItems?: DatasetItemUpdateManyWithoutSourceObservationNestedInput
   }
 
   export type ObservationUncheckedUpdateInput = {
@@ -41397,7 +45147,6 @@ export namespace Prisma {
     calculatedTotalCost?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     completionStartTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     promptId?: NullableStringFieldUpdateOperationsInput | string | null
-    derivedDatasetItems?: DatasetItemUncheckedUpdateManyWithoutSourceObservationNestedInput
   }
 
   export type ObservationCreateManyInput = {
@@ -41796,10 +45545,10 @@ export namespace Prisma {
 
   export type DatasetUncheckedCreateInput = {
     id?: string
+    projectId: string
     name: string
     description?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    projectId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     datasetItems?: DatasetItemUncheckedCreateNestedManyWithoutDatasetInput
@@ -41820,10 +45569,10 @@ export namespace Prisma {
 
   export type DatasetUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    projectId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     datasetItems?: DatasetItemUncheckedUpdateManyWithoutDatasetNestedInput
@@ -41832,10 +45581,10 @@ export namespace Prisma {
 
   export type DatasetCreateManyInput = {
     id?: string
+    projectId: string
     name: string
     description?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    projectId: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -41851,10 +45600,10 @@ export namespace Prisma {
 
   export type DatasetUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    projectId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -41865,16 +45614,17 @@ export namespace Prisma {
     input?: NullableJsonNullValueInput | InputJsonValue
     expectedOutput?: NullableJsonNullValueInput | InputJsonValue
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    sourceTraceId?: string | null
+    sourceObservationId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    sourceTrace?: TraceCreateNestedOneWithoutDatasetItemInput
-    sourceObservation?: ObservationCreateNestedOneWithoutDerivedDatasetItemsInput
     dataset: DatasetCreateNestedOneWithoutDatasetItemsInput
     datasetRunItems?: DatasetRunItemsCreateNestedManyWithoutDatasetItemInput
   }
 
   export type DatasetItemUncheckedCreateInput = {
     id?: string
+    projectId: string
     status?: $Enums.DatasetStatus
     input?: NullableJsonNullValueInput | InputJsonValue
     expectedOutput?: NullableJsonNullValueInput | InputJsonValue
@@ -41893,16 +45643,17 @@ export namespace Prisma {
     input?: NullableJsonNullValueInput | InputJsonValue
     expectedOutput?: NullableJsonNullValueInput | InputJsonValue
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    sourceTraceId?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceObservationId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    sourceTrace?: TraceUpdateOneWithoutDatasetItemNestedInput
-    sourceObservation?: ObservationUpdateOneWithoutDerivedDatasetItemsNestedInput
     dataset?: DatasetUpdateOneRequiredWithoutDatasetItemsNestedInput
     datasetRunItems?: DatasetRunItemsUpdateManyWithoutDatasetItemNestedInput
   }
 
   export type DatasetItemUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
     status?: EnumDatasetStatusFieldUpdateOperationsInput | $Enums.DatasetStatus
     input?: NullableJsonNullValueInput | InputJsonValue
     expectedOutput?: NullableJsonNullValueInput | InputJsonValue
@@ -41917,6 +45668,7 @@ export namespace Prisma {
 
   export type DatasetItemCreateManyInput = {
     id?: string
+    projectId: string
     status?: $Enums.DatasetStatus
     input?: NullableJsonNullValueInput | InputJsonValue
     expectedOutput?: NullableJsonNullValueInput | InputJsonValue
@@ -41934,12 +45686,15 @@ export namespace Prisma {
     input?: NullableJsonNullValueInput | InputJsonValue
     expectedOutput?: NullableJsonNullValueInput | InputJsonValue
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    sourceTraceId?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceObservationId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type DatasetItemUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
     status?: EnumDatasetStatusFieldUpdateOperationsInput | $Enums.DatasetStatus
     input?: NullableJsonNullValueInput | InputJsonValue
     expectedOutput?: NullableJsonNullValueInput | InputJsonValue
@@ -41964,6 +45719,7 @@ export namespace Prisma {
 
   export type DatasetRunsUncheckedCreateInput = {
     id?: string
+    projectId: string
     name: string
     description?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
@@ -41986,6 +45742,7 @@ export namespace Prisma {
 
   export type DatasetRunsUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
@@ -41997,6 +45754,7 @@ export namespace Prisma {
 
   export type DatasetRunsCreateManyInput = {
     id?: string
+    projectId: string
     name: string
     description?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
@@ -42016,6 +45774,7 @@ export namespace Prisma {
 
   export type DatasetRunsUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
@@ -42036,6 +45795,7 @@ export namespace Prisma {
 
   export type DatasetRunItemsUncheckedCreateInput = {
     id?: string
+    projectId: string
     datasetRunId: string
     datasetItemId: string
     traceId: string
@@ -42056,6 +45816,7 @@ export namespace Prisma {
 
   export type DatasetRunItemsUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
     datasetRunId?: StringFieldUpdateOperationsInput | string
     datasetItemId?: StringFieldUpdateOperationsInput | string
     traceId?: StringFieldUpdateOperationsInput | string
@@ -42066,6 +45827,7 @@ export namespace Prisma {
 
   export type DatasetRunItemsCreateManyInput = {
     id?: string
+    projectId: string
     datasetRunId: string
     datasetItemId: string
     traceId: string
@@ -42084,6 +45846,7 @@ export namespace Prisma {
 
   export type DatasetRunItemsUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
     datasetRunId?: StringFieldUpdateOperationsInput | string
     datasetItemId?: StringFieldUpdateOperationsInput | string
     traceId?: StringFieldUpdateOperationsInput | string
@@ -42166,6 +45929,82 @@ export namespace Prisma {
     headers?: JsonNullValueInput | InputJsonValue
     url?: NullableStringFieldUpdateOperationsInput | string | null
     method?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type CommentCreateInput = {
+    id?: string
+    objectType: $Enums.CommentObjectType
+    objectId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    content: string
+    authorUserId?: string | null
+    project: ProjectCreateNestedOneWithoutCommentInput
+  }
+
+  export type CommentUncheckedCreateInput = {
+    id?: string
+    projectId: string
+    objectType: $Enums.CommentObjectType
+    objectId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    content: string
+    authorUserId?: string | null
+  }
+
+  export type CommentUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    objectType?: EnumCommentObjectTypeFieldUpdateOperationsInput | $Enums.CommentObjectType
+    objectId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    content?: StringFieldUpdateOperationsInput | string
+    authorUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    project?: ProjectUpdateOneRequiredWithoutCommentNestedInput
+  }
+
+  export type CommentUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    objectType?: EnumCommentObjectTypeFieldUpdateOperationsInput | $Enums.CommentObjectType
+    objectId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    content?: StringFieldUpdateOperationsInput | string
+    authorUserId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type CommentCreateManyInput = {
+    id?: string
+    projectId: string
+    objectType: $Enums.CommentObjectType
+    objectId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    content: string
+    authorUserId?: string | null
+  }
+
+  export type CommentUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    objectType?: EnumCommentObjectTypeFieldUpdateOperationsInput | $Enums.CommentObjectType
+    objectId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    content?: StringFieldUpdateOperationsInput | string
+    authorUserId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type CommentUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    objectType?: EnumCommentObjectTypeFieldUpdateOperationsInput | $Enums.CommentObjectType
+    objectId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    content?: StringFieldUpdateOperationsInput | string
+    authorUserId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type PromptCreateInput = {
@@ -42394,14 +46233,16 @@ export namespace Prisma {
     id?: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    userProjectRole: $Enums.ProjectRole
+    userId: string
+    orgId: string
+    userOrgRole: string
+    projectId?: string | null
+    userProjectRole?: string | null
     resourceType: string
     resourceId: string
     action: string
     before?: string | null
     after?: string | null
-    user: UserCreateNestedOneWithoutAuditLogInput
-    project: ProjectCreateNestedOneWithoutAuditLogInput
   }
 
   export type AuditLogUncheckedCreateInput = {
@@ -42409,8 +46250,10 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     userId: string
-    projectId: string
-    userProjectRole: $Enums.ProjectRole
+    orgId: string
+    userOrgRole: string
+    projectId?: string | null
+    userProjectRole?: string | null
     resourceType: string
     resourceId: string
     action: string
@@ -42422,14 +46265,16 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userProjectRole?: EnumProjectRoleFieldUpdateOperationsInput | $Enums.ProjectRole
+    userId?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
+    userOrgRole?: StringFieldUpdateOperationsInput | string
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    userProjectRole?: NullableStringFieldUpdateOperationsInput | string | null
     resourceType?: StringFieldUpdateOperationsInput | string
     resourceId?: StringFieldUpdateOperationsInput | string
     action?: StringFieldUpdateOperationsInput | string
     before?: NullableStringFieldUpdateOperationsInput | string | null
     after?: NullableStringFieldUpdateOperationsInput | string | null
-    user?: UserUpdateOneRequiredWithoutAuditLogNestedInput
-    project?: ProjectUpdateOneRequiredWithoutAuditLogNestedInput
   }
 
   export type AuditLogUncheckedUpdateInput = {
@@ -42437,8 +46282,10 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
-    projectId?: StringFieldUpdateOperationsInput | string
-    userProjectRole?: EnumProjectRoleFieldUpdateOperationsInput | $Enums.ProjectRole
+    orgId?: StringFieldUpdateOperationsInput | string
+    userOrgRole?: StringFieldUpdateOperationsInput | string
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    userProjectRole?: NullableStringFieldUpdateOperationsInput | string | null
     resourceType?: StringFieldUpdateOperationsInput | string
     resourceId?: StringFieldUpdateOperationsInput | string
     action?: StringFieldUpdateOperationsInput | string
@@ -42451,8 +46298,10 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     userId: string
-    projectId: string
-    userProjectRole: $Enums.ProjectRole
+    orgId: string
+    userOrgRole: string
+    projectId?: string | null
+    userProjectRole?: string | null
     resourceType: string
     resourceId: string
     action: string
@@ -42464,7 +46313,11 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userProjectRole?: EnumProjectRoleFieldUpdateOperationsInput | $Enums.ProjectRole
+    userId?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
+    userOrgRole?: StringFieldUpdateOperationsInput | string
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    userProjectRole?: NullableStringFieldUpdateOperationsInput | string | null
     resourceType?: StringFieldUpdateOperationsInput | string
     resourceId?: StringFieldUpdateOperationsInput | string
     action?: StringFieldUpdateOperationsInput | string
@@ -42477,8 +46330,10 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
-    projectId?: StringFieldUpdateOperationsInput | string
-    userProjectRole?: EnumProjectRoleFieldUpdateOperationsInput | $Enums.ProjectRole
+    orgId?: StringFieldUpdateOperationsInput | string
+    userOrgRole?: StringFieldUpdateOperationsInput | string
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    userProjectRole?: NullableStringFieldUpdateOperationsInput | string | null
     resourceType?: StringFieldUpdateOperationsInput | string
     resourceId?: StringFieldUpdateOperationsInput | string
     action?: StringFieldUpdateOperationsInput | string
@@ -43203,6 +47058,8 @@ export namespace Prisma {
     unit?: string | null
     completionStartTime?: Date | string | null
     promptId?: string | null
+    promptName?: string | null
+    promptVersion?: number | null
     modelId?: string | null
     inputPrice?: Decimal | DecimalJsLike | number | string | null
     outputPrice?: Decimal | DecimalJsLike | number | string | null
@@ -43239,6 +47096,8 @@ export namespace Prisma {
     unit?: string | null
     completionStartTime?: Date | string | null
     promptId?: string | null
+    promptName?: string | null
+    promptVersion?: number | null
     modelId?: string | null
     inputPrice?: Decimal | DecimalJsLike | number | string | null
     outputPrice?: Decimal | DecimalJsLike | number | string | null
@@ -43275,6 +47134,8 @@ export namespace Prisma {
     unit?: NullableStringFieldUpdateOperationsInput | string | null
     completionStartTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     promptId?: NullableStringFieldUpdateOperationsInput | string | null
+    promptName?: NullableStringFieldUpdateOperationsInput | string | null
+    promptVersion?: NullableIntFieldUpdateOperationsInput | number | null
     modelId?: NullableStringFieldUpdateOperationsInput | string | null
     inputPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     outputPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -43311,6 +47172,8 @@ export namespace Prisma {
     unit?: NullableStringFieldUpdateOperationsInput | string | null
     completionStartTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     promptId?: NullableStringFieldUpdateOperationsInput | string | null
+    promptName?: NullableStringFieldUpdateOperationsInput | string | null
+    promptVersion?: NullableIntFieldUpdateOperationsInput | number | null
     modelId?: NullableStringFieldUpdateOperationsInput | string | null
     inputPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     outputPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -43347,6 +47210,8 @@ export namespace Prisma {
     unit?: string | null
     completionStartTime?: Date | string | null
     promptId?: string | null
+    promptName?: string | null
+    promptVersion?: number | null
     modelId?: string | null
     inputPrice?: Decimal | DecimalJsLike | number | string | null
     outputPrice?: Decimal | DecimalJsLike | number | string | null
@@ -43383,6 +47248,8 @@ export namespace Prisma {
     unit?: NullableStringFieldUpdateOperationsInput | string | null
     completionStartTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     promptId?: NullableStringFieldUpdateOperationsInput | string | null
+    promptName?: NullableStringFieldUpdateOperationsInput | string | null
+    promptVersion?: NullableIntFieldUpdateOperationsInput | number | null
     modelId?: NullableStringFieldUpdateOperationsInput | string | null
     inputPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     outputPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -43419,6 +47286,8 @@ export namespace Prisma {
     unit?: NullableStringFieldUpdateOperationsInput | string | null
     completionStartTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     promptId?: NullableStringFieldUpdateOperationsInput | string | null
+    promptName?: NullableStringFieldUpdateOperationsInput | string | null
+    promptVersion?: NullableIntFieldUpdateOperationsInput | number | null
     modelId?: NullableStringFieldUpdateOperationsInput | string | null
     inputPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     outputPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -43683,6 +47552,12 @@ export namespace Prisma {
     none?: SessionWhereInput
   }
 
+  export type OrganizationMembershipListRelationFilter = {
+    every?: OrganizationMembershipWhereInput
+    some?: OrganizationMembershipWhereInput
+    none?: OrganizationMembershipWhereInput
+  }
+
   export type ProjectMembershipListRelationFilter = {
     every?: ProjectMembershipWhereInput
     some?: ProjectMembershipWhereInput
@@ -43695,12 +47570,6 @@ export namespace Prisma {
     none?: MembershipInvitationWhereInput
   }
 
-  export type AuditLogListRelationFilter = {
-    every?: AuditLogWhereInput
-    some?: AuditLogWhereInput
-    none?: AuditLogWhereInput
-  }
-
   export type AccountOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -43709,15 +47578,15 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
+  export type OrganizationMembershipOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type ProjectMembershipOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
   export type MembershipInvitationOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
-  export type AuditLogOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -43825,6 +47694,68 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
+  export type ProjectListRelationFilter = {
+    every?: ProjectWhereInput
+    some?: ProjectWhereInput
+    none?: ProjectWhereInput
+  }
+
+  export type ProjectOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type OrganizationCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    cloudConfig?: SortOrder
+  }
+
+  export type OrganizationMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type OrganizationMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+  export type JsonNullableWithAggregatesFilter<$PrismaModel = never> = 
+    | PatchUndefined<
+        Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedJsonNullableFilter<$PrismaModel>
+    _max?: NestedJsonNullableFilter<$PrismaModel>
+  }
+
+  export type OrganizationRelationFilter = {
+    is?: OrganizationWhereInput
+    isNot?: OrganizationWhereInput
+  }
+
   export type TraceListRelationFilter = {
     every?: TraceWhereInput
     some?: TraceWhereInput
@@ -43921,6 +47852,12 @@ export namespace Prisma {
     none?: BatchExportWhereInput
   }
 
+  export type CommentListRelationFilter = {
+    every?: CommentWhereInput
+    some?: CommentWhereInput
+    none?: CommentWhereInput
+  }
+
   export type TraceOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -43985,16 +47922,21 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
+  export type CommentOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type ProjectCountOrderByAggregateInput = {
     id?: SortOrder
+    orgId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     name?: SortOrder
-    cloudConfig?: SortOrder
   }
 
   export type ProjectMaxOrderByAggregateInput = {
     id?: SortOrder
+    orgId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     name?: SortOrder
@@ -44002,34 +47944,10 @@ export namespace Prisma {
 
   export type ProjectMinOrderByAggregateInput = {
     id?: SortOrder
+    orgId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     name?: SortOrder
-  }
-  export type JsonNullableWithAggregatesFilter<$PrismaModel = never> = 
-    | PatchUndefined<
-        Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
-        Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
-
-  export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedJsonNullableFilter<$PrismaModel>
-    _max?: NestedJsonNullableFilter<$PrismaModel>
   }
 
   export type ProjectRelationFilter = {
@@ -44121,11 +48039,58 @@ export namespace Prisma {
     projectId?: SortOrder
   }
 
-  export type EnumProjectRoleFilter<$PrismaModel = never> = {
-    equals?: $Enums.ProjectRole | EnumProjectRoleFieldRefInput<$PrismaModel>
-    in?: $Enums.ProjectRole[] | ListEnumProjectRoleFieldRefInput<$PrismaModel>
-    notIn?: $Enums.ProjectRole[] | ListEnumProjectRoleFieldRefInput<$PrismaModel>
-    not?: NestedEnumProjectRoleFilter<$PrismaModel> | $Enums.ProjectRole
+  export type EnumRoleFilter<$PrismaModel = never> = {
+    equals?: $Enums.Role | EnumRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.Role[] | ListEnumRoleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.Role[] | ListEnumRoleFieldRefInput<$PrismaModel>
+    not?: NestedEnumRoleFilter<$PrismaModel> | $Enums.Role
+  }
+
+  export type OrganizationMembershipOrgIdUserIdCompoundUniqueInput = {
+    orgId: string
+    userId: string
+  }
+
+  export type OrganizationMembershipCountOrderByAggregateInput = {
+    id?: SortOrder
+    orgId?: SortOrder
+    userId?: SortOrder
+    role?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type OrganizationMembershipMaxOrderByAggregateInput = {
+    id?: SortOrder
+    orgId?: SortOrder
+    userId?: SortOrder
+    role?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type OrganizationMembershipMinOrderByAggregateInput = {
+    id?: SortOrder
+    orgId?: SortOrder
+    userId?: SortOrder
+    role?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EnumRoleWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.Role | EnumRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.Role[] | ListEnumRoleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.Role[] | ListEnumRoleFieldRefInput<$PrismaModel>
+    not?: NestedEnumRoleWithAggregatesFilter<$PrismaModel> | $Enums.Role
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumRoleFilter<$PrismaModel>
+    _max?: NestedEnumRoleFilter<$PrismaModel>
+  }
+
+  export type OrganizationMembershipRelationFilter = {
+    is?: OrganizationMembershipWhereInput
+    isNot?: OrganizationMembershipWhereInput
   }
 
   export type ProjectMembershipProjectIdUserIdCompoundUniqueInput = {
@@ -44134,6 +48099,7 @@ export namespace Prisma {
   }
 
   export type ProjectMembershipCountOrderByAggregateInput = {
+    orgMembershipId?: SortOrder
     projectId?: SortOrder
     userId?: SortOrder
     role?: SortOrder
@@ -44142,6 +48108,7 @@ export namespace Prisma {
   }
 
   export type ProjectMembershipMaxOrderByAggregateInput = {
+    orgMembershipId?: SortOrder
     projectId?: SortOrder
     userId?: SortOrder
     role?: SortOrder
@@ -44150,6 +48117,7 @@ export namespace Prisma {
   }
 
   export type ProjectMembershipMinOrderByAggregateInput = {
+    orgMembershipId?: SortOrder
     projectId?: SortOrder
     userId?: SortOrder
     role?: SortOrder
@@ -44157,14 +48125,16 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
-  export type EnumProjectRoleWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.ProjectRole | EnumProjectRoleFieldRefInput<$PrismaModel>
-    in?: $Enums.ProjectRole[] | ListEnumProjectRoleFieldRefInput<$PrismaModel>
-    notIn?: $Enums.ProjectRole[] | ListEnumProjectRoleFieldRefInput<$PrismaModel>
-    not?: NestedEnumProjectRoleWithAggregatesFilter<$PrismaModel> | $Enums.ProjectRole
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumProjectRoleFilter<$PrismaModel>
-    _max?: NestedEnumProjectRoleFilter<$PrismaModel>
+  export type EnumRoleNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.Role | EnumRoleFieldRefInput<$PrismaModel> | null
+    in?: $Enums.Role[] | ListEnumRoleFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.Role[] | ListEnumRoleFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumRoleNullableFilter<$PrismaModel> | $Enums.Role | null
+  }
+
+  export type ProjectNullableRelationFilter = {
+    is?: ProjectWhereInput | null
+    isNot?: ProjectWhereInput | null
   }
 
   export type UserNullableRelationFilter = {
@@ -44175,9 +48145,11 @@ export namespace Prisma {
   export type MembershipInvitationCountOrderByAggregateInput = {
     id?: SortOrder
     email?: SortOrder
-    role?: SortOrder
+    orgId?: SortOrder
+    orgRole?: SortOrder
     projectId?: SortOrder
-    senderId?: SortOrder
+    projectRole?: SortOrder
+    invitedByUserId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -44185,9 +48157,11 @@ export namespace Prisma {
   export type MembershipInvitationMaxOrderByAggregateInput = {
     id?: SortOrder
     email?: SortOrder
-    role?: SortOrder
+    orgId?: SortOrder
+    orgRole?: SortOrder
     projectId?: SortOrder
-    senderId?: SortOrder
+    projectRole?: SortOrder
+    invitedByUserId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -44195,11 +48169,23 @@ export namespace Prisma {
   export type MembershipInvitationMinOrderByAggregateInput = {
     id?: SortOrder
     email?: SortOrder
-    role?: SortOrder
+    orgId?: SortOrder
+    orgRole?: SortOrder
     projectId?: SortOrder
-    senderId?: SortOrder
+    projectRole?: SortOrder
+    invitedByUserId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type EnumRoleNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.Role | EnumRoleFieldRefInput<$PrismaModel> | null
+    in?: $Enums.Role[] | ListEnumRoleFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.Role[] | ListEnumRoleFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumRoleNullableWithAggregatesFilter<$PrismaModel> | $Enums.Role | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumRoleNullableFilter<$PrismaModel>
+    _max?: NestedEnumRoleNullableFilter<$PrismaModel>
   }
 
   export type TraceSessionIdProjectIdCompoundUniqueInput = {
@@ -44237,16 +48223,6 @@ export namespace Prisma {
   export type TraceSessionNullableRelationFilter = {
     is?: TraceSessionWhereInput | null
     isNot?: TraceSessionWhereInput | null
-  }
-
-  export type DatasetItemListRelationFilter = {
-    every?: DatasetItemWhereInput
-    some?: DatasetItemWhereInput
-    none?: DatasetItemWhereInput
-  }
-
-  export type DatasetItemOrderByRelationAggregateInput = {
-    _count?: SortOrder
   }
 
   export type TraceCountOrderByAggregateInput = {
@@ -44724,10 +48700,20 @@ export namespace Prisma {
     state?: SortOrder
   }
 
+  export type DatasetItemListRelationFilter = {
+    every?: DatasetItemWhereInput
+    some?: DatasetItemWhereInput
+    none?: DatasetItemWhereInput
+  }
+
   export type DatasetRunsListRelationFilter = {
     every?: DatasetRunsWhereInput
     some?: DatasetRunsWhereInput
     none?: DatasetRunsWhereInput
+  }
+
+  export type DatasetItemOrderByRelationAggregateInput = {
+    _count?: SortOrder
   }
 
   export type DatasetRunsOrderByRelationAggregateInput = {
@@ -44739,30 +48725,35 @@ export namespace Prisma {
     name: string
   }
 
+  export type DatasetIdProjectIdCompoundUniqueInput = {
+    id: string
+    projectId: string
+  }
+
   export type DatasetCountOrderByAggregateInput = {
     id?: SortOrder
+    projectId?: SortOrder
     name?: SortOrder
     description?: SortOrder
     metadata?: SortOrder
-    projectId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type DatasetMaxOrderByAggregateInput = {
     id?: SortOrder
+    projectId?: SortOrder
     name?: SortOrder
     description?: SortOrder
-    projectId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type DatasetMinOrderByAggregateInput = {
     id?: SortOrder
+    projectId?: SortOrder
     name?: SortOrder
     description?: SortOrder
-    projectId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -44772,16 +48763,6 @@ export namespace Prisma {
     in?: $Enums.DatasetStatus[] | ListEnumDatasetStatusFieldRefInput<$PrismaModel>
     notIn?: $Enums.DatasetStatus[] | ListEnumDatasetStatusFieldRefInput<$PrismaModel>
     not?: NestedEnumDatasetStatusFilter<$PrismaModel> | $Enums.DatasetStatus
-  }
-
-  export type TraceNullableRelationFilter = {
-    is?: TraceWhereInput | null
-    isNot?: TraceWhereInput | null
-  }
-
-  export type ObservationNullableRelationFilter = {
-    is?: ObservationWhereInput | null
-    isNot?: ObservationWhereInput | null
   }
 
   export type DatasetRelationFilter = {
@@ -44799,8 +48780,14 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
+  export type DatasetItemIdProjectIdCompoundUniqueInput = {
+    id: string
+    projectId: string
+  }
+
   export type DatasetItemCountOrderByAggregateInput = {
     id?: SortOrder
+    projectId?: SortOrder
     status?: SortOrder
     input?: SortOrder
     expectedOutput?: SortOrder
@@ -44814,6 +48801,7 @@ export namespace Prisma {
 
   export type DatasetItemMaxOrderByAggregateInput = {
     id?: SortOrder
+    projectId?: SortOrder
     status?: SortOrder
     sourceTraceId?: SortOrder
     sourceObservationId?: SortOrder
@@ -44824,6 +48812,7 @@ export namespace Prisma {
 
   export type DatasetItemMinOrderByAggregateInput = {
     id?: SortOrder
+    projectId?: SortOrder
     status?: SortOrder
     sourceTraceId?: SortOrder
     sourceObservationId?: SortOrder
@@ -44842,13 +48831,20 @@ export namespace Prisma {
     _max?: NestedEnumDatasetStatusFilter<$PrismaModel>
   }
 
-  export type DatasetRunsDatasetIdNameCompoundUniqueInput = {
+  export type DatasetRunsDatasetIdProjectIdNameCompoundUniqueInput = {
     datasetId: string
+    projectId: string
     name: string
+  }
+
+  export type DatasetRunsIdProjectIdCompoundUniqueInput = {
+    id: string
+    projectId: string
   }
 
   export type DatasetRunsCountOrderByAggregateInput = {
     id?: SortOrder
+    projectId?: SortOrder
     name?: SortOrder
     description?: SortOrder
     metadata?: SortOrder
@@ -44859,6 +48855,7 @@ export namespace Prisma {
 
   export type DatasetRunsMaxOrderByAggregateInput = {
     id?: SortOrder
+    projectId?: SortOrder
     name?: SortOrder
     description?: SortOrder
     datasetId?: SortOrder
@@ -44868,6 +48865,7 @@ export namespace Prisma {
 
   export type DatasetRunsMinOrderByAggregateInput = {
     id?: SortOrder
+    projectId?: SortOrder
     name?: SortOrder
     description?: SortOrder
     datasetId?: SortOrder
@@ -44885,8 +48883,14 @@ export namespace Prisma {
     isNot?: DatasetItemWhereInput
   }
 
+  export type DatasetRunItemsIdProjectIdCompoundUniqueInput = {
+    id: string
+    projectId: string
+  }
+
   export type DatasetRunItemsCountOrderByAggregateInput = {
     id?: SortOrder
+    projectId?: SortOrder
     datasetRunId?: SortOrder
     datasetItemId?: SortOrder
     traceId?: SortOrder
@@ -44897,6 +48901,7 @@ export namespace Prisma {
 
   export type DatasetRunItemsMaxOrderByAggregateInput = {
     id?: SortOrder
+    projectId?: SortOrder
     datasetRunId?: SortOrder
     datasetItemId?: SortOrder
     traceId?: SortOrder
@@ -44907,6 +48912,7 @@ export namespace Prisma {
 
   export type DatasetRunItemsMinOrderByAggregateInput = {
     id?: SortOrder
+    projectId?: SortOrder
     datasetRunId?: SortOrder
     datasetItemId?: SortOrder
     traceId?: SortOrder
@@ -44991,6 +48997,56 @@ export namespace Prisma {
     _max?: NestedJsonFilter<$PrismaModel>
   }
 
+  export type EnumCommentObjectTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.CommentObjectType | EnumCommentObjectTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.CommentObjectType[] | ListEnumCommentObjectTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.CommentObjectType[] | ListEnumCommentObjectTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumCommentObjectTypeFilter<$PrismaModel> | $Enums.CommentObjectType
+  }
+
+  export type CommentCountOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    objectType?: SortOrder
+    objectId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    content?: SortOrder
+    authorUserId?: SortOrder
+  }
+
+  export type CommentMaxOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    objectType?: SortOrder
+    objectId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    content?: SortOrder
+    authorUserId?: SortOrder
+  }
+
+  export type CommentMinOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    objectType?: SortOrder
+    objectId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    content?: SortOrder
+    authorUserId?: SortOrder
+  }
+
+  export type EnumCommentObjectTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.CommentObjectType | EnumCommentObjectTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.CommentObjectType[] | ListEnumCommentObjectTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.CommentObjectType[] | ListEnumCommentObjectTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumCommentObjectTypeWithAggregatesFilter<$PrismaModel> | $Enums.CommentObjectType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumCommentObjectTypeFilter<$PrismaModel>
+    _max?: NestedEnumCommentObjectTypeFilter<$PrismaModel>
+  }
+
   export type BoolNullableFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
     not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
@@ -45056,11 +49112,6 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedBoolNullableFilter<$PrismaModel>
     _max?: NestedBoolNullableFilter<$PrismaModel>
-  }
-
-  export type ProjectNullableRelationFilter = {
-    is?: ProjectWhereInput | null
-    isNot?: ProjectWhereInput | null
   }
 
   export type ModelProjectIdModelNameStartDateUnitCompoundUniqueInput = {
@@ -45133,6 +49184,8 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     userId?: SortOrder
+    orgId?: SortOrder
+    userOrgRole?: SortOrder
     projectId?: SortOrder
     userProjectRole?: SortOrder
     resourceType?: SortOrder
@@ -45147,6 +49200,8 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     userId?: SortOrder
+    orgId?: SortOrder
+    userOrgRole?: SortOrder
     projectId?: SortOrder
     userProjectRole?: SortOrder
     resourceType?: SortOrder
@@ -45161,6 +49216,8 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     userId?: SortOrder
+    orgId?: SortOrder
+    userOrgRole?: SortOrder
     projectId?: SortOrder
     userProjectRole?: SortOrder
     resourceType?: SortOrder
@@ -45353,6 +49410,11 @@ export namespace Prisma {
   export type JobConfigurationRelationFilter = {
     is?: JobConfigurationWhereInput
     isNot?: JobConfigurationWhereInput
+  }
+
+  export type TraceNullableRelationFilter = {
+    is?: TraceWhereInput | null
+    isNot?: TraceWhereInput | null
   }
 
   export type ScoreNullableRelationFilter = {
@@ -45595,6 +49657,8 @@ export namespace Prisma {
     unit?: SortOrder
     completionStartTime?: SortOrder
     promptId?: SortOrder
+    promptName?: SortOrder
+    promptVersion?: SortOrder
     modelId?: SortOrder
     inputPrice?: SortOrder
     outputPrice?: SortOrder
@@ -45610,6 +49674,7 @@ export namespace Prisma {
     promptTokens?: SortOrder
     completionTokens?: SortOrder
     totalTokens?: SortOrder
+    promptVersion?: SortOrder
     inputPrice?: SortOrder
     outputPrice?: SortOrder
     totalPrice?: SortOrder
@@ -45641,6 +49706,8 @@ export namespace Prisma {
     unit?: SortOrder
     completionStartTime?: SortOrder
     promptId?: SortOrder
+    promptName?: SortOrder
+    promptVersion?: SortOrder
     modelId?: SortOrder
     inputPrice?: SortOrder
     outputPrice?: SortOrder
@@ -45673,6 +49740,8 @@ export namespace Prisma {
     unit?: SortOrder
     completionStartTime?: SortOrder
     promptId?: SortOrder
+    promptName?: SortOrder
+    promptVersion?: SortOrder
     modelId?: SortOrder
     inputPrice?: SortOrder
     outputPrice?: SortOrder
@@ -45688,6 +49757,7 @@ export namespace Prisma {
     promptTokens?: SortOrder
     completionTokens?: SortOrder
     totalTokens?: SortOrder
+    promptVersion?: SortOrder
     inputPrice?: SortOrder
     outputPrice?: SortOrder
     totalPrice?: SortOrder
@@ -45764,6 +49834,13 @@ export namespace Prisma {
     connect?: SessionWhereUniqueInput | SessionWhereUniqueInput[]
   }
 
+  export type OrganizationMembershipCreateNestedManyWithoutUserInput = {
+    create?: XOR<OrganizationMembershipCreateWithoutUserInput, OrganizationMembershipUncheckedCreateWithoutUserInput> | OrganizationMembershipCreateWithoutUserInput[] | OrganizationMembershipUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: OrganizationMembershipCreateOrConnectWithoutUserInput | OrganizationMembershipCreateOrConnectWithoutUserInput[]
+    createMany?: OrganizationMembershipCreateManyUserInputEnvelope
+    connect?: OrganizationMembershipWhereUniqueInput | OrganizationMembershipWhereUniqueInput[]
+  }
+
   export type ProjectMembershipCreateNestedManyWithoutUserInput = {
     create?: XOR<ProjectMembershipCreateWithoutUserInput, ProjectMembershipUncheckedCreateWithoutUserInput> | ProjectMembershipCreateWithoutUserInput[] | ProjectMembershipUncheckedCreateWithoutUserInput[]
     connectOrCreate?: ProjectMembershipCreateOrConnectWithoutUserInput | ProjectMembershipCreateOrConnectWithoutUserInput[]
@@ -45771,18 +49848,11 @@ export namespace Prisma {
     connect?: ProjectMembershipWhereUniqueInput | ProjectMembershipWhereUniqueInput[]
   }
 
-  export type MembershipInvitationCreateNestedManyWithoutSenderInput = {
-    create?: XOR<MembershipInvitationCreateWithoutSenderInput, MembershipInvitationUncheckedCreateWithoutSenderInput> | MembershipInvitationCreateWithoutSenderInput[] | MembershipInvitationUncheckedCreateWithoutSenderInput[]
-    connectOrCreate?: MembershipInvitationCreateOrConnectWithoutSenderInput | MembershipInvitationCreateOrConnectWithoutSenderInput[]
-    createMany?: MembershipInvitationCreateManySenderInputEnvelope
+  export type MembershipInvitationCreateNestedManyWithoutInvitedByUserInput = {
+    create?: XOR<MembershipInvitationCreateWithoutInvitedByUserInput, MembershipInvitationUncheckedCreateWithoutInvitedByUserInput> | MembershipInvitationCreateWithoutInvitedByUserInput[] | MembershipInvitationUncheckedCreateWithoutInvitedByUserInput[]
+    connectOrCreate?: MembershipInvitationCreateOrConnectWithoutInvitedByUserInput | MembershipInvitationCreateOrConnectWithoutInvitedByUserInput[]
+    createMany?: MembershipInvitationCreateManyInvitedByUserInputEnvelope
     connect?: MembershipInvitationWhereUniqueInput | MembershipInvitationWhereUniqueInput[]
-  }
-
-  export type AuditLogCreateNestedManyWithoutUserInput = {
-    create?: XOR<AuditLogCreateWithoutUserInput, AuditLogUncheckedCreateWithoutUserInput> | AuditLogCreateWithoutUserInput[] | AuditLogUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: AuditLogCreateOrConnectWithoutUserInput | AuditLogCreateOrConnectWithoutUserInput[]
-    createMany?: AuditLogCreateManyUserInputEnvelope
-    connect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
   }
 
   export type AccountUncheckedCreateNestedManyWithoutUserInput = {
@@ -45799,6 +49869,13 @@ export namespace Prisma {
     connect?: SessionWhereUniqueInput | SessionWhereUniqueInput[]
   }
 
+  export type OrganizationMembershipUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<OrganizationMembershipCreateWithoutUserInput, OrganizationMembershipUncheckedCreateWithoutUserInput> | OrganizationMembershipCreateWithoutUserInput[] | OrganizationMembershipUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: OrganizationMembershipCreateOrConnectWithoutUserInput | OrganizationMembershipCreateOrConnectWithoutUserInput[]
+    createMany?: OrganizationMembershipCreateManyUserInputEnvelope
+    connect?: OrganizationMembershipWhereUniqueInput | OrganizationMembershipWhereUniqueInput[]
+  }
+
   export type ProjectMembershipUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<ProjectMembershipCreateWithoutUserInput, ProjectMembershipUncheckedCreateWithoutUserInput> | ProjectMembershipCreateWithoutUserInput[] | ProjectMembershipUncheckedCreateWithoutUserInput[]
     connectOrCreate?: ProjectMembershipCreateOrConnectWithoutUserInput | ProjectMembershipCreateOrConnectWithoutUserInput[]
@@ -45806,18 +49883,11 @@ export namespace Prisma {
     connect?: ProjectMembershipWhereUniqueInput | ProjectMembershipWhereUniqueInput[]
   }
 
-  export type MembershipInvitationUncheckedCreateNestedManyWithoutSenderInput = {
-    create?: XOR<MembershipInvitationCreateWithoutSenderInput, MembershipInvitationUncheckedCreateWithoutSenderInput> | MembershipInvitationCreateWithoutSenderInput[] | MembershipInvitationUncheckedCreateWithoutSenderInput[]
-    connectOrCreate?: MembershipInvitationCreateOrConnectWithoutSenderInput | MembershipInvitationCreateOrConnectWithoutSenderInput[]
-    createMany?: MembershipInvitationCreateManySenderInputEnvelope
+  export type MembershipInvitationUncheckedCreateNestedManyWithoutInvitedByUserInput = {
+    create?: XOR<MembershipInvitationCreateWithoutInvitedByUserInput, MembershipInvitationUncheckedCreateWithoutInvitedByUserInput> | MembershipInvitationCreateWithoutInvitedByUserInput[] | MembershipInvitationUncheckedCreateWithoutInvitedByUserInput[]
+    connectOrCreate?: MembershipInvitationCreateOrConnectWithoutInvitedByUserInput | MembershipInvitationCreateOrConnectWithoutInvitedByUserInput[]
+    createMany?: MembershipInvitationCreateManyInvitedByUserInputEnvelope
     connect?: MembershipInvitationWhereUniqueInput | MembershipInvitationWhereUniqueInput[]
-  }
-
-  export type AuditLogUncheckedCreateNestedManyWithoutUserInput = {
-    create?: XOR<AuditLogCreateWithoutUserInput, AuditLogUncheckedCreateWithoutUserInput> | AuditLogCreateWithoutUserInput[] | AuditLogUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: AuditLogCreateOrConnectWithoutUserInput | AuditLogCreateOrConnectWithoutUserInput[]
-    createMany?: AuditLogCreateManyUserInputEnvelope
-    connect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
   }
 
   export type NullableDateTimeFieldUpdateOperationsInput = {
@@ -45861,6 +49931,20 @@ export namespace Prisma {
     deleteMany?: SessionScalarWhereInput | SessionScalarWhereInput[]
   }
 
+  export type OrganizationMembershipUpdateManyWithoutUserNestedInput = {
+    create?: XOR<OrganizationMembershipCreateWithoutUserInput, OrganizationMembershipUncheckedCreateWithoutUserInput> | OrganizationMembershipCreateWithoutUserInput[] | OrganizationMembershipUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: OrganizationMembershipCreateOrConnectWithoutUserInput | OrganizationMembershipCreateOrConnectWithoutUserInput[]
+    upsert?: OrganizationMembershipUpsertWithWhereUniqueWithoutUserInput | OrganizationMembershipUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: OrganizationMembershipCreateManyUserInputEnvelope
+    set?: OrganizationMembershipWhereUniqueInput | OrganizationMembershipWhereUniqueInput[]
+    disconnect?: OrganizationMembershipWhereUniqueInput | OrganizationMembershipWhereUniqueInput[]
+    delete?: OrganizationMembershipWhereUniqueInput | OrganizationMembershipWhereUniqueInput[]
+    connect?: OrganizationMembershipWhereUniqueInput | OrganizationMembershipWhereUniqueInput[]
+    update?: OrganizationMembershipUpdateWithWhereUniqueWithoutUserInput | OrganizationMembershipUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: OrganizationMembershipUpdateManyWithWhereWithoutUserInput | OrganizationMembershipUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: OrganizationMembershipScalarWhereInput | OrganizationMembershipScalarWhereInput[]
+  }
+
   export type ProjectMembershipUpdateManyWithoutUserNestedInput = {
     create?: XOR<ProjectMembershipCreateWithoutUserInput, ProjectMembershipUncheckedCreateWithoutUserInput> | ProjectMembershipCreateWithoutUserInput[] | ProjectMembershipUncheckedCreateWithoutUserInput[]
     connectOrCreate?: ProjectMembershipCreateOrConnectWithoutUserInput | ProjectMembershipCreateOrConnectWithoutUserInput[]
@@ -45875,32 +49959,18 @@ export namespace Prisma {
     deleteMany?: ProjectMembershipScalarWhereInput | ProjectMembershipScalarWhereInput[]
   }
 
-  export type MembershipInvitationUpdateManyWithoutSenderNestedInput = {
-    create?: XOR<MembershipInvitationCreateWithoutSenderInput, MembershipInvitationUncheckedCreateWithoutSenderInput> | MembershipInvitationCreateWithoutSenderInput[] | MembershipInvitationUncheckedCreateWithoutSenderInput[]
-    connectOrCreate?: MembershipInvitationCreateOrConnectWithoutSenderInput | MembershipInvitationCreateOrConnectWithoutSenderInput[]
-    upsert?: MembershipInvitationUpsertWithWhereUniqueWithoutSenderInput | MembershipInvitationUpsertWithWhereUniqueWithoutSenderInput[]
-    createMany?: MembershipInvitationCreateManySenderInputEnvelope
+  export type MembershipInvitationUpdateManyWithoutInvitedByUserNestedInput = {
+    create?: XOR<MembershipInvitationCreateWithoutInvitedByUserInput, MembershipInvitationUncheckedCreateWithoutInvitedByUserInput> | MembershipInvitationCreateWithoutInvitedByUserInput[] | MembershipInvitationUncheckedCreateWithoutInvitedByUserInput[]
+    connectOrCreate?: MembershipInvitationCreateOrConnectWithoutInvitedByUserInput | MembershipInvitationCreateOrConnectWithoutInvitedByUserInput[]
+    upsert?: MembershipInvitationUpsertWithWhereUniqueWithoutInvitedByUserInput | MembershipInvitationUpsertWithWhereUniqueWithoutInvitedByUserInput[]
+    createMany?: MembershipInvitationCreateManyInvitedByUserInputEnvelope
     set?: MembershipInvitationWhereUniqueInput | MembershipInvitationWhereUniqueInput[]
     disconnect?: MembershipInvitationWhereUniqueInput | MembershipInvitationWhereUniqueInput[]
     delete?: MembershipInvitationWhereUniqueInput | MembershipInvitationWhereUniqueInput[]
     connect?: MembershipInvitationWhereUniqueInput | MembershipInvitationWhereUniqueInput[]
-    update?: MembershipInvitationUpdateWithWhereUniqueWithoutSenderInput | MembershipInvitationUpdateWithWhereUniqueWithoutSenderInput[]
-    updateMany?: MembershipInvitationUpdateManyWithWhereWithoutSenderInput | MembershipInvitationUpdateManyWithWhereWithoutSenderInput[]
+    update?: MembershipInvitationUpdateWithWhereUniqueWithoutInvitedByUserInput | MembershipInvitationUpdateWithWhereUniqueWithoutInvitedByUserInput[]
+    updateMany?: MembershipInvitationUpdateManyWithWhereWithoutInvitedByUserInput | MembershipInvitationUpdateManyWithWhereWithoutInvitedByUserInput[]
     deleteMany?: MembershipInvitationScalarWhereInput | MembershipInvitationScalarWhereInput[]
-  }
-
-  export type AuditLogUpdateManyWithoutUserNestedInput = {
-    create?: XOR<AuditLogCreateWithoutUserInput, AuditLogUncheckedCreateWithoutUserInput> | AuditLogCreateWithoutUserInput[] | AuditLogUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: AuditLogCreateOrConnectWithoutUserInput | AuditLogCreateOrConnectWithoutUserInput[]
-    upsert?: AuditLogUpsertWithWhereUniqueWithoutUserInput | AuditLogUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: AuditLogCreateManyUserInputEnvelope
-    set?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
-    disconnect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
-    delete?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
-    connect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
-    update?: AuditLogUpdateWithWhereUniqueWithoutUserInput | AuditLogUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: AuditLogUpdateManyWithWhereWithoutUserInput | AuditLogUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: AuditLogScalarWhereInput | AuditLogScalarWhereInput[]
   }
 
   export type AccountUncheckedUpdateManyWithoutUserNestedInput = {
@@ -45931,6 +50001,20 @@ export namespace Prisma {
     deleteMany?: SessionScalarWhereInput | SessionScalarWhereInput[]
   }
 
+  export type OrganizationMembershipUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<OrganizationMembershipCreateWithoutUserInput, OrganizationMembershipUncheckedCreateWithoutUserInput> | OrganizationMembershipCreateWithoutUserInput[] | OrganizationMembershipUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: OrganizationMembershipCreateOrConnectWithoutUserInput | OrganizationMembershipCreateOrConnectWithoutUserInput[]
+    upsert?: OrganizationMembershipUpsertWithWhereUniqueWithoutUserInput | OrganizationMembershipUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: OrganizationMembershipCreateManyUserInputEnvelope
+    set?: OrganizationMembershipWhereUniqueInput | OrganizationMembershipWhereUniqueInput[]
+    disconnect?: OrganizationMembershipWhereUniqueInput | OrganizationMembershipWhereUniqueInput[]
+    delete?: OrganizationMembershipWhereUniqueInput | OrganizationMembershipWhereUniqueInput[]
+    connect?: OrganizationMembershipWhereUniqueInput | OrganizationMembershipWhereUniqueInput[]
+    update?: OrganizationMembershipUpdateWithWhereUniqueWithoutUserInput | OrganizationMembershipUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: OrganizationMembershipUpdateManyWithWhereWithoutUserInput | OrganizationMembershipUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: OrganizationMembershipScalarWhereInput | OrganizationMembershipScalarWhereInput[]
+  }
+
   export type ProjectMembershipUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<ProjectMembershipCreateWithoutUserInput, ProjectMembershipUncheckedCreateWithoutUserInput> | ProjectMembershipCreateWithoutUserInput[] | ProjectMembershipUncheckedCreateWithoutUserInput[]
     connectOrCreate?: ProjectMembershipCreateOrConnectWithoutUserInput | ProjectMembershipCreateOrConnectWithoutUserInput[]
@@ -45945,32 +50029,144 @@ export namespace Prisma {
     deleteMany?: ProjectMembershipScalarWhereInput | ProjectMembershipScalarWhereInput[]
   }
 
-  export type MembershipInvitationUncheckedUpdateManyWithoutSenderNestedInput = {
-    create?: XOR<MembershipInvitationCreateWithoutSenderInput, MembershipInvitationUncheckedCreateWithoutSenderInput> | MembershipInvitationCreateWithoutSenderInput[] | MembershipInvitationUncheckedCreateWithoutSenderInput[]
-    connectOrCreate?: MembershipInvitationCreateOrConnectWithoutSenderInput | MembershipInvitationCreateOrConnectWithoutSenderInput[]
-    upsert?: MembershipInvitationUpsertWithWhereUniqueWithoutSenderInput | MembershipInvitationUpsertWithWhereUniqueWithoutSenderInput[]
-    createMany?: MembershipInvitationCreateManySenderInputEnvelope
+  export type MembershipInvitationUncheckedUpdateManyWithoutInvitedByUserNestedInput = {
+    create?: XOR<MembershipInvitationCreateWithoutInvitedByUserInput, MembershipInvitationUncheckedCreateWithoutInvitedByUserInput> | MembershipInvitationCreateWithoutInvitedByUserInput[] | MembershipInvitationUncheckedCreateWithoutInvitedByUserInput[]
+    connectOrCreate?: MembershipInvitationCreateOrConnectWithoutInvitedByUserInput | MembershipInvitationCreateOrConnectWithoutInvitedByUserInput[]
+    upsert?: MembershipInvitationUpsertWithWhereUniqueWithoutInvitedByUserInput | MembershipInvitationUpsertWithWhereUniqueWithoutInvitedByUserInput[]
+    createMany?: MembershipInvitationCreateManyInvitedByUserInputEnvelope
     set?: MembershipInvitationWhereUniqueInput | MembershipInvitationWhereUniqueInput[]
     disconnect?: MembershipInvitationWhereUniqueInput | MembershipInvitationWhereUniqueInput[]
     delete?: MembershipInvitationWhereUniqueInput | MembershipInvitationWhereUniqueInput[]
     connect?: MembershipInvitationWhereUniqueInput | MembershipInvitationWhereUniqueInput[]
-    update?: MembershipInvitationUpdateWithWhereUniqueWithoutSenderInput | MembershipInvitationUpdateWithWhereUniqueWithoutSenderInput[]
-    updateMany?: MembershipInvitationUpdateManyWithWhereWithoutSenderInput | MembershipInvitationUpdateManyWithWhereWithoutSenderInput[]
+    update?: MembershipInvitationUpdateWithWhereUniqueWithoutInvitedByUserInput | MembershipInvitationUpdateWithWhereUniqueWithoutInvitedByUserInput[]
+    updateMany?: MembershipInvitationUpdateManyWithWhereWithoutInvitedByUserInput | MembershipInvitationUpdateManyWithWhereWithoutInvitedByUserInput[]
     deleteMany?: MembershipInvitationScalarWhereInput | MembershipInvitationScalarWhereInput[]
   }
 
-  export type AuditLogUncheckedUpdateManyWithoutUserNestedInput = {
-    create?: XOR<AuditLogCreateWithoutUserInput, AuditLogUncheckedCreateWithoutUserInput> | AuditLogCreateWithoutUserInput[] | AuditLogUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: AuditLogCreateOrConnectWithoutUserInput | AuditLogCreateOrConnectWithoutUserInput[]
-    upsert?: AuditLogUpsertWithWhereUniqueWithoutUserInput | AuditLogUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: AuditLogCreateManyUserInputEnvelope
-    set?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
-    disconnect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
-    delete?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
-    connect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
-    update?: AuditLogUpdateWithWhereUniqueWithoutUserInput | AuditLogUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: AuditLogUpdateManyWithWhereWithoutUserInput | AuditLogUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: AuditLogScalarWhereInput | AuditLogScalarWhereInput[]
+  export type OrganizationMembershipCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<OrganizationMembershipCreateWithoutOrganizationInput, OrganizationMembershipUncheckedCreateWithoutOrganizationInput> | OrganizationMembershipCreateWithoutOrganizationInput[] | OrganizationMembershipUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: OrganizationMembershipCreateOrConnectWithoutOrganizationInput | OrganizationMembershipCreateOrConnectWithoutOrganizationInput[]
+    createMany?: OrganizationMembershipCreateManyOrganizationInputEnvelope
+    connect?: OrganizationMembershipWhereUniqueInput | OrganizationMembershipWhereUniqueInput[]
+  }
+
+  export type ProjectCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<ProjectCreateWithoutOrganizationInput, ProjectUncheckedCreateWithoutOrganizationInput> | ProjectCreateWithoutOrganizationInput[] | ProjectUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: ProjectCreateOrConnectWithoutOrganizationInput | ProjectCreateOrConnectWithoutOrganizationInput[]
+    createMany?: ProjectCreateManyOrganizationInputEnvelope
+    connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+  }
+
+  export type MembershipInvitationCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<MembershipInvitationCreateWithoutOrganizationInput, MembershipInvitationUncheckedCreateWithoutOrganizationInput> | MembershipInvitationCreateWithoutOrganizationInput[] | MembershipInvitationUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: MembershipInvitationCreateOrConnectWithoutOrganizationInput | MembershipInvitationCreateOrConnectWithoutOrganizationInput[]
+    createMany?: MembershipInvitationCreateManyOrganizationInputEnvelope
+    connect?: MembershipInvitationWhereUniqueInput | MembershipInvitationWhereUniqueInput[]
+  }
+
+  export type OrganizationMembershipUncheckedCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<OrganizationMembershipCreateWithoutOrganizationInput, OrganizationMembershipUncheckedCreateWithoutOrganizationInput> | OrganizationMembershipCreateWithoutOrganizationInput[] | OrganizationMembershipUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: OrganizationMembershipCreateOrConnectWithoutOrganizationInput | OrganizationMembershipCreateOrConnectWithoutOrganizationInput[]
+    createMany?: OrganizationMembershipCreateManyOrganizationInputEnvelope
+    connect?: OrganizationMembershipWhereUniqueInput | OrganizationMembershipWhereUniqueInput[]
+  }
+
+  export type ProjectUncheckedCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<ProjectCreateWithoutOrganizationInput, ProjectUncheckedCreateWithoutOrganizationInput> | ProjectCreateWithoutOrganizationInput[] | ProjectUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: ProjectCreateOrConnectWithoutOrganizationInput | ProjectCreateOrConnectWithoutOrganizationInput[]
+    createMany?: ProjectCreateManyOrganizationInputEnvelope
+    connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+  }
+
+  export type MembershipInvitationUncheckedCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<MembershipInvitationCreateWithoutOrganizationInput, MembershipInvitationUncheckedCreateWithoutOrganizationInput> | MembershipInvitationCreateWithoutOrganizationInput[] | MembershipInvitationUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: MembershipInvitationCreateOrConnectWithoutOrganizationInput | MembershipInvitationCreateOrConnectWithoutOrganizationInput[]
+    createMany?: MembershipInvitationCreateManyOrganizationInputEnvelope
+    connect?: MembershipInvitationWhereUniqueInput | MembershipInvitationWhereUniqueInput[]
+  }
+
+  export type OrganizationMembershipUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<OrganizationMembershipCreateWithoutOrganizationInput, OrganizationMembershipUncheckedCreateWithoutOrganizationInput> | OrganizationMembershipCreateWithoutOrganizationInput[] | OrganizationMembershipUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: OrganizationMembershipCreateOrConnectWithoutOrganizationInput | OrganizationMembershipCreateOrConnectWithoutOrganizationInput[]
+    upsert?: OrganizationMembershipUpsertWithWhereUniqueWithoutOrganizationInput | OrganizationMembershipUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: OrganizationMembershipCreateManyOrganizationInputEnvelope
+    set?: OrganizationMembershipWhereUniqueInput | OrganizationMembershipWhereUniqueInput[]
+    disconnect?: OrganizationMembershipWhereUniqueInput | OrganizationMembershipWhereUniqueInput[]
+    delete?: OrganizationMembershipWhereUniqueInput | OrganizationMembershipWhereUniqueInput[]
+    connect?: OrganizationMembershipWhereUniqueInput | OrganizationMembershipWhereUniqueInput[]
+    update?: OrganizationMembershipUpdateWithWhereUniqueWithoutOrganizationInput | OrganizationMembershipUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: OrganizationMembershipUpdateManyWithWhereWithoutOrganizationInput | OrganizationMembershipUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: OrganizationMembershipScalarWhereInput | OrganizationMembershipScalarWhereInput[]
+  }
+
+  export type ProjectUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<ProjectCreateWithoutOrganizationInput, ProjectUncheckedCreateWithoutOrganizationInput> | ProjectCreateWithoutOrganizationInput[] | ProjectUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: ProjectCreateOrConnectWithoutOrganizationInput | ProjectCreateOrConnectWithoutOrganizationInput[]
+    upsert?: ProjectUpsertWithWhereUniqueWithoutOrganizationInput | ProjectUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: ProjectCreateManyOrganizationInputEnvelope
+    set?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    disconnect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    delete?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    update?: ProjectUpdateWithWhereUniqueWithoutOrganizationInput | ProjectUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: ProjectUpdateManyWithWhereWithoutOrganizationInput | ProjectUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: ProjectScalarWhereInput | ProjectScalarWhereInput[]
+  }
+
+  export type MembershipInvitationUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<MembershipInvitationCreateWithoutOrganizationInput, MembershipInvitationUncheckedCreateWithoutOrganizationInput> | MembershipInvitationCreateWithoutOrganizationInput[] | MembershipInvitationUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: MembershipInvitationCreateOrConnectWithoutOrganizationInput | MembershipInvitationCreateOrConnectWithoutOrganizationInput[]
+    upsert?: MembershipInvitationUpsertWithWhereUniqueWithoutOrganizationInput | MembershipInvitationUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: MembershipInvitationCreateManyOrganizationInputEnvelope
+    set?: MembershipInvitationWhereUniqueInput | MembershipInvitationWhereUniqueInput[]
+    disconnect?: MembershipInvitationWhereUniqueInput | MembershipInvitationWhereUniqueInput[]
+    delete?: MembershipInvitationWhereUniqueInput | MembershipInvitationWhereUniqueInput[]
+    connect?: MembershipInvitationWhereUniqueInput | MembershipInvitationWhereUniqueInput[]
+    update?: MembershipInvitationUpdateWithWhereUniqueWithoutOrganizationInput | MembershipInvitationUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: MembershipInvitationUpdateManyWithWhereWithoutOrganizationInput | MembershipInvitationUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: MembershipInvitationScalarWhereInput | MembershipInvitationScalarWhereInput[]
+  }
+
+  export type OrganizationMembershipUncheckedUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<OrganizationMembershipCreateWithoutOrganizationInput, OrganizationMembershipUncheckedCreateWithoutOrganizationInput> | OrganizationMembershipCreateWithoutOrganizationInput[] | OrganizationMembershipUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: OrganizationMembershipCreateOrConnectWithoutOrganizationInput | OrganizationMembershipCreateOrConnectWithoutOrganizationInput[]
+    upsert?: OrganizationMembershipUpsertWithWhereUniqueWithoutOrganizationInput | OrganizationMembershipUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: OrganizationMembershipCreateManyOrganizationInputEnvelope
+    set?: OrganizationMembershipWhereUniqueInput | OrganizationMembershipWhereUniqueInput[]
+    disconnect?: OrganizationMembershipWhereUniqueInput | OrganizationMembershipWhereUniqueInput[]
+    delete?: OrganizationMembershipWhereUniqueInput | OrganizationMembershipWhereUniqueInput[]
+    connect?: OrganizationMembershipWhereUniqueInput | OrganizationMembershipWhereUniqueInput[]
+    update?: OrganizationMembershipUpdateWithWhereUniqueWithoutOrganizationInput | OrganizationMembershipUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: OrganizationMembershipUpdateManyWithWhereWithoutOrganizationInput | OrganizationMembershipUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: OrganizationMembershipScalarWhereInput | OrganizationMembershipScalarWhereInput[]
+  }
+
+  export type ProjectUncheckedUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<ProjectCreateWithoutOrganizationInput, ProjectUncheckedCreateWithoutOrganizationInput> | ProjectCreateWithoutOrganizationInput[] | ProjectUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: ProjectCreateOrConnectWithoutOrganizationInput | ProjectCreateOrConnectWithoutOrganizationInput[]
+    upsert?: ProjectUpsertWithWhereUniqueWithoutOrganizationInput | ProjectUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: ProjectCreateManyOrganizationInputEnvelope
+    set?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    disconnect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    delete?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    update?: ProjectUpdateWithWhereUniqueWithoutOrganizationInput | ProjectUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: ProjectUpdateManyWithWhereWithoutOrganizationInput | ProjectUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: ProjectScalarWhereInput | ProjectScalarWhereInput[]
+  }
+
+  export type MembershipInvitationUncheckedUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<MembershipInvitationCreateWithoutOrganizationInput, MembershipInvitationUncheckedCreateWithoutOrganizationInput> | MembershipInvitationCreateWithoutOrganizationInput[] | MembershipInvitationUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: MembershipInvitationCreateOrConnectWithoutOrganizationInput | MembershipInvitationCreateOrConnectWithoutOrganizationInput[]
+    upsert?: MembershipInvitationUpsertWithWhereUniqueWithoutOrganizationInput | MembershipInvitationUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: MembershipInvitationCreateManyOrganizationInputEnvelope
+    set?: MembershipInvitationWhereUniqueInput | MembershipInvitationWhereUniqueInput[]
+    disconnect?: MembershipInvitationWhereUniqueInput | MembershipInvitationWhereUniqueInput[]
+    delete?: MembershipInvitationWhereUniqueInput | MembershipInvitationWhereUniqueInput[]
+    connect?: MembershipInvitationWhereUniqueInput | MembershipInvitationWhereUniqueInput[]
+    update?: MembershipInvitationUpdateWithWhereUniqueWithoutOrganizationInput | MembershipInvitationUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: MembershipInvitationUpdateManyWithWhereWithoutOrganizationInput | MembershipInvitationUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: MembershipInvitationScalarWhereInput | MembershipInvitationScalarWhereInput[]
   }
 
   export type ProjectMembershipCreateNestedManyWithoutProjectInput = {
@@ -45978,6 +50174,12 @@ export namespace Prisma {
     connectOrCreate?: ProjectMembershipCreateOrConnectWithoutProjectInput | ProjectMembershipCreateOrConnectWithoutProjectInput[]
     createMany?: ProjectMembershipCreateManyProjectInputEnvelope
     connect?: ProjectMembershipWhereUniqueInput | ProjectMembershipWhereUniqueInput[]
+  }
+
+  export type OrganizationCreateNestedOneWithoutProjectsInput = {
+    create?: XOR<OrganizationCreateWithoutProjectsInput, OrganizationUncheckedCreateWithoutProjectsInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutProjectsInput
+    connect?: OrganizationWhereUniqueInput
   }
 
   export type TraceCreateNestedManyWithoutProjectInput = {
@@ -46043,13 +50245,6 @@ export namespace Prisma {
     connect?: ModelWhereUniqueInput | ModelWhereUniqueInput[]
   }
 
-  export type AuditLogCreateNestedManyWithoutProjectInput = {
-    create?: XOR<AuditLogCreateWithoutProjectInput, AuditLogUncheckedCreateWithoutProjectInput> | AuditLogCreateWithoutProjectInput[] | AuditLogUncheckedCreateWithoutProjectInput[]
-    connectOrCreate?: AuditLogCreateOrConnectWithoutProjectInput | AuditLogCreateOrConnectWithoutProjectInput[]
-    createMany?: AuditLogCreateManyProjectInputEnvelope
-    connect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
-  }
-
   export type EvalTemplateCreateNestedManyWithoutProjectInput = {
     create?: XOR<EvalTemplateCreateWithoutProjectInput, EvalTemplateUncheckedCreateWithoutProjectInput> | EvalTemplateCreateWithoutProjectInput[] | EvalTemplateUncheckedCreateWithoutProjectInput[]
     connectOrCreate?: EvalTemplateCreateOrConnectWithoutProjectInput | EvalTemplateCreateOrConnectWithoutProjectInput[]
@@ -46104,6 +50299,13 @@ export namespace Prisma {
     connectOrCreate?: BatchExportCreateOrConnectWithoutProjectInput | BatchExportCreateOrConnectWithoutProjectInput[]
     createMany?: BatchExportCreateManyProjectInputEnvelope
     connect?: BatchExportWhereUniqueInput | BatchExportWhereUniqueInput[]
+  }
+
+  export type CommentCreateNestedManyWithoutProjectInput = {
+    create?: XOR<CommentCreateWithoutProjectInput, CommentUncheckedCreateWithoutProjectInput> | CommentCreateWithoutProjectInput[] | CommentUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: CommentCreateOrConnectWithoutProjectInput | CommentCreateOrConnectWithoutProjectInput[]
+    createMany?: CommentCreateManyProjectInputEnvelope
+    connect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
   }
 
   export type ProjectMembershipUncheckedCreateNestedManyWithoutProjectInput = {
@@ -46176,13 +50378,6 @@ export namespace Prisma {
     connect?: ModelWhereUniqueInput | ModelWhereUniqueInput[]
   }
 
-  export type AuditLogUncheckedCreateNestedManyWithoutProjectInput = {
-    create?: XOR<AuditLogCreateWithoutProjectInput, AuditLogUncheckedCreateWithoutProjectInput> | AuditLogCreateWithoutProjectInput[] | AuditLogUncheckedCreateWithoutProjectInput[]
-    connectOrCreate?: AuditLogCreateOrConnectWithoutProjectInput | AuditLogCreateOrConnectWithoutProjectInput[]
-    createMany?: AuditLogCreateManyProjectInputEnvelope
-    connect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
-  }
-
   export type EvalTemplateUncheckedCreateNestedManyWithoutProjectInput = {
     create?: XOR<EvalTemplateCreateWithoutProjectInput, EvalTemplateUncheckedCreateWithoutProjectInput> | EvalTemplateCreateWithoutProjectInput[] | EvalTemplateUncheckedCreateWithoutProjectInput[]
     connectOrCreate?: EvalTemplateCreateOrConnectWithoutProjectInput | EvalTemplateCreateOrConnectWithoutProjectInput[]
@@ -46239,6 +50434,13 @@ export namespace Prisma {
     connect?: BatchExportWhereUniqueInput | BatchExportWhereUniqueInput[]
   }
 
+  export type CommentUncheckedCreateNestedManyWithoutProjectInput = {
+    create?: XOR<CommentCreateWithoutProjectInput, CommentUncheckedCreateWithoutProjectInput> | CommentCreateWithoutProjectInput[] | CommentUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: CommentCreateOrConnectWithoutProjectInput | CommentCreateOrConnectWithoutProjectInput[]
+    createMany?: CommentCreateManyProjectInputEnvelope
+    connect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
+  }
+
   export type ProjectMembershipUpdateManyWithoutProjectNestedInput = {
     create?: XOR<ProjectMembershipCreateWithoutProjectInput, ProjectMembershipUncheckedCreateWithoutProjectInput> | ProjectMembershipCreateWithoutProjectInput[] | ProjectMembershipUncheckedCreateWithoutProjectInput[]
     connectOrCreate?: ProjectMembershipCreateOrConnectWithoutProjectInput | ProjectMembershipCreateOrConnectWithoutProjectInput[]
@@ -46251,6 +50453,14 @@ export namespace Prisma {
     update?: ProjectMembershipUpdateWithWhereUniqueWithoutProjectInput | ProjectMembershipUpdateWithWhereUniqueWithoutProjectInput[]
     updateMany?: ProjectMembershipUpdateManyWithWhereWithoutProjectInput | ProjectMembershipUpdateManyWithWhereWithoutProjectInput[]
     deleteMany?: ProjectMembershipScalarWhereInput | ProjectMembershipScalarWhereInput[]
+  }
+
+  export type OrganizationUpdateOneRequiredWithoutProjectsNestedInput = {
+    create?: XOR<OrganizationCreateWithoutProjectsInput, OrganizationUncheckedCreateWithoutProjectsInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutProjectsInput
+    upsert?: OrganizationUpsertWithoutProjectsInput
+    connect?: OrganizationWhereUniqueInput
+    update?: XOR<XOR<OrganizationUpdateToOneWithWhereWithoutProjectsInput, OrganizationUpdateWithoutProjectsInput>, OrganizationUncheckedUpdateWithoutProjectsInput>
   }
 
   export type TraceUpdateManyWithoutProjectNestedInput = {
@@ -46379,20 +50589,6 @@ export namespace Prisma {
     deleteMany?: ModelScalarWhereInput | ModelScalarWhereInput[]
   }
 
-  export type AuditLogUpdateManyWithoutProjectNestedInput = {
-    create?: XOR<AuditLogCreateWithoutProjectInput, AuditLogUncheckedCreateWithoutProjectInput> | AuditLogCreateWithoutProjectInput[] | AuditLogUncheckedCreateWithoutProjectInput[]
-    connectOrCreate?: AuditLogCreateOrConnectWithoutProjectInput | AuditLogCreateOrConnectWithoutProjectInput[]
-    upsert?: AuditLogUpsertWithWhereUniqueWithoutProjectInput | AuditLogUpsertWithWhereUniqueWithoutProjectInput[]
-    createMany?: AuditLogCreateManyProjectInputEnvelope
-    set?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
-    disconnect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
-    delete?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
-    connect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
-    update?: AuditLogUpdateWithWhereUniqueWithoutProjectInput | AuditLogUpdateWithWhereUniqueWithoutProjectInput[]
-    updateMany?: AuditLogUpdateManyWithWhereWithoutProjectInput | AuditLogUpdateManyWithWhereWithoutProjectInput[]
-    deleteMany?: AuditLogScalarWhereInput | AuditLogScalarWhereInput[]
-  }
-
   export type EvalTemplateUpdateManyWithoutProjectNestedInput = {
     create?: XOR<EvalTemplateCreateWithoutProjectInput, EvalTemplateUncheckedCreateWithoutProjectInput> | EvalTemplateCreateWithoutProjectInput[] | EvalTemplateUncheckedCreateWithoutProjectInput[]
     connectOrCreate?: EvalTemplateCreateOrConnectWithoutProjectInput | EvalTemplateCreateOrConnectWithoutProjectInput[]
@@ -46503,6 +50699,20 @@ export namespace Prisma {
     update?: BatchExportUpdateWithWhereUniqueWithoutProjectInput | BatchExportUpdateWithWhereUniqueWithoutProjectInput[]
     updateMany?: BatchExportUpdateManyWithWhereWithoutProjectInput | BatchExportUpdateManyWithWhereWithoutProjectInput[]
     deleteMany?: BatchExportScalarWhereInput | BatchExportScalarWhereInput[]
+  }
+
+  export type CommentUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<CommentCreateWithoutProjectInput, CommentUncheckedCreateWithoutProjectInput> | CommentCreateWithoutProjectInput[] | CommentUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: CommentCreateOrConnectWithoutProjectInput | CommentCreateOrConnectWithoutProjectInput[]
+    upsert?: CommentUpsertWithWhereUniqueWithoutProjectInput | CommentUpsertWithWhereUniqueWithoutProjectInput[]
+    createMany?: CommentCreateManyProjectInputEnvelope
+    set?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
+    disconnect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
+    delete?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
+    connect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
+    update?: CommentUpdateWithWhereUniqueWithoutProjectInput | CommentUpdateWithWhereUniqueWithoutProjectInput[]
+    updateMany?: CommentUpdateManyWithWhereWithoutProjectInput | CommentUpdateManyWithWhereWithoutProjectInput[]
+    deleteMany?: CommentScalarWhereInput | CommentScalarWhereInput[]
   }
 
   export type ProjectMembershipUncheckedUpdateManyWithoutProjectNestedInput = {
@@ -46645,20 +50855,6 @@ export namespace Prisma {
     deleteMany?: ModelScalarWhereInput | ModelScalarWhereInput[]
   }
 
-  export type AuditLogUncheckedUpdateManyWithoutProjectNestedInput = {
-    create?: XOR<AuditLogCreateWithoutProjectInput, AuditLogUncheckedCreateWithoutProjectInput> | AuditLogCreateWithoutProjectInput[] | AuditLogUncheckedCreateWithoutProjectInput[]
-    connectOrCreate?: AuditLogCreateOrConnectWithoutProjectInput | AuditLogCreateOrConnectWithoutProjectInput[]
-    upsert?: AuditLogUpsertWithWhereUniqueWithoutProjectInput | AuditLogUpsertWithWhereUniqueWithoutProjectInput[]
-    createMany?: AuditLogCreateManyProjectInputEnvelope
-    set?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
-    disconnect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
-    delete?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
-    connect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
-    update?: AuditLogUpdateWithWhereUniqueWithoutProjectInput | AuditLogUpdateWithWhereUniqueWithoutProjectInput[]
-    updateMany?: AuditLogUpdateManyWithWhereWithoutProjectInput | AuditLogUpdateManyWithWhereWithoutProjectInput[]
-    deleteMany?: AuditLogScalarWhereInput | AuditLogScalarWhereInput[]
-  }
-
   export type EvalTemplateUncheckedUpdateManyWithoutProjectNestedInput = {
     create?: XOR<EvalTemplateCreateWithoutProjectInput, EvalTemplateUncheckedCreateWithoutProjectInput> | EvalTemplateCreateWithoutProjectInput[] | EvalTemplateUncheckedCreateWithoutProjectInput[]
     connectOrCreate?: EvalTemplateCreateOrConnectWithoutProjectInput | EvalTemplateCreateOrConnectWithoutProjectInput[]
@@ -46771,6 +50967,20 @@ export namespace Prisma {
     deleteMany?: BatchExportScalarWhereInput | BatchExportScalarWhereInput[]
   }
 
+  export type CommentUncheckedUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<CommentCreateWithoutProjectInput, CommentUncheckedCreateWithoutProjectInput> | CommentCreateWithoutProjectInput[] | CommentUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: CommentCreateOrConnectWithoutProjectInput | CommentCreateOrConnectWithoutProjectInput[]
+    upsert?: CommentUpsertWithWhereUniqueWithoutProjectInput | CommentUpsertWithWhereUniqueWithoutProjectInput[]
+    createMany?: CommentCreateManyProjectInputEnvelope
+    set?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
+    disconnect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
+    delete?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
+    connect?: CommentWhereUniqueInput | CommentWhereUniqueInput[]
+    update?: CommentUpdateWithWhereUniqueWithoutProjectInput | CommentUpdateWithWhereUniqueWithoutProjectInput[]
+    updateMany?: CommentUpdateManyWithWhereWithoutProjectInput | CommentUpdateManyWithWhereWithoutProjectInput[]
+    deleteMany?: CommentScalarWhereInput | CommentScalarWhereInput[]
+  }
+
   export type ProjectCreateNestedOneWithoutApiKeysInput = {
     create?: XOR<ProjectCreateWithoutApiKeysInput, ProjectUncheckedCreateWithoutApiKeysInput>
     connectOrCreate?: ProjectCreateOrConnectWithoutApiKeysInput
@@ -46808,6 +51018,86 @@ export namespace Prisma {
     update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutLlmApiKeysInput, ProjectUpdateWithoutLlmApiKeysInput>, ProjectUncheckedUpdateWithoutLlmApiKeysInput>
   }
 
+  export type OrganizationCreateNestedOneWithoutOrganizationMembershipsInput = {
+    create?: XOR<OrganizationCreateWithoutOrganizationMembershipsInput, OrganizationUncheckedCreateWithoutOrganizationMembershipsInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutOrganizationMembershipsInput
+    connect?: OrganizationWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutOrganizationMembershipsInput = {
+    create?: XOR<UserCreateWithoutOrganizationMembershipsInput, UserUncheckedCreateWithoutOrganizationMembershipsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutOrganizationMembershipsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type ProjectMembershipCreateNestedManyWithoutOrganizationMembershipInput = {
+    create?: XOR<ProjectMembershipCreateWithoutOrganizationMembershipInput, ProjectMembershipUncheckedCreateWithoutOrganizationMembershipInput> | ProjectMembershipCreateWithoutOrganizationMembershipInput[] | ProjectMembershipUncheckedCreateWithoutOrganizationMembershipInput[]
+    connectOrCreate?: ProjectMembershipCreateOrConnectWithoutOrganizationMembershipInput | ProjectMembershipCreateOrConnectWithoutOrganizationMembershipInput[]
+    createMany?: ProjectMembershipCreateManyOrganizationMembershipInputEnvelope
+    connect?: ProjectMembershipWhereUniqueInput | ProjectMembershipWhereUniqueInput[]
+  }
+
+  export type ProjectMembershipUncheckedCreateNestedManyWithoutOrganizationMembershipInput = {
+    create?: XOR<ProjectMembershipCreateWithoutOrganizationMembershipInput, ProjectMembershipUncheckedCreateWithoutOrganizationMembershipInput> | ProjectMembershipCreateWithoutOrganizationMembershipInput[] | ProjectMembershipUncheckedCreateWithoutOrganizationMembershipInput[]
+    connectOrCreate?: ProjectMembershipCreateOrConnectWithoutOrganizationMembershipInput | ProjectMembershipCreateOrConnectWithoutOrganizationMembershipInput[]
+    createMany?: ProjectMembershipCreateManyOrganizationMembershipInputEnvelope
+    connect?: ProjectMembershipWhereUniqueInput | ProjectMembershipWhereUniqueInput[]
+  }
+
+  export type EnumRoleFieldUpdateOperationsInput = {
+    set?: $Enums.Role
+  }
+
+  export type OrganizationUpdateOneRequiredWithoutOrganizationMembershipsNestedInput = {
+    create?: XOR<OrganizationCreateWithoutOrganizationMembershipsInput, OrganizationUncheckedCreateWithoutOrganizationMembershipsInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutOrganizationMembershipsInput
+    upsert?: OrganizationUpsertWithoutOrganizationMembershipsInput
+    connect?: OrganizationWhereUniqueInput
+    update?: XOR<XOR<OrganizationUpdateToOneWithWhereWithoutOrganizationMembershipsInput, OrganizationUpdateWithoutOrganizationMembershipsInput>, OrganizationUncheckedUpdateWithoutOrganizationMembershipsInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutOrganizationMembershipsNestedInput = {
+    create?: XOR<UserCreateWithoutOrganizationMembershipsInput, UserUncheckedCreateWithoutOrganizationMembershipsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutOrganizationMembershipsInput
+    upsert?: UserUpsertWithoutOrganizationMembershipsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutOrganizationMembershipsInput, UserUpdateWithoutOrganizationMembershipsInput>, UserUncheckedUpdateWithoutOrganizationMembershipsInput>
+  }
+
+  export type ProjectMembershipUpdateManyWithoutOrganizationMembershipNestedInput = {
+    create?: XOR<ProjectMembershipCreateWithoutOrganizationMembershipInput, ProjectMembershipUncheckedCreateWithoutOrganizationMembershipInput> | ProjectMembershipCreateWithoutOrganizationMembershipInput[] | ProjectMembershipUncheckedCreateWithoutOrganizationMembershipInput[]
+    connectOrCreate?: ProjectMembershipCreateOrConnectWithoutOrganizationMembershipInput | ProjectMembershipCreateOrConnectWithoutOrganizationMembershipInput[]
+    upsert?: ProjectMembershipUpsertWithWhereUniqueWithoutOrganizationMembershipInput | ProjectMembershipUpsertWithWhereUniqueWithoutOrganizationMembershipInput[]
+    createMany?: ProjectMembershipCreateManyOrganizationMembershipInputEnvelope
+    set?: ProjectMembershipWhereUniqueInput | ProjectMembershipWhereUniqueInput[]
+    disconnect?: ProjectMembershipWhereUniqueInput | ProjectMembershipWhereUniqueInput[]
+    delete?: ProjectMembershipWhereUniqueInput | ProjectMembershipWhereUniqueInput[]
+    connect?: ProjectMembershipWhereUniqueInput | ProjectMembershipWhereUniqueInput[]
+    update?: ProjectMembershipUpdateWithWhereUniqueWithoutOrganizationMembershipInput | ProjectMembershipUpdateWithWhereUniqueWithoutOrganizationMembershipInput[]
+    updateMany?: ProjectMembershipUpdateManyWithWhereWithoutOrganizationMembershipInput | ProjectMembershipUpdateManyWithWhereWithoutOrganizationMembershipInput[]
+    deleteMany?: ProjectMembershipScalarWhereInput | ProjectMembershipScalarWhereInput[]
+  }
+
+  export type ProjectMembershipUncheckedUpdateManyWithoutOrganizationMembershipNestedInput = {
+    create?: XOR<ProjectMembershipCreateWithoutOrganizationMembershipInput, ProjectMembershipUncheckedCreateWithoutOrganizationMembershipInput> | ProjectMembershipCreateWithoutOrganizationMembershipInput[] | ProjectMembershipUncheckedCreateWithoutOrganizationMembershipInput[]
+    connectOrCreate?: ProjectMembershipCreateOrConnectWithoutOrganizationMembershipInput | ProjectMembershipCreateOrConnectWithoutOrganizationMembershipInput[]
+    upsert?: ProjectMembershipUpsertWithWhereUniqueWithoutOrganizationMembershipInput | ProjectMembershipUpsertWithWhereUniqueWithoutOrganizationMembershipInput[]
+    createMany?: ProjectMembershipCreateManyOrganizationMembershipInputEnvelope
+    set?: ProjectMembershipWhereUniqueInput | ProjectMembershipWhereUniqueInput[]
+    disconnect?: ProjectMembershipWhereUniqueInput | ProjectMembershipWhereUniqueInput[]
+    delete?: ProjectMembershipWhereUniqueInput | ProjectMembershipWhereUniqueInput[]
+    connect?: ProjectMembershipWhereUniqueInput | ProjectMembershipWhereUniqueInput[]
+    update?: ProjectMembershipUpdateWithWhereUniqueWithoutOrganizationMembershipInput | ProjectMembershipUpdateWithWhereUniqueWithoutOrganizationMembershipInput[]
+    updateMany?: ProjectMembershipUpdateManyWithWhereWithoutOrganizationMembershipInput | ProjectMembershipUpdateManyWithWhereWithoutOrganizationMembershipInput[]
+    deleteMany?: ProjectMembershipScalarWhereInput | ProjectMembershipScalarWhereInput[]
+  }
+
+  export type OrganizationMembershipCreateNestedOneWithoutProjectMembershipsInput = {
+    create?: XOR<OrganizationMembershipCreateWithoutProjectMembershipsInput, OrganizationMembershipUncheckedCreateWithoutProjectMembershipsInput>
+    connectOrCreate?: OrganizationMembershipCreateOrConnectWithoutProjectMembershipsInput
+    connect?: OrganizationMembershipWhereUniqueInput
+  }
+
   export type ProjectCreateNestedOneWithoutProjectMembersInput = {
     create?: XOR<ProjectCreateWithoutProjectMembersInput, ProjectUncheckedCreateWithoutProjectMembersInput>
     connectOrCreate?: ProjectCreateOrConnectWithoutProjectMembersInput
@@ -46820,8 +51110,12 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
-  export type EnumProjectRoleFieldUpdateOperationsInput = {
-    set?: $Enums.ProjectRole
+  export type OrganizationMembershipUpdateOneRequiredWithoutProjectMembershipsNestedInput = {
+    create?: XOR<OrganizationMembershipCreateWithoutProjectMembershipsInput, OrganizationMembershipUncheckedCreateWithoutProjectMembershipsInput>
+    connectOrCreate?: OrganizationMembershipCreateOrConnectWithoutProjectMembershipsInput
+    upsert?: OrganizationMembershipUpsertWithoutProjectMembershipsInput
+    connect?: OrganizationMembershipWhereUniqueInput
+    update?: XOR<XOR<OrganizationMembershipUpdateToOneWithWhereWithoutProjectMembershipsInput, OrganizationMembershipUpdateWithoutProjectMembershipsInput>, OrganizationMembershipUncheckedUpdateWithoutProjectMembershipsInput>
   }
 
   export type ProjectUpdateOneRequiredWithoutProjectMembersNestedInput = {
@@ -46840,6 +51134,12 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutProjectMembershipsInput, UserUpdateWithoutProjectMembershipsInput>, UserUncheckedUpdateWithoutProjectMembershipsInput>
   }
 
+  export type OrganizationCreateNestedOneWithoutMembershipInvitationInput = {
+    create?: XOR<OrganizationCreateWithoutMembershipInvitationInput, OrganizationUncheckedCreateWithoutMembershipInvitationInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutMembershipInvitationInput
+    connect?: OrganizationWhereUniqueInput
+  }
+
   export type ProjectCreateNestedOneWithoutInvitationsInput = {
     create?: XOR<ProjectCreateWithoutInvitationsInput, ProjectUncheckedCreateWithoutInvitationsInput>
     connectOrCreate?: ProjectCreateOrConnectWithoutInvitationsInput
@@ -46852,10 +51152,24 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
-  export type ProjectUpdateOneRequiredWithoutInvitationsNestedInput = {
+  export type NullableEnumRoleFieldUpdateOperationsInput = {
+    set?: $Enums.Role | null
+  }
+
+  export type OrganizationUpdateOneRequiredWithoutMembershipInvitationNestedInput = {
+    create?: XOR<OrganizationCreateWithoutMembershipInvitationInput, OrganizationUncheckedCreateWithoutMembershipInvitationInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutMembershipInvitationInput
+    upsert?: OrganizationUpsertWithoutMembershipInvitationInput
+    connect?: OrganizationWhereUniqueInput
+    update?: XOR<XOR<OrganizationUpdateToOneWithWhereWithoutMembershipInvitationInput, OrganizationUpdateWithoutMembershipInvitationInput>, OrganizationUncheckedUpdateWithoutMembershipInvitationInput>
+  }
+
+  export type ProjectUpdateOneWithoutInvitationsNestedInput = {
     create?: XOR<ProjectCreateWithoutInvitationsInput, ProjectUncheckedCreateWithoutInvitationsInput>
     connectOrCreate?: ProjectCreateOrConnectWithoutInvitationsInput
     upsert?: ProjectUpsertWithoutInvitationsInput
+    disconnect?: ProjectWhereInput | boolean
+    delete?: ProjectWhereInput | boolean
     connect?: ProjectWhereUniqueInput
     update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutInvitationsInput, ProjectUpdateWithoutInvitationsInput>, ProjectUncheckedUpdateWithoutInvitationsInput>
   }
@@ -46942,25 +51256,11 @@ export namespace Prisma {
     connect?: TraceSessionWhereUniqueInput
   }
 
-  export type DatasetItemCreateNestedManyWithoutSourceTraceInput = {
-    create?: XOR<DatasetItemCreateWithoutSourceTraceInput, DatasetItemUncheckedCreateWithoutSourceTraceInput> | DatasetItemCreateWithoutSourceTraceInput[] | DatasetItemUncheckedCreateWithoutSourceTraceInput[]
-    connectOrCreate?: DatasetItemCreateOrConnectWithoutSourceTraceInput | DatasetItemCreateOrConnectWithoutSourceTraceInput[]
-    createMany?: DatasetItemCreateManySourceTraceInputEnvelope
-    connect?: DatasetItemWhereUniqueInput | DatasetItemWhereUniqueInput[]
-  }
-
   export type JobExecutionCreateNestedManyWithoutTraceInput = {
     create?: XOR<JobExecutionCreateWithoutTraceInput, JobExecutionUncheckedCreateWithoutTraceInput> | JobExecutionCreateWithoutTraceInput[] | JobExecutionUncheckedCreateWithoutTraceInput[]
     connectOrCreate?: JobExecutionCreateOrConnectWithoutTraceInput | JobExecutionCreateOrConnectWithoutTraceInput[]
     createMany?: JobExecutionCreateManyTraceInputEnvelope
     connect?: JobExecutionWhereUniqueInput | JobExecutionWhereUniqueInput[]
-  }
-
-  export type DatasetItemUncheckedCreateNestedManyWithoutSourceTraceInput = {
-    create?: XOR<DatasetItemCreateWithoutSourceTraceInput, DatasetItemUncheckedCreateWithoutSourceTraceInput> | DatasetItemCreateWithoutSourceTraceInput[] | DatasetItemUncheckedCreateWithoutSourceTraceInput[]
-    connectOrCreate?: DatasetItemCreateOrConnectWithoutSourceTraceInput | DatasetItemCreateOrConnectWithoutSourceTraceInput[]
-    createMany?: DatasetItemCreateManySourceTraceInputEnvelope
-    connect?: DatasetItemWhereUniqueInput | DatasetItemWhereUniqueInput[]
   }
 
   export type JobExecutionUncheckedCreateNestedManyWithoutTraceInput = {
@@ -46993,20 +51293,6 @@ export namespace Prisma {
     update?: XOR<XOR<TraceSessionUpdateToOneWithWhereWithoutTracesInput, TraceSessionUpdateWithoutTracesInput>, TraceSessionUncheckedUpdateWithoutTracesInput>
   }
 
-  export type DatasetItemUpdateManyWithoutSourceTraceNestedInput = {
-    create?: XOR<DatasetItemCreateWithoutSourceTraceInput, DatasetItemUncheckedCreateWithoutSourceTraceInput> | DatasetItemCreateWithoutSourceTraceInput[] | DatasetItemUncheckedCreateWithoutSourceTraceInput[]
-    connectOrCreate?: DatasetItemCreateOrConnectWithoutSourceTraceInput | DatasetItemCreateOrConnectWithoutSourceTraceInput[]
-    upsert?: DatasetItemUpsertWithWhereUniqueWithoutSourceTraceInput | DatasetItemUpsertWithWhereUniqueWithoutSourceTraceInput[]
-    createMany?: DatasetItemCreateManySourceTraceInputEnvelope
-    set?: DatasetItemWhereUniqueInput | DatasetItemWhereUniqueInput[]
-    disconnect?: DatasetItemWhereUniqueInput | DatasetItemWhereUniqueInput[]
-    delete?: DatasetItemWhereUniqueInput | DatasetItemWhereUniqueInput[]
-    connect?: DatasetItemWhereUniqueInput | DatasetItemWhereUniqueInput[]
-    update?: DatasetItemUpdateWithWhereUniqueWithoutSourceTraceInput | DatasetItemUpdateWithWhereUniqueWithoutSourceTraceInput[]
-    updateMany?: DatasetItemUpdateManyWithWhereWithoutSourceTraceInput | DatasetItemUpdateManyWithWhereWithoutSourceTraceInput[]
-    deleteMany?: DatasetItemScalarWhereInput | DatasetItemScalarWhereInput[]
-  }
-
   export type JobExecutionUpdateManyWithoutTraceNestedInput = {
     create?: XOR<JobExecutionCreateWithoutTraceInput, JobExecutionUncheckedCreateWithoutTraceInput> | JobExecutionCreateWithoutTraceInput[] | JobExecutionUncheckedCreateWithoutTraceInput[]
     connectOrCreate?: JobExecutionCreateOrConnectWithoutTraceInput | JobExecutionCreateOrConnectWithoutTraceInput[]
@@ -47019,20 +51305,6 @@ export namespace Prisma {
     update?: JobExecutionUpdateWithWhereUniqueWithoutTraceInput | JobExecutionUpdateWithWhereUniqueWithoutTraceInput[]
     updateMany?: JobExecutionUpdateManyWithWhereWithoutTraceInput | JobExecutionUpdateManyWithWhereWithoutTraceInput[]
     deleteMany?: JobExecutionScalarWhereInput | JobExecutionScalarWhereInput[]
-  }
-
-  export type DatasetItemUncheckedUpdateManyWithoutSourceTraceNestedInput = {
-    create?: XOR<DatasetItemCreateWithoutSourceTraceInput, DatasetItemUncheckedCreateWithoutSourceTraceInput> | DatasetItemCreateWithoutSourceTraceInput[] | DatasetItemUncheckedCreateWithoutSourceTraceInput[]
-    connectOrCreate?: DatasetItemCreateOrConnectWithoutSourceTraceInput | DatasetItemCreateOrConnectWithoutSourceTraceInput[]
-    upsert?: DatasetItemUpsertWithWhereUniqueWithoutSourceTraceInput | DatasetItemUpsertWithWhereUniqueWithoutSourceTraceInput[]
-    createMany?: DatasetItemCreateManySourceTraceInputEnvelope
-    set?: DatasetItemWhereUniqueInput | DatasetItemWhereUniqueInput[]
-    disconnect?: DatasetItemWhereUniqueInput | DatasetItemWhereUniqueInput[]
-    delete?: DatasetItemWhereUniqueInput | DatasetItemWhereUniqueInput[]
-    connect?: DatasetItemWhereUniqueInput | DatasetItemWhereUniqueInput[]
-    update?: DatasetItemUpdateWithWhereUniqueWithoutSourceTraceInput | DatasetItemUpdateWithWhereUniqueWithoutSourceTraceInput[]
-    updateMany?: DatasetItemUpdateManyWithWhereWithoutSourceTraceInput | DatasetItemUpdateManyWithWhereWithoutSourceTraceInput[]
-    deleteMany?: DatasetItemScalarWhereInput | DatasetItemScalarWhereInput[]
   }
 
   export type JobExecutionUncheckedUpdateManyWithoutTraceNestedInput = {
@@ -47053,20 +51325,6 @@ export namespace Prisma {
     create?: XOR<ProjectCreateWithoutObservationsInput, ProjectUncheckedCreateWithoutObservationsInput>
     connectOrCreate?: ProjectCreateOrConnectWithoutObservationsInput
     connect?: ProjectWhereUniqueInput
-  }
-
-  export type DatasetItemCreateNestedManyWithoutSourceObservationInput = {
-    create?: XOR<DatasetItemCreateWithoutSourceObservationInput, DatasetItemUncheckedCreateWithoutSourceObservationInput> | DatasetItemCreateWithoutSourceObservationInput[] | DatasetItemUncheckedCreateWithoutSourceObservationInput[]
-    connectOrCreate?: DatasetItemCreateOrConnectWithoutSourceObservationInput | DatasetItemCreateOrConnectWithoutSourceObservationInput[]
-    createMany?: DatasetItemCreateManySourceObservationInputEnvelope
-    connect?: DatasetItemWhereUniqueInput | DatasetItemWhereUniqueInput[]
-  }
-
-  export type DatasetItemUncheckedCreateNestedManyWithoutSourceObservationInput = {
-    create?: XOR<DatasetItemCreateWithoutSourceObservationInput, DatasetItemUncheckedCreateWithoutSourceObservationInput> | DatasetItemCreateWithoutSourceObservationInput[] | DatasetItemUncheckedCreateWithoutSourceObservationInput[]
-    connectOrCreate?: DatasetItemCreateOrConnectWithoutSourceObservationInput | DatasetItemCreateOrConnectWithoutSourceObservationInput[]
-    createMany?: DatasetItemCreateManySourceObservationInputEnvelope
-    connect?: DatasetItemWhereUniqueInput | DatasetItemWhereUniqueInput[]
   }
 
   export type EnumObservationTypeFieldUpdateOperationsInput = {
@@ -47099,34 +51357,6 @@ export namespace Prisma {
     upsert?: ProjectUpsertWithoutObservationsInput
     connect?: ProjectWhereUniqueInput
     update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutObservationsInput, ProjectUpdateWithoutObservationsInput>, ProjectUncheckedUpdateWithoutObservationsInput>
-  }
-
-  export type DatasetItemUpdateManyWithoutSourceObservationNestedInput = {
-    create?: XOR<DatasetItemCreateWithoutSourceObservationInput, DatasetItemUncheckedCreateWithoutSourceObservationInput> | DatasetItemCreateWithoutSourceObservationInput[] | DatasetItemUncheckedCreateWithoutSourceObservationInput[]
-    connectOrCreate?: DatasetItemCreateOrConnectWithoutSourceObservationInput | DatasetItemCreateOrConnectWithoutSourceObservationInput[]
-    upsert?: DatasetItemUpsertWithWhereUniqueWithoutSourceObservationInput | DatasetItemUpsertWithWhereUniqueWithoutSourceObservationInput[]
-    createMany?: DatasetItemCreateManySourceObservationInputEnvelope
-    set?: DatasetItemWhereUniqueInput | DatasetItemWhereUniqueInput[]
-    disconnect?: DatasetItemWhereUniqueInput | DatasetItemWhereUniqueInput[]
-    delete?: DatasetItemWhereUniqueInput | DatasetItemWhereUniqueInput[]
-    connect?: DatasetItemWhereUniqueInput | DatasetItemWhereUniqueInput[]
-    update?: DatasetItemUpdateWithWhereUniqueWithoutSourceObservationInput | DatasetItemUpdateWithWhereUniqueWithoutSourceObservationInput[]
-    updateMany?: DatasetItemUpdateManyWithWhereWithoutSourceObservationInput | DatasetItemUpdateManyWithWhereWithoutSourceObservationInput[]
-    deleteMany?: DatasetItemScalarWhereInput | DatasetItemScalarWhereInput[]
-  }
-
-  export type DatasetItemUncheckedUpdateManyWithoutSourceObservationNestedInput = {
-    create?: XOR<DatasetItemCreateWithoutSourceObservationInput, DatasetItemUncheckedCreateWithoutSourceObservationInput> | DatasetItemCreateWithoutSourceObservationInput[] | DatasetItemUncheckedCreateWithoutSourceObservationInput[]
-    connectOrCreate?: DatasetItemCreateOrConnectWithoutSourceObservationInput | DatasetItemCreateOrConnectWithoutSourceObservationInput[]
-    upsert?: DatasetItemUpsertWithWhereUniqueWithoutSourceObservationInput | DatasetItemUpsertWithWhereUniqueWithoutSourceObservationInput[]
-    createMany?: DatasetItemCreateManySourceObservationInputEnvelope
-    set?: DatasetItemWhereUniqueInput | DatasetItemWhereUniqueInput[]
-    disconnect?: DatasetItemWhereUniqueInput | DatasetItemWhereUniqueInput[]
-    delete?: DatasetItemWhereUniqueInput | DatasetItemWhereUniqueInput[]
-    connect?: DatasetItemWhereUniqueInput | DatasetItemWhereUniqueInput[]
-    update?: DatasetItemUpdateWithWhereUniqueWithoutSourceObservationInput | DatasetItemUpdateWithWhereUniqueWithoutSourceObservationInput[]
-    updateMany?: DatasetItemUpdateManyWithWhereWithoutSourceObservationInput | DatasetItemUpdateManyWithWhereWithoutSourceObservationInput[]
-    deleteMany?: DatasetItemScalarWhereInput | DatasetItemScalarWhereInput[]
   }
 
   export type ProjectCreateNestedOneWithoutScoreInput = {
@@ -47371,18 +51601,6 @@ export namespace Prisma {
     deleteMany?: DatasetRunsScalarWhereInput | DatasetRunsScalarWhereInput[]
   }
 
-  export type TraceCreateNestedOneWithoutDatasetItemInput = {
-    create?: XOR<TraceCreateWithoutDatasetItemInput, TraceUncheckedCreateWithoutDatasetItemInput>
-    connectOrCreate?: TraceCreateOrConnectWithoutDatasetItemInput
-    connect?: TraceWhereUniqueInput
-  }
-
-  export type ObservationCreateNestedOneWithoutDerivedDatasetItemsInput = {
-    create?: XOR<ObservationCreateWithoutDerivedDatasetItemsInput, ObservationUncheckedCreateWithoutDerivedDatasetItemsInput>
-    connectOrCreate?: ObservationCreateOrConnectWithoutDerivedDatasetItemsInput
-    connect?: ObservationWhereUniqueInput
-  }
-
   export type DatasetCreateNestedOneWithoutDatasetItemsInput = {
     create?: XOR<DatasetCreateWithoutDatasetItemsInput, DatasetUncheckedCreateWithoutDatasetItemsInput>
     connectOrCreate?: DatasetCreateOrConnectWithoutDatasetItemsInput
@@ -47405,26 +51623,6 @@ export namespace Prisma {
 
   export type EnumDatasetStatusFieldUpdateOperationsInput = {
     set?: $Enums.DatasetStatus
-  }
-
-  export type TraceUpdateOneWithoutDatasetItemNestedInput = {
-    create?: XOR<TraceCreateWithoutDatasetItemInput, TraceUncheckedCreateWithoutDatasetItemInput>
-    connectOrCreate?: TraceCreateOrConnectWithoutDatasetItemInput
-    upsert?: TraceUpsertWithoutDatasetItemInput
-    disconnect?: TraceWhereInput | boolean
-    delete?: TraceWhereInput | boolean
-    connect?: TraceWhereUniqueInput
-    update?: XOR<XOR<TraceUpdateToOneWithWhereWithoutDatasetItemInput, TraceUpdateWithoutDatasetItemInput>, TraceUncheckedUpdateWithoutDatasetItemInput>
-  }
-
-  export type ObservationUpdateOneWithoutDerivedDatasetItemsNestedInput = {
-    create?: XOR<ObservationCreateWithoutDerivedDatasetItemsInput, ObservationUncheckedCreateWithoutDerivedDatasetItemsInput>
-    connectOrCreate?: ObservationCreateOrConnectWithoutDerivedDatasetItemsInput
-    upsert?: ObservationUpsertWithoutDerivedDatasetItemsInput
-    disconnect?: ObservationWhereInput | boolean
-    delete?: ObservationWhereInput | boolean
-    connect?: ObservationWhereUniqueInput
-    update?: XOR<XOR<ObservationUpdateToOneWithWhereWithoutDerivedDatasetItemsInput, ObservationUpdateWithoutDerivedDatasetItemsInput>, ObservationUncheckedUpdateWithoutDerivedDatasetItemsInput>
   }
 
   export type DatasetUpdateOneRequiredWithoutDatasetItemsNestedInput = {
@@ -47561,6 +51759,24 @@ export namespace Prisma {
     update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutRawEventsInput, ProjectUpdateWithoutRawEventsInput>, ProjectUncheckedUpdateWithoutRawEventsInput>
   }
 
+  export type ProjectCreateNestedOneWithoutCommentInput = {
+    create?: XOR<ProjectCreateWithoutCommentInput, ProjectUncheckedCreateWithoutCommentInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutCommentInput
+    connect?: ProjectWhereUniqueInput
+  }
+
+  export type EnumCommentObjectTypeFieldUpdateOperationsInput = {
+    set?: $Enums.CommentObjectType
+  }
+
+  export type ProjectUpdateOneRequiredWithoutCommentNestedInput = {
+    create?: XOR<ProjectCreateWithoutCommentInput, ProjectUncheckedCreateWithoutCommentInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutCommentInput
+    upsert?: ProjectUpsertWithoutCommentInput
+    connect?: ProjectWhereUniqueInput
+    update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutCommentInput, ProjectUpdateWithoutCommentInput>, ProjectUncheckedUpdateWithoutCommentInput>
+  }
+
   export type PromptCreatetagsInput = {
     set: string[]
   }
@@ -47611,34 +51827,6 @@ export namespace Prisma {
     delete?: ProjectWhereInput | boolean
     connect?: ProjectWhereUniqueInput
     update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutModelInput, ProjectUpdateWithoutModelInput>, ProjectUncheckedUpdateWithoutModelInput>
-  }
-
-  export type UserCreateNestedOneWithoutAuditLogInput = {
-    create?: XOR<UserCreateWithoutAuditLogInput, UserUncheckedCreateWithoutAuditLogInput>
-    connectOrCreate?: UserCreateOrConnectWithoutAuditLogInput
-    connect?: UserWhereUniqueInput
-  }
-
-  export type ProjectCreateNestedOneWithoutAuditLogInput = {
-    create?: XOR<ProjectCreateWithoutAuditLogInput, ProjectUncheckedCreateWithoutAuditLogInput>
-    connectOrCreate?: ProjectCreateOrConnectWithoutAuditLogInput
-    connect?: ProjectWhereUniqueInput
-  }
-
-  export type UserUpdateOneRequiredWithoutAuditLogNestedInput = {
-    create?: XOR<UserCreateWithoutAuditLogInput, UserUncheckedCreateWithoutAuditLogInput>
-    connectOrCreate?: UserCreateOrConnectWithoutAuditLogInput
-    upsert?: UserUpsertWithoutAuditLogInput
-    connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutAuditLogInput, UserUpdateWithoutAuditLogInput>, UserUncheckedUpdateWithoutAuditLogInput>
-  }
-
-  export type ProjectUpdateOneRequiredWithoutAuditLogNestedInput = {
-    create?: XOR<ProjectCreateWithoutAuditLogInput, ProjectUncheckedCreateWithoutAuditLogInput>
-    connectOrCreate?: ProjectCreateOrConnectWithoutAuditLogInput
-    upsert?: ProjectUpsertWithoutAuditLogInput
-    connect?: ProjectWhereUniqueInput
-    update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutAuditLogInput, ProjectUpdateWithoutAuditLogInput>, ProjectUncheckedUpdateWithoutAuditLogInput>
   }
 
   export type EvalTemplateCreatevarsInput = {
@@ -48091,21 +52279,38 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
-  export type NestedEnumProjectRoleFilter<$PrismaModel = never> = {
-    equals?: $Enums.ProjectRole | EnumProjectRoleFieldRefInput<$PrismaModel>
-    in?: $Enums.ProjectRole[] | ListEnumProjectRoleFieldRefInput<$PrismaModel>
-    notIn?: $Enums.ProjectRole[] | ListEnumProjectRoleFieldRefInput<$PrismaModel>
-    not?: NestedEnumProjectRoleFilter<$PrismaModel> | $Enums.ProjectRole
+  export type NestedEnumRoleFilter<$PrismaModel = never> = {
+    equals?: $Enums.Role | EnumRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.Role[] | ListEnumRoleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.Role[] | ListEnumRoleFieldRefInput<$PrismaModel>
+    not?: NestedEnumRoleFilter<$PrismaModel> | $Enums.Role
   }
 
-  export type NestedEnumProjectRoleWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.ProjectRole | EnumProjectRoleFieldRefInput<$PrismaModel>
-    in?: $Enums.ProjectRole[] | ListEnumProjectRoleFieldRefInput<$PrismaModel>
-    notIn?: $Enums.ProjectRole[] | ListEnumProjectRoleFieldRefInput<$PrismaModel>
-    not?: NestedEnumProjectRoleWithAggregatesFilter<$PrismaModel> | $Enums.ProjectRole
+  export type NestedEnumRoleWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.Role | EnumRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.Role[] | ListEnumRoleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.Role[] | ListEnumRoleFieldRefInput<$PrismaModel>
+    not?: NestedEnumRoleWithAggregatesFilter<$PrismaModel> | $Enums.Role
     _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumProjectRoleFilter<$PrismaModel>
-    _max?: NestedEnumProjectRoleFilter<$PrismaModel>
+    _min?: NestedEnumRoleFilter<$PrismaModel>
+    _max?: NestedEnumRoleFilter<$PrismaModel>
+  }
+
+  export type NestedEnumRoleNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.Role | EnumRoleFieldRefInput<$PrismaModel> | null
+    in?: $Enums.Role[] | ListEnumRoleFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.Role[] | ListEnumRoleFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumRoleNullableFilter<$PrismaModel> | $Enums.Role | null
+  }
+
+  export type NestedEnumRoleNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.Role | EnumRoleFieldRefInput<$PrismaModel> | null
+    in?: $Enums.Role[] | ListEnumRoleFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.Role[] | ListEnumRoleFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumRoleNullableWithAggregatesFilter<$PrismaModel> | $Enums.Role | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumRoleNullableFilter<$PrismaModel>
+    _max?: NestedEnumRoleNullableFilter<$PrismaModel>
   }
 
   export type NestedEnumObservationTypeFilter<$PrismaModel = never> = {
@@ -48285,6 +52490,23 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
+  export type NestedEnumCommentObjectTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.CommentObjectType | EnumCommentObjectTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.CommentObjectType[] | ListEnumCommentObjectTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.CommentObjectType[] | ListEnumCommentObjectTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumCommentObjectTypeFilter<$PrismaModel> | $Enums.CommentObjectType
+  }
+
+  export type NestedEnumCommentObjectTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.CommentObjectType | EnumCommentObjectTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.CommentObjectType[] | ListEnumCommentObjectTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.CommentObjectType[] | ListEnumCommentObjectTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumCommentObjectTypeWithAggregatesFilter<$PrismaModel> | $Enums.CommentObjectType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumCommentObjectTypeFilter<$PrismaModel>
+    _max?: NestedEnumCommentObjectTypeFilter<$PrismaModel>
+  }
+
   export type NestedBoolNullableFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
     not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
@@ -48388,9 +52610,9 @@ export namespace Prisma {
     updatedAt?: Date | string
     featureFlags?: UserCreatefeatureFlagsInput | string[]
     sessions?: SessionCreateNestedManyWithoutUserInput
+    organizationMemberships?: OrganizationMembershipCreateNestedManyWithoutUserInput
     projectMemberships?: ProjectMembershipCreateNestedManyWithoutUserInput
-    invitations?: MembershipInvitationCreateNestedManyWithoutSenderInput
-    AuditLog?: AuditLogCreateNestedManyWithoutUserInput
+    invitations?: MembershipInvitationCreateNestedManyWithoutInvitedByUserInput
   }
 
   export type UserUncheckedCreateWithoutAccountsInput = {
@@ -48405,9 +52627,9 @@ export namespace Prisma {
     updatedAt?: Date | string
     featureFlags?: UserCreatefeatureFlagsInput | string[]
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    organizationMemberships?: OrganizationMembershipUncheckedCreateNestedManyWithoutUserInput
     projectMemberships?: ProjectMembershipUncheckedCreateNestedManyWithoutUserInput
-    invitations?: MembershipInvitationUncheckedCreateNestedManyWithoutSenderInput
-    AuditLog?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    invitations?: MembershipInvitationUncheckedCreateNestedManyWithoutInvitedByUserInput
   }
 
   export type UserCreateOrConnectWithoutAccountsInput = {
@@ -48438,9 +52660,9 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     featureFlags?: UserUpdatefeatureFlagsInput | string[]
     sessions?: SessionUpdateManyWithoutUserNestedInput
+    organizationMemberships?: OrganizationMembershipUpdateManyWithoutUserNestedInput
     projectMemberships?: ProjectMembershipUpdateManyWithoutUserNestedInput
-    invitations?: MembershipInvitationUpdateManyWithoutSenderNestedInput
-    AuditLog?: AuditLogUpdateManyWithoutUserNestedInput
+    invitations?: MembershipInvitationUpdateManyWithoutInvitedByUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -48455,9 +52677,9 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     featureFlags?: UserUpdatefeatureFlagsInput | string[]
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    organizationMemberships?: OrganizationMembershipUncheckedUpdateManyWithoutUserNestedInput
     projectMemberships?: ProjectMembershipUncheckedUpdateManyWithoutUserNestedInput
-    invitations?: MembershipInvitationUncheckedUpdateManyWithoutSenderNestedInput
-    AuditLog?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    invitations?: MembershipInvitationUncheckedUpdateManyWithoutInvitedByUserNestedInput
   }
 
   export type UserCreateWithoutSessionsInput = {
@@ -48472,9 +52694,9 @@ export namespace Prisma {
     updatedAt?: Date | string
     featureFlags?: UserCreatefeatureFlagsInput | string[]
     accounts?: AccountCreateNestedManyWithoutUserInput
+    organizationMemberships?: OrganizationMembershipCreateNestedManyWithoutUserInput
     projectMemberships?: ProjectMembershipCreateNestedManyWithoutUserInput
-    invitations?: MembershipInvitationCreateNestedManyWithoutSenderInput
-    AuditLog?: AuditLogCreateNestedManyWithoutUserInput
+    invitations?: MembershipInvitationCreateNestedManyWithoutInvitedByUserInput
   }
 
   export type UserUncheckedCreateWithoutSessionsInput = {
@@ -48489,9 +52711,9 @@ export namespace Prisma {
     updatedAt?: Date | string
     featureFlags?: UserCreatefeatureFlagsInput | string[]
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    organizationMemberships?: OrganizationMembershipUncheckedCreateNestedManyWithoutUserInput
     projectMemberships?: ProjectMembershipUncheckedCreateNestedManyWithoutUserInput
-    invitations?: MembershipInvitationUncheckedCreateNestedManyWithoutSenderInput
-    AuditLog?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    invitations?: MembershipInvitationUncheckedCreateNestedManyWithoutInvitedByUserInput
   }
 
   export type UserCreateOrConnectWithoutSessionsInput = {
@@ -48522,9 +52744,9 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     featureFlags?: UserUpdatefeatureFlagsInput | string[]
     accounts?: AccountUpdateManyWithoutUserNestedInput
+    organizationMemberships?: OrganizationMembershipUpdateManyWithoutUserNestedInput
     projectMemberships?: ProjectMembershipUpdateManyWithoutUserNestedInput
-    invitations?: MembershipInvitationUpdateManyWithoutSenderNestedInput
-    AuditLog?: AuditLogUpdateManyWithoutUserNestedInput
+    invitations?: MembershipInvitationUpdateManyWithoutInvitedByUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -48539,9 +52761,9 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     featureFlags?: UserUpdatefeatureFlagsInput | string[]
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    organizationMemberships?: OrganizationMembershipUncheckedUpdateManyWithoutUserNestedInput
     projectMemberships?: ProjectMembershipUncheckedUpdateManyWithoutUserNestedInput
-    invitations?: MembershipInvitationUncheckedUpdateManyWithoutSenderNestedInput
-    AuditLog?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    invitations?: MembershipInvitationUncheckedUpdateManyWithoutInvitedByUserNestedInput
   }
 
   export type AccountCreateWithoutUserInput = {
@@ -48608,16 +52830,46 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type ProjectMembershipCreateWithoutUserInput = {
-    role: $Enums.ProjectRole
+  export type OrganizationMembershipCreateWithoutUserInput = {
+    id?: string
+    role: $Enums.Role
     createdAt?: Date | string
     updatedAt?: Date | string
+    organization: OrganizationCreateNestedOneWithoutOrganizationMembershipsInput
+    ProjectMemberships?: ProjectMembershipCreateNestedManyWithoutOrganizationMembershipInput
+  }
+
+  export type OrganizationMembershipUncheckedCreateWithoutUserInput = {
+    id?: string
+    orgId: string
+    role: $Enums.Role
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    ProjectMemberships?: ProjectMembershipUncheckedCreateNestedManyWithoutOrganizationMembershipInput
+  }
+
+  export type OrganizationMembershipCreateOrConnectWithoutUserInput = {
+    where: OrganizationMembershipWhereUniqueInput
+    create: XOR<OrganizationMembershipCreateWithoutUserInput, OrganizationMembershipUncheckedCreateWithoutUserInput>
+  }
+
+  export type OrganizationMembershipCreateManyUserInputEnvelope = {
+    data: OrganizationMembershipCreateManyUserInput | OrganizationMembershipCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ProjectMembershipCreateWithoutUserInput = {
+    role: $Enums.Role
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    organizationMembership: OrganizationMembershipCreateNestedOneWithoutProjectMembershipsInput
     project: ProjectCreateNestedOneWithoutProjectMembersInput
   }
 
   export type ProjectMembershipUncheckedCreateWithoutUserInput = {
+    orgMembershipId: string
     projectId: string
-    role: $Enums.ProjectRole
+    role: $Enums.Role
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -48632,67 +52884,35 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type MembershipInvitationCreateWithoutSenderInput = {
+  export type MembershipInvitationCreateWithoutInvitedByUserInput = {
     id?: string
     email: string
-    role: $Enums.ProjectRole
+    orgRole: $Enums.Role
+    projectRole?: $Enums.Role | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    project: ProjectCreateNestedOneWithoutInvitationsInput
+    organization: OrganizationCreateNestedOneWithoutMembershipInvitationInput
+    project?: ProjectCreateNestedOneWithoutInvitationsInput
   }
 
-  export type MembershipInvitationUncheckedCreateWithoutSenderInput = {
+  export type MembershipInvitationUncheckedCreateWithoutInvitedByUserInput = {
     id?: string
     email: string
-    role: $Enums.ProjectRole
-    projectId: string
+    orgId: string
+    orgRole: $Enums.Role
+    projectId?: string | null
+    projectRole?: $Enums.Role | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
-  export type MembershipInvitationCreateOrConnectWithoutSenderInput = {
+  export type MembershipInvitationCreateOrConnectWithoutInvitedByUserInput = {
     where: MembershipInvitationWhereUniqueInput
-    create: XOR<MembershipInvitationCreateWithoutSenderInput, MembershipInvitationUncheckedCreateWithoutSenderInput>
+    create: XOR<MembershipInvitationCreateWithoutInvitedByUserInput, MembershipInvitationUncheckedCreateWithoutInvitedByUserInput>
   }
 
-  export type MembershipInvitationCreateManySenderInputEnvelope = {
-    data: MembershipInvitationCreateManySenderInput | MembershipInvitationCreateManySenderInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type AuditLogCreateWithoutUserInput = {
-    id?: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    userProjectRole: $Enums.ProjectRole
-    resourceType: string
-    resourceId: string
-    action: string
-    before?: string | null
-    after?: string | null
-    project: ProjectCreateNestedOneWithoutAuditLogInput
-  }
-
-  export type AuditLogUncheckedCreateWithoutUserInput = {
-    id?: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    projectId: string
-    userProjectRole: $Enums.ProjectRole
-    resourceType: string
-    resourceId: string
-    action: string
-    before?: string | null
-    after?: string | null
-  }
-
-  export type AuditLogCreateOrConnectWithoutUserInput = {
-    where: AuditLogWhereUniqueInput
-    create: XOR<AuditLogCreateWithoutUserInput, AuditLogUncheckedCreateWithoutUserInput>
-  }
-
-  export type AuditLogCreateManyUserInputEnvelope = {
-    data: AuditLogCreateManyUserInput | AuditLogCreateManyUserInput[]
+  export type MembershipInvitationCreateManyInvitedByUserInputEnvelope = {
+    data: MembershipInvitationCreateManyInvitedByUserInput | MembershipInvitationCreateManyInvitedByUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -48758,6 +52978,34 @@ export namespace Prisma {
     expires?: DateTimeFilter<"Session"> | Date | string
   }
 
+  export type OrganizationMembershipUpsertWithWhereUniqueWithoutUserInput = {
+    where: OrganizationMembershipWhereUniqueInput
+    update: XOR<OrganizationMembershipUpdateWithoutUserInput, OrganizationMembershipUncheckedUpdateWithoutUserInput>
+    create: XOR<OrganizationMembershipCreateWithoutUserInput, OrganizationMembershipUncheckedCreateWithoutUserInput>
+  }
+
+  export type OrganizationMembershipUpdateWithWhereUniqueWithoutUserInput = {
+    where: OrganizationMembershipWhereUniqueInput
+    data: XOR<OrganizationMembershipUpdateWithoutUserInput, OrganizationMembershipUncheckedUpdateWithoutUserInput>
+  }
+
+  export type OrganizationMembershipUpdateManyWithWhereWithoutUserInput = {
+    where: OrganizationMembershipScalarWhereInput
+    data: XOR<OrganizationMembershipUpdateManyMutationInput, OrganizationMembershipUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type OrganizationMembershipScalarWhereInput = {
+    AND?: OrganizationMembershipScalarWhereInput | OrganizationMembershipScalarWhereInput[]
+    OR?: OrganizationMembershipScalarWhereInput[]
+    NOT?: OrganizationMembershipScalarWhereInput | OrganizationMembershipScalarWhereInput[]
+    id?: StringFilter<"OrganizationMembership"> | string
+    orgId?: StringFilter<"OrganizationMembership"> | string
+    userId?: StringFilter<"OrganizationMembership"> | string
+    role?: EnumRoleFilter<"OrganizationMembership"> | $Enums.Role
+    createdAt?: DateTimeFilter<"OrganizationMembership"> | Date | string
+    updatedAt?: DateTimeFilter<"OrganizationMembership"> | Date | string
+  }
+
   export type ProjectMembershipUpsertWithWhereUniqueWithoutUserInput = {
     where: ProjectMembershipWhereUniqueInput
     update: XOR<ProjectMembershipUpdateWithoutUserInput, ProjectMembershipUncheckedUpdateWithoutUserInput>
@@ -48778,27 +53026,28 @@ export namespace Prisma {
     AND?: ProjectMembershipScalarWhereInput | ProjectMembershipScalarWhereInput[]
     OR?: ProjectMembershipScalarWhereInput[]
     NOT?: ProjectMembershipScalarWhereInput | ProjectMembershipScalarWhereInput[]
+    orgMembershipId?: StringFilter<"ProjectMembership"> | string
     projectId?: StringFilter<"ProjectMembership"> | string
     userId?: StringFilter<"ProjectMembership"> | string
-    role?: EnumProjectRoleFilter<"ProjectMembership"> | $Enums.ProjectRole
+    role?: EnumRoleFilter<"ProjectMembership"> | $Enums.Role
     createdAt?: DateTimeFilter<"ProjectMembership"> | Date | string
     updatedAt?: DateTimeFilter<"ProjectMembership"> | Date | string
   }
 
-  export type MembershipInvitationUpsertWithWhereUniqueWithoutSenderInput = {
+  export type MembershipInvitationUpsertWithWhereUniqueWithoutInvitedByUserInput = {
     where: MembershipInvitationWhereUniqueInput
-    update: XOR<MembershipInvitationUpdateWithoutSenderInput, MembershipInvitationUncheckedUpdateWithoutSenderInput>
-    create: XOR<MembershipInvitationCreateWithoutSenderInput, MembershipInvitationUncheckedCreateWithoutSenderInput>
+    update: XOR<MembershipInvitationUpdateWithoutInvitedByUserInput, MembershipInvitationUncheckedUpdateWithoutInvitedByUserInput>
+    create: XOR<MembershipInvitationCreateWithoutInvitedByUserInput, MembershipInvitationUncheckedCreateWithoutInvitedByUserInput>
   }
 
-  export type MembershipInvitationUpdateWithWhereUniqueWithoutSenderInput = {
+  export type MembershipInvitationUpdateWithWhereUniqueWithoutInvitedByUserInput = {
     where: MembershipInvitationWhereUniqueInput
-    data: XOR<MembershipInvitationUpdateWithoutSenderInput, MembershipInvitationUncheckedUpdateWithoutSenderInput>
+    data: XOR<MembershipInvitationUpdateWithoutInvitedByUserInput, MembershipInvitationUncheckedUpdateWithoutInvitedByUserInput>
   }
 
-  export type MembershipInvitationUpdateManyWithWhereWithoutSenderInput = {
+  export type MembershipInvitationUpdateManyWithWhereWithoutInvitedByUserInput = {
     where: MembershipInvitationScalarWhereInput
-    data: XOR<MembershipInvitationUpdateManyMutationInput, MembershipInvitationUncheckedUpdateManyWithoutSenderInput>
+    data: XOR<MembershipInvitationUpdateManyMutationInput, MembershipInvitationUncheckedUpdateManyWithoutInvitedByUserInput>
   }
 
   export type MembershipInvitationScalarWhereInput = {
@@ -48807,56 +53056,208 @@ export namespace Prisma {
     NOT?: MembershipInvitationScalarWhereInput | MembershipInvitationScalarWhereInput[]
     id?: StringFilter<"MembershipInvitation"> | string
     email?: StringFilter<"MembershipInvitation"> | string
-    role?: EnumProjectRoleFilter<"MembershipInvitation"> | $Enums.ProjectRole
-    projectId?: StringFilter<"MembershipInvitation"> | string
-    senderId?: StringNullableFilter<"MembershipInvitation"> | string | null
+    orgId?: StringFilter<"MembershipInvitation"> | string
+    orgRole?: EnumRoleFilter<"MembershipInvitation"> | $Enums.Role
+    projectId?: StringNullableFilter<"MembershipInvitation"> | string | null
+    projectRole?: EnumRoleNullableFilter<"MembershipInvitation"> | $Enums.Role | null
+    invitedByUserId?: StringNullableFilter<"MembershipInvitation"> | string | null
     createdAt?: DateTimeFilter<"MembershipInvitation"> | Date | string
     updatedAt?: DateTimeFilter<"MembershipInvitation"> | Date | string
   }
 
-  export type AuditLogUpsertWithWhereUniqueWithoutUserInput = {
-    where: AuditLogWhereUniqueInput
-    update: XOR<AuditLogUpdateWithoutUserInput, AuditLogUncheckedUpdateWithoutUserInput>
-    create: XOR<AuditLogCreateWithoutUserInput, AuditLogUncheckedCreateWithoutUserInput>
+  export type OrganizationMembershipCreateWithoutOrganizationInput = {
+    id?: string
+    role: $Enums.Role
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutOrganizationMembershipsInput
+    ProjectMemberships?: ProjectMembershipCreateNestedManyWithoutOrganizationMembershipInput
   }
 
-  export type AuditLogUpdateWithWhereUniqueWithoutUserInput = {
-    where: AuditLogWhereUniqueInput
-    data: XOR<AuditLogUpdateWithoutUserInput, AuditLogUncheckedUpdateWithoutUserInput>
+  export type OrganizationMembershipUncheckedCreateWithoutOrganizationInput = {
+    id?: string
+    userId: string
+    role: $Enums.Role
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    ProjectMemberships?: ProjectMembershipUncheckedCreateNestedManyWithoutOrganizationMembershipInput
   }
 
-  export type AuditLogUpdateManyWithWhereWithoutUserInput = {
-    where: AuditLogScalarWhereInput
-    data: XOR<AuditLogUpdateManyMutationInput, AuditLogUncheckedUpdateManyWithoutUserInput>
+  export type OrganizationMembershipCreateOrConnectWithoutOrganizationInput = {
+    where: OrganizationMembershipWhereUniqueInput
+    create: XOR<OrganizationMembershipCreateWithoutOrganizationInput, OrganizationMembershipUncheckedCreateWithoutOrganizationInput>
   }
 
-  export type AuditLogScalarWhereInput = {
-    AND?: AuditLogScalarWhereInput | AuditLogScalarWhereInput[]
-    OR?: AuditLogScalarWhereInput[]
-    NOT?: AuditLogScalarWhereInput | AuditLogScalarWhereInput[]
-    id?: StringFilter<"AuditLog"> | string
-    createdAt?: DateTimeFilter<"AuditLog"> | Date | string
-    updatedAt?: DateTimeFilter<"AuditLog"> | Date | string
-    userId?: StringFilter<"AuditLog"> | string
-    projectId?: StringFilter<"AuditLog"> | string
-    userProjectRole?: EnumProjectRoleFilter<"AuditLog"> | $Enums.ProjectRole
-    resourceType?: StringFilter<"AuditLog"> | string
-    resourceId?: StringFilter<"AuditLog"> | string
-    action?: StringFilter<"AuditLog"> | string
-    before?: StringNullableFilter<"AuditLog"> | string | null
-    after?: StringNullableFilter<"AuditLog"> | string | null
+  export type OrganizationMembershipCreateManyOrganizationInputEnvelope = {
+    data: OrganizationMembershipCreateManyOrganizationInput | OrganizationMembershipCreateManyOrganizationInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ProjectCreateWithoutOrganizationInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    projectMembers?: ProjectMembershipCreateNestedManyWithoutProjectInput
+    traces?: TraceCreateNestedManyWithoutProjectInput
+    observations?: ObservationCreateNestedManyWithoutProjectInput
+    apiKeys?: ApiKeyCreateNestedManyWithoutProjectInput
+    dataset?: DatasetCreateNestedManyWithoutProjectInput
+    RawEvents?: EventsCreateNestedManyWithoutProjectInput
+    invitations?: MembershipInvitationCreateNestedManyWithoutProjectInput
+    sessions?: TraceSessionCreateNestedManyWithoutProjectInput
+    Prompt?: PromptCreateNestedManyWithoutProjectInput
+    Model?: ModelCreateNestedManyWithoutProjectInput
+    EvalTemplate?: EvalTemplateCreateNestedManyWithoutProjectInput
+    JobConfiguration?: JobConfigurationCreateNestedManyWithoutProjectInput
+    JobExecution?: JobExecutionCreateNestedManyWithoutProjectInput
+    LlmApiKeys?: LlmApiKeysCreateNestedManyWithoutProjectInput
+    PosthogIntegration?: PosthogIntegrationCreateNestedManyWithoutProjectInput
+    Score?: ScoreCreateNestedManyWithoutProjectInput
+    scoreConfig?: ScoreConfigCreateNestedManyWithoutProjectInput
+    BatchExport?: BatchExportCreateNestedManyWithoutProjectInput
+    comment?: CommentCreateNestedManyWithoutProjectInput
+  }
+
+  export type ProjectUncheckedCreateWithoutOrganizationInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    projectMembers?: ProjectMembershipUncheckedCreateNestedManyWithoutProjectInput
+    traces?: TraceUncheckedCreateNestedManyWithoutProjectInput
+    observations?: ObservationUncheckedCreateNestedManyWithoutProjectInput
+    apiKeys?: ApiKeyUncheckedCreateNestedManyWithoutProjectInput
+    dataset?: DatasetUncheckedCreateNestedManyWithoutProjectInput
+    RawEvents?: EventsUncheckedCreateNestedManyWithoutProjectInput
+    invitations?: MembershipInvitationUncheckedCreateNestedManyWithoutProjectInput
+    sessions?: TraceSessionUncheckedCreateNestedManyWithoutProjectInput
+    Prompt?: PromptUncheckedCreateNestedManyWithoutProjectInput
+    Model?: ModelUncheckedCreateNestedManyWithoutProjectInput
+    EvalTemplate?: EvalTemplateUncheckedCreateNestedManyWithoutProjectInput
+    JobConfiguration?: JobConfigurationUncheckedCreateNestedManyWithoutProjectInput
+    JobExecution?: JobExecutionUncheckedCreateNestedManyWithoutProjectInput
+    LlmApiKeys?: LlmApiKeysUncheckedCreateNestedManyWithoutProjectInput
+    PosthogIntegration?: PosthogIntegrationUncheckedCreateNestedManyWithoutProjectInput
+    Score?: ScoreUncheckedCreateNestedManyWithoutProjectInput
+    scoreConfig?: ScoreConfigUncheckedCreateNestedManyWithoutProjectInput
+    BatchExport?: BatchExportUncheckedCreateNestedManyWithoutProjectInput
+    comment?: CommentUncheckedCreateNestedManyWithoutProjectInput
+  }
+
+  export type ProjectCreateOrConnectWithoutOrganizationInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutOrganizationInput, ProjectUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type ProjectCreateManyOrganizationInputEnvelope = {
+    data: ProjectCreateManyOrganizationInput | ProjectCreateManyOrganizationInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type MembershipInvitationCreateWithoutOrganizationInput = {
+    id?: string
+    email: string
+    orgRole: $Enums.Role
+    projectRole?: $Enums.Role | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    project?: ProjectCreateNestedOneWithoutInvitationsInput
+    invitedByUser?: UserCreateNestedOneWithoutInvitationsInput
+  }
+
+  export type MembershipInvitationUncheckedCreateWithoutOrganizationInput = {
+    id?: string
+    email: string
+    orgRole: $Enums.Role
+    projectId?: string | null
+    projectRole?: $Enums.Role | null
+    invitedByUserId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type MembershipInvitationCreateOrConnectWithoutOrganizationInput = {
+    where: MembershipInvitationWhereUniqueInput
+    create: XOR<MembershipInvitationCreateWithoutOrganizationInput, MembershipInvitationUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type MembershipInvitationCreateManyOrganizationInputEnvelope = {
+    data: MembershipInvitationCreateManyOrganizationInput | MembershipInvitationCreateManyOrganizationInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type OrganizationMembershipUpsertWithWhereUniqueWithoutOrganizationInput = {
+    where: OrganizationMembershipWhereUniqueInput
+    update: XOR<OrganizationMembershipUpdateWithoutOrganizationInput, OrganizationMembershipUncheckedUpdateWithoutOrganizationInput>
+    create: XOR<OrganizationMembershipCreateWithoutOrganizationInput, OrganizationMembershipUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type OrganizationMembershipUpdateWithWhereUniqueWithoutOrganizationInput = {
+    where: OrganizationMembershipWhereUniqueInput
+    data: XOR<OrganizationMembershipUpdateWithoutOrganizationInput, OrganizationMembershipUncheckedUpdateWithoutOrganizationInput>
+  }
+
+  export type OrganizationMembershipUpdateManyWithWhereWithoutOrganizationInput = {
+    where: OrganizationMembershipScalarWhereInput
+    data: XOR<OrganizationMembershipUpdateManyMutationInput, OrganizationMembershipUncheckedUpdateManyWithoutOrganizationInput>
+  }
+
+  export type ProjectUpsertWithWhereUniqueWithoutOrganizationInput = {
+    where: ProjectWhereUniqueInput
+    update: XOR<ProjectUpdateWithoutOrganizationInput, ProjectUncheckedUpdateWithoutOrganizationInput>
+    create: XOR<ProjectCreateWithoutOrganizationInput, ProjectUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type ProjectUpdateWithWhereUniqueWithoutOrganizationInput = {
+    where: ProjectWhereUniqueInput
+    data: XOR<ProjectUpdateWithoutOrganizationInput, ProjectUncheckedUpdateWithoutOrganizationInput>
+  }
+
+  export type ProjectUpdateManyWithWhereWithoutOrganizationInput = {
+    where: ProjectScalarWhereInput
+    data: XOR<ProjectUpdateManyMutationInput, ProjectUncheckedUpdateManyWithoutOrganizationInput>
+  }
+
+  export type ProjectScalarWhereInput = {
+    AND?: ProjectScalarWhereInput | ProjectScalarWhereInput[]
+    OR?: ProjectScalarWhereInput[]
+    NOT?: ProjectScalarWhereInput | ProjectScalarWhereInput[]
+    id?: StringFilter<"Project"> | string
+    orgId?: StringFilter<"Project"> | string
+    createdAt?: DateTimeFilter<"Project"> | Date | string
+    updatedAt?: DateTimeFilter<"Project"> | Date | string
+    name?: StringFilter<"Project"> | string
+  }
+
+  export type MembershipInvitationUpsertWithWhereUniqueWithoutOrganizationInput = {
+    where: MembershipInvitationWhereUniqueInput
+    update: XOR<MembershipInvitationUpdateWithoutOrganizationInput, MembershipInvitationUncheckedUpdateWithoutOrganizationInput>
+    create: XOR<MembershipInvitationCreateWithoutOrganizationInput, MembershipInvitationUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type MembershipInvitationUpdateWithWhereUniqueWithoutOrganizationInput = {
+    where: MembershipInvitationWhereUniqueInput
+    data: XOR<MembershipInvitationUpdateWithoutOrganizationInput, MembershipInvitationUncheckedUpdateWithoutOrganizationInput>
+  }
+
+  export type MembershipInvitationUpdateManyWithWhereWithoutOrganizationInput = {
+    where: MembershipInvitationScalarWhereInput
+    data: XOR<MembershipInvitationUpdateManyMutationInput, MembershipInvitationUncheckedUpdateManyWithoutOrganizationInput>
   }
 
   export type ProjectMembershipCreateWithoutProjectInput = {
-    role: $Enums.ProjectRole
+    role: $Enums.Role
     createdAt?: Date | string
     updatedAt?: Date | string
+    organizationMembership: OrganizationMembershipCreateNestedOneWithoutProjectMembershipsInput
     user: UserCreateNestedOneWithoutProjectMembershipsInput
   }
 
   export type ProjectMembershipUncheckedCreateWithoutProjectInput = {
+    orgMembershipId: string
     userId: string
-    role: $Enums.ProjectRole
+    role: $Enums.Role
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -48869,6 +53270,31 @@ export namespace Prisma {
   export type ProjectMembershipCreateManyProjectInputEnvelope = {
     data: ProjectMembershipCreateManyProjectInput | ProjectMembershipCreateManyProjectInput[]
     skipDuplicates?: boolean
+  }
+
+  export type OrganizationCreateWithoutProjectsInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
+    organizationMemberships?: OrganizationMembershipCreateNestedManyWithoutOrganizationInput
+    MembershipInvitation?: MembershipInvitationCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationUncheckedCreateWithoutProjectsInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
+    organizationMemberships?: OrganizationMembershipUncheckedCreateNestedManyWithoutOrganizationInput
+    MembershipInvitation?: MembershipInvitationUncheckedCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationCreateOrConnectWithoutProjectsInput = {
+    where: OrganizationWhereUniqueInput
+    create: XOR<OrganizationCreateWithoutProjectsInput, OrganizationUncheckedCreateWithoutProjectsInput>
   }
 
   export type TraceCreateWithoutProjectInput = {
@@ -48888,7 +53314,6 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     session?: TraceSessionCreateNestedOneWithoutTracesInput
-    DatasetItem?: DatasetItemCreateNestedManyWithoutSourceTraceInput
     JobExecution?: JobExecutionCreateNestedManyWithoutTraceInput
   }
 
@@ -48909,7 +53334,6 @@ export namespace Prisma {
     sessionId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    DatasetItem?: DatasetItemUncheckedCreateNestedManyWithoutSourceTraceInput
     JobExecution?: JobExecutionUncheckedCreateNestedManyWithoutTraceInput
   }
 
@@ -48955,7 +53379,6 @@ export namespace Prisma {
     calculatedTotalCost?: Decimal | DecimalJsLike | number | string | null
     completionStartTime?: Date | string | null
     promptId?: string | null
-    derivedDatasetItems?: DatasetItemCreateNestedManyWithoutSourceObservationInput
   }
 
   export type ObservationUncheckedCreateWithoutProjectInput = {
@@ -48990,7 +53413,6 @@ export namespace Prisma {
     calculatedTotalCost?: Decimal | DecimalJsLike | number | string | null
     completionStartTime?: Date | string | null
     promptId?: string | null
-    derivedDatasetItems?: DatasetItemUncheckedCreateNestedManyWithoutSourceObservationInput
   }
 
   export type ObservationCreateOrConnectWithoutProjectInput = {
@@ -49102,17 +53524,21 @@ export namespace Prisma {
   export type MembershipInvitationCreateWithoutProjectInput = {
     id?: string
     email: string
-    role: $Enums.ProjectRole
+    orgRole: $Enums.Role
+    projectRole?: $Enums.Role | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    sender?: UserCreateNestedOneWithoutInvitationsInput
+    organization: OrganizationCreateNestedOneWithoutMembershipInvitationInput
+    invitedByUser?: UserCreateNestedOneWithoutInvitationsInput
   }
 
   export type MembershipInvitationUncheckedCreateWithoutProjectInput = {
     id?: string
     email: string
-    role: $Enums.ProjectRole
-    senderId?: string | null
+    orgId: string
+    orgRole: $Enums.Role
+    projectRole?: $Enums.Role | null
+    invitedByUserId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -49232,42 +53658,6 @@ export namespace Prisma {
 
   export type ModelCreateManyProjectInputEnvelope = {
     data: ModelCreateManyProjectInput | ModelCreateManyProjectInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type AuditLogCreateWithoutProjectInput = {
-    id?: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    userProjectRole: $Enums.ProjectRole
-    resourceType: string
-    resourceId: string
-    action: string
-    before?: string | null
-    after?: string | null
-    user: UserCreateNestedOneWithoutAuditLogInput
-  }
-
-  export type AuditLogUncheckedCreateWithoutProjectInput = {
-    id?: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    userId: string
-    userProjectRole: $Enums.ProjectRole
-    resourceType: string
-    resourceId: string
-    action: string
-    before?: string | null
-    after?: string | null
-  }
-
-  export type AuditLogCreateOrConnectWithoutProjectInput = {
-    where: AuditLogWhereUniqueInput
-    create: XOR<AuditLogCreateWithoutProjectInput, AuditLogUncheckedCreateWithoutProjectInput>
-  }
-
-  export type AuditLogCreateManyProjectInputEnvelope = {
-    data: AuditLogCreateManyProjectInput | AuditLogCreateManyProjectInput[]
     skipDuplicates?: boolean
   }
 
@@ -49575,6 +53965,36 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type CommentCreateWithoutProjectInput = {
+    id?: string
+    objectType: $Enums.CommentObjectType
+    objectId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    content: string
+    authorUserId?: string | null
+  }
+
+  export type CommentUncheckedCreateWithoutProjectInput = {
+    id?: string
+    objectType: $Enums.CommentObjectType
+    objectId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    content: string
+    authorUserId?: string | null
+  }
+
+  export type CommentCreateOrConnectWithoutProjectInput = {
+    where: CommentWhereUniqueInput
+    create: XOR<CommentCreateWithoutProjectInput, CommentUncheckedCreateWithoutProjectInput>
+  }
+
+  export type CommentCreateManyProjectInputEnvelope = {
+    data: CommentCreateManyProjectInput | CommentCreateManyProjectInput[]
+    skipDuplicates?: boolean
+  }
+
   export type ProjectMembershipUpsertWithWhereUniqueWithoutProjectInput = {
     where: ProjectMembershipWhereUniqueInput
     update: XOR<ProjectMembershipUpdateWithoutProjectInput, ProjectMembershipUncheckedUpdateWithoutProjectInput>
@@ -49589,6 +54009,37 @@ export namespace Prisma {
   export type ProjectMembershipUpdateManyWithWhereWithoutProjectInput = {
     where: ProjectMembershipScalarWhereInput
     data: XOR<ProjectMembershipUpdateManyMutationInput, ProjectMembershipUncheckedUpdateManyWithoutProjectInput>
+  }
+
+  export type OrganizationUpsertWithoutProjectsInput = {
+    update: XOR<OrganizationUpdateWithoutProjectsInput, OrganizationUncheckedUpdateWithoutProjectsInput>
+    create: XOR<OrganizationCreateWithoutProjectsInput, OrganizationUncheckedCreateWithoutProjectsInput>
+    where?: OrganizationWhereInput
+  }
+
+  export type OrganizationUpdateToOneWithWhereWithoutProjectsInput = {
+    where?: OrganizationWhereInput
+    data: XOR<OrganizationUpdateWithoutProjectsInput, OrganizationUncheckedUpdateWithoutProjectsInput>
+  }
+
+  export type OrganizationUpdateWithoutProjectsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
+    organizationMemberships?: OrganizationMembershipUpdateManyWithoutOrganizationNestedInput
+    MembershipInvitation?: MembershipInvitationUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type OrganizationUncheckedUpdateWithoutProjectsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
+    organizationMemberships?: OrganizationMembershipUncheckedUpdateManyWithoutOrganizationNestedInput
+    MembershipInvitation?: MembershipInvitationUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type TraceUpsertWithWhereUniqueWithoutProjectInput = {
@@ -49737,10 +54188,10 @@ export namespace Prisma {
     OR?: DatasetScalarWhereInput[]
     NOT?: DatasetScalarWhereInput | DatasetScalarWhereInput[]
     id?: StringFilter<"Dataset"> | string
+    projectId?: StringFilter<"Dataset"> | string
     name?: StringFilter<"Dataset"> | string
     description?: StringNullableFilter<"Dataset"> | string | null
     metadata?: JsonNullableFilter<"Dataset">
-    projectId?: StringFilter<"Dataset"> | string
     createdAt?: DateTimeFilter<"Dataset"> | Date | string
     updatedAt?: DateTimeFilter<"Dataset"> | Date | string
   }
@@ -49887,22 +54338,6 @@ export namespace Prisma {
     unit?: StringFilter<"Model"> | string
     tokenizerId?: StringNullableFilter<"Model"> | string | null
     tokenizerConfig?: JsonNullableFilter<"Model">
-  }
-
-  export type AuditLogUpsertWithWhereUniqueWithoutProjectInput = {
-    where: AuditLogWhereUniqueInput
-    update: XOR<AuditLogUpdateWithoutProjectInput, AuditLogUncheckedUpdateWithoutProjectInput>
-    create: XOR<AuditLogCreateWithoutProjectInput, AuditLogUncheckedCreateWithoutProjectInput>
-  }
-
-  export type AuditLogUpdateWithWhereUniqueWithoutProjectInput = {
-    where: AuditLogWhereUniqueInput
-    data: XOR<AuditLogUpdateWithoutProjectInput, AuditLogUncheckedUpdateWithoutProjectInput>
-  }
-
-  export type AuditLogUpdateManyWithWhereWithoutProjectInput = {
-    where: AuditLogScalarWhereInput
-    data: XOR<AuditLogUpdateManyMutationInput, AuditLogUncheckedUpdateManyWithoutProjectInput>
   }
 
   export type EvalTemplateUpsertWithWhereUniqueWithoutProjectInput = {
@@ -50173,13 +54608,43 @@ export namespace Prisma {
     log?: StringNullableFilter<"BatchExport"> | string | null
   }
 
+  export type CommentUpsertWithWhereUniqueWithoutProjectInput = {
+    where: CommentWhereUniqueInput
+    update: XOR<CommentUpdateWithoutProjectInput, CommentUncheckedUpdateWithoutProjectInput>
+    create: XOR<CommentCreateWithoutProjectInput, CommentUncheckedCreateWithoutProjectInput>
+  }
+
+  export type CommentUpdateWithWhereUniqueWithoutProjectInput = {
+    where: CommentWhereUniqueInput
+    data: XOR<CommentUpdateWithoutProjectInput, CommentUncheckedUpdateWithoutProjectInput>
+  }
+
+  export type CommentUpdateManyWithWhereWithoutProjectInput = {
+    where: CommentScalarWhereInput
+    data: XOR<CommentUpdateManyMutationInput, CommentUncheckedUpdateManyWithoutProjectInput>
+  }
+
+  export type CommentScalarWhereInput = {
+    AND?: CommentScalarWhereInput | CommentScalarWhereInput[]
+    OR?: CommentScalarWhereInput[]
+    NOT?: CommentScalarWhereInput | CommentScalarWhereInput[]
+    id?: StringFilter<"Comment"> | string
+    projectId?: StringFilter<"Comment"> | string
+    objectType?: EnumCommentObjectTypeFilter<"Comment"> | $Enums.CommentObjectType
+    objectId?: StringFilter<"Comment"> | string
+    createdAt?: DateTimeFilter<"Comment"> | Date | string
+    updatedAt?: DateTimeFilter<"Comment"> | Date | string
+    content?: StringFilter<"Comment"> | string
+    authorUserId?: StringNullableFilter<"Comment"> | string | null
+  }
+
   export type ProjectCreateWithoutApiKeysInput = {
     id?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     name: string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipCreateNestedManyWithoutProjectInput
+    organization: OrganizationCreateNestedOneWithoutProjectsInput
     traces?: TraceCreateNestedManyWithoutProjectInput
     observations?: ObservationCreateNestedManyWithoutProjectInput
     dataset?: DatasetCreateNestedManyWithoutProjectInput
@@ -50188,7 +54653,6 @@ export namespace Prisma {
     sessions?: TraceSessionCreateNestedManyWithoutProjectInput
     Prompt?: PromptCreateNestedManyWithoutProjectInput
     Model?: ModelCreateNestedManyWithoutProjectInput
-    AuditLog?: AuditLogCreateNestedManyWithoutProjectInput
     EvalTemplate?: EvalTemplateCreateNestedManyWithoutProjectInput
     JobConfiguration?: JobConfigurationCreateNestedManyWithoutProjectInput
     JobExecution?: JobExecutionCreateNestedManyWithoutProjectInput
@@ -50197,14 +54661,15 @@ export namespace Prisma {
     Score?: ScoreCreateNestedManyWithoutProjectInput
     scoreConfig?: ScoreConfigCreateNestedManyWithoutProjectInput
     BatchExport?: BatchExportCreateNestedManyWithoutProjectInput
+    comment?: CommentCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutApiKeysInput = {
     id?: string
+    orgId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     name: string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUncheckedCreateNestedManyWithoutProjectInput
     traces?: TraceUncheckedCreateNestedManyWithoutProjectInput
     observations?: ObservationUncheckedCreateNestedManyWithoutProjectInput
@@ -50214,7 +54679,6 @@ export namespace Prisma {
     sessions?: TraceSessionUncheckedCreateNestedManyWithoutProjectInput
     Prompt?: PromptUncheckedCreateNestedManyWithoutProjectInput
     Model?: ModelUncheckedCreateNestedManyWithoutProjectInput
-    AuditLog?: AuditLogUncheckedCreateNestedManyWithoutProjectInput
     EvalTemplate?: EvalTemplateUncheckedCreateNestedManyWithoutProjectInput
     JobConfiguration?: JobConfigurationUncheckedCreateNestedManyWithoutProjectInput
     JobExecution?: JobExecutionUncheckedCreateNestedManyWithoutProjectInput
@@ -50223,6 +54687,7 @@ export namespace Prisma {
     Score?: ScoreUncheckedCreateNestedManyWithoutProjectInput
     scoreConfig?: ScoreConfigUncheckedCreateNestedManyWithoutProjectInput
     BatchExport?: BatchExportUncheckedCreateNestedManyWithoutProjectInput
+    comment?: CommentUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutApiKeysInput = {
@@ -50246,8 +54711,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUpdateManyWithoutProjectNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutProjectsNestedInput
     traces?: TraceUpdateManyWithoutProjectNestedInput
     observations?: ObservationUpdateManyWithoutProjectNestedInput
     dataset?: DatasetUpdateManyWithoutProjectNestedInput
@@ -50256,7 +54721,6 @@ export namespace Prisma {
     sessions?: TraceSessionUpdateManyWithoutProjectNestedInput
     Prompt?: PromptUpdateManyWithoutProjectNestedInput
     Model?: ModelUpdateManyWithoutProjectNestedInput
-    AuditLog?: AuditLogUpdateManyWithoutProjectNestedInput
     EvalTemplate?: EvalTemplateUpdateManyWithoutProjectNestedInput
     JobConfiguration?: JobConfigurationUpdateManyWithoutProjectNestedInput
     JobExecution?: JobExecutionUpdateManyWithoutProjectNestedInput
@@ -50265,14 +54729,15 @@ export namespace Prisma {
     Score?: ScoreUpdateManyWithoutProjectNestedInput
     scoreConfig?: ScoreConfigUpdateManyWithoutProjectNestedInput
     BatchExport?: BatchExportUpdateManyWithoutProjectNestedInput
+    comment?: CommentUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutApiKeysInput = {
     id?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUncheckedUpdateManyWithoutProjectNestedInput
     traces?: TraceUncheckedUpdateManyWithoutProjectNestedInput
     observations?: ObservationUncheckedUpdateManyWithoutProjectNestedInput
@@ -50282,7 +54747,6 @@ export namespace Prisma {
     sessions?: TraceSessionUncheckedUpdateManyWithoutProjectNestedInput
     Prompt?: PromptUncheckedUpdateManyWithoutProjectNestedInput
     Model?: ModelUncheckedUpdateManyWithoutProjectNestedInput
-    AuditLog?: AuditLogUncheckedUpdateManyWithoutProjectNestedInput
     EvalTemplate?: EvalTemplateUncheckedUpdateManyWithoutProjectNestedInput
     JobConfiguration?: JobConfigurationUncheckedUpdateManyWithoutProjectNestedInput
     JobExecution?: JobExecutionUncheckedUpdateManyWithoutProjectNestedInput
@@ -50291,6 +54755,7 @@ export namespace Prisma {
     Score?: ScoreUncheckedUpdateManyWithoutProjectNestedInput
     scoreConfig?: ScoreConfigUncheckedUpdateManyWithoutProjectNestedInput
     BatchExport?: BatchExportUncheckedUpdateManyWithoutProjectNestedInput
+    comment?: CommentUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectCreateWithoutLlmApiKeysInput = {
@@ -50298,8 +54763,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     name: string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipCreateNestedManyWithoutProjectInput
+    organization: OrganizationCreateNestedOneWithoutProjectsInput
     traces?: TraceCreateNestedManyWithoutProjectInput
     observations?: ObservationCreateNestedManyWithoutProjectInput
     apiKeys?: ApiKeyCreateNestedManyWithoutProjectInput
@@ -50309,7 +54774,6 @@ export namespace Prisma {
     sessions?: TraceSessionCreateNestedManyWithoutProjectInput
     Prompt?: PromptCreateNestedManyWithoutProjectInput
     Model?: ModelCreateNestedManyWithoutProjectInput
-    AuditLog?: AuditLogCreateNestedManyWithoutProjectInput
     EvalTemplate?: EvalTemplateCreateNestedManyWithoutProjectInput
     JobConfiguration?: JobConfigurationCreateNestedManyWithoutProjectInput
     JobExecution?: JobExecutionCreateNestedManyWithoutProjectInput
@@ -50317,14 +54781,15 @@ export namespace Prisma {
     Score?: ScoreCreateNestedManyWithoutProjectInput
     scoreConfig?: ScoreConfigCreateNestedManyWithoutProjectInput
     BatchExport?: BatchExportCreateNestedManyWithoutProjectInput
+    comment?: CommentCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutLlmApiKeysInput = {
     id?: string
+    orgId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     name: string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUncheckedCreateNestedManyWithoutProjectInput
     traces?: TraceUncheckedCreateNestedManyWithoutProjectInput
     observations?: ObservationUncheckedCreateNestedManyWithoutProjectInput
@@ -50335,7 +54800,6 @@ export namespace Prisma {
     sessions?: TraceSessionUncheckedCreateNestedManyWithoutProjectInput
     Prompt?: PromptUncheckedCreateNestedManyWithoutProjectInput
     Model?: ModelUncheckedCreateNestedManyWithoutProjectInput
-    AuditLog?: AuditLogUncheckedCreateNestedManyWithoutProjectInput
     EvalTemplate?: EvalTemplateUncheckedCreateNestedManyWithoutProjectInput
     JobConfiguration?: JobConfigurationUncheckedCreateNestedManyWithoutProjectInput
     JobExecution?: JobExecutionUncheckedCreateNestedManyWithoutProjectInput
@@ -50343,6 +54807,7 @@ export namespace Prisma {
     Score?: ScoreUncheckedCreateNestedManyWithoutProjectInput
     scoreConfig?: ScoreConfigUncheckedCreateNestedManyWithoutProjectInput
     BatchExport?: BatchExportUncheckedCreateNestedManyWithoutProjectInput
+    comment?: CommentUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutLlmApiKeysInput = {
@@ -50366,8 +54831,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUpdateManyWithoutProjectNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutProjectsNestedInput
     traces?: TraceUpdateManyWithoutProjectNestedInput
     observations?: ObservationUpdateManyWithoutProjectNestedInput
     apiKeys?: ApiKeyUpdateManyWithoutProjectNestedInput
@@ -50377,7 +54842,6 @@ export namespace Prisma {
     sessions?: TraceSessionUpdateManyWithoutProjectNestedInput
     Prompt?: PromptUpdateManyWithoutProjectNestedInput
     Model?: ModelUpdateManyWithoutProjectNestedInput
-    AuditLog?: AuditLogUpdateManyWithoutProjectNestedInput
     EvalTemplate?: EvalTemplateUpdateManyWithoutProjectNestedInput
     JobConfiguration?: JobConfigurationUpdateManyWithoutProjectNestedInput
     JobExecution?: JobExecutionUpdateManyWithoutProjectNestedInput
@@ -50385,14 +54849,15 @@ export namespace Prisma {
     Score?: ScoreUpdateManyWithoutProjectNestedInput
     scoreConfig?: ScoreConfigUpdateManyWithoutProjectNestedInput
     BatchExport?: BatchExportUpdateManyWithoutProjectNestedInput
+    comment?: CommentUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutLlmApiKeysInput = {
     id?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUncheckedUpdateManyWithoutProjectNestedInput
     traces?: TraceUncheckedUpdateManyWithoutProjectNestedInput
     observations?: ObservationUncheckedUpdateManyWithoutProjectNestedInput
@@ -50403,7 +54868,6 @@ export namespace Prisma {
     sessions?: TraceSessionUncheckedUpdateManyWithoutProjectNestedInput
     Prompt?: PromptUncheckedUpdateManyWithoutProjectNestedInput
     Model?: ModelUncheckedUpdateManyWithoutProjectNestedInput
-    AuditLog?: AuditLogUncheckedUpdateManyWithoutProjectNestedInput
     EvalTemplate?: EvalTemplateUncheckedUpdateManyWithoutProjectNestedInput
     JobConfiguration?: JobConfigurationUncheckedUpdateManyWithoutProjectNestedInput
     JobExecution?: JobExecutionUncheckedUpdateManyWithoutProjectNestedInput
@@ -50411,6 +54875,212 @@ export namespace Prisma {
     Score?: ScoreUncheckedUpdateManyWithoutProjectNestedInput
     scoreConfig?: ScoreConfigUncheckedUpdateManyWithoutProjectNestedInput
     BatchExport?: BatchExportUncheckedUpdateManyWithoutProjectNestedInput
+    comment?: CommentUncheckedUpdateManyWithoutProjectNestedInput
+  }
+
+  export type OrganizationCreateWithoutOrganizationMembershipsInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
+    projects?: ProjectCreateNestedManyWithoutOrganizationInput
+    MembershipInvitation?: MembershipInvitationCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationUncheckedCreateWithoutOrganizationMembershipsInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
+    projects?: ProjectUncheckedCreateNestedManyWithoutOrganizationInput
+    MembershipInvitation?: MembershipInvitationUncheckedCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationCreateOrConnectWithoutOrganizationMembershipsInput = {
+    where: OrganizationWhereUniqueInput
+    create: XOR<OrganizationCreateWithoutOrganizationMembershipsInput, OrganizationUncheckedCreateWithoutOrganizationMembershipsInput>
+  }
+
+  export type UserCreateWithoutOrganizationMembershipsInput = {
+    id?: string
+    name?: string | null
+    email?: string | null
+    emailVerified?: Date | string | null
+    password?: string | null
+    image?: string | null
+    admin?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    featureFlags?: UserCreatefeatureFlagsInput | string[]
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    projectMemberships?: ProjectMembershipCreateNestedManyWithoutUserInput
+    invitations?: MembershipInvitationCreateNestedManyWithoutInvitedByUserInput
+  }
+
+  export type UserUncheckedCreateWithoutOrganizationMembershipsInput = {
+    id?: string
+    name?: string | null
+    email?: string | null
+    emailVerified?: Date | string | null
+    password?: string | null
+    image?: string | null
+    admin?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    featureFlags?: UserCreatefeatureFlagsInput | string[]
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    projectMemberships?: ProjectMembershipUncheckedCreateNestedManyWithoutUserInput
+    invitations?: MembershipInvitationUncheckedCreateNestedManyWithoutInvitedByUserInput
+  }
+
+  export type UserCreateOrConnectWithoutOrganizationMembershipsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutOrganizationMembershipsInput, UserUncheckedCreateWithoutOrganizationMembershipsInput>
+  }
+
+  export type ProjectMembershipCreateWithoutOrganizationMembershipInput = {
+    role: $Enums.Role
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    project: ProjectCreateNestedOneWithoutProjectMembersInput
+    user: UserCreateNestedOneWithoutProjectMembershipsInput
+  }
+
+  export type ProjectMembershipUncheckedCreateWithoutOrganizationMembershipInput = {
+    projectId: string
+    userId: string
+    role: $Enums.Role
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ProjectMembershipCreateOrConnectWithoutOrganizationMembershipInput = {
+    where: ProjectMembershipWhereUniqueInput
+    create: XOR<ProjectMembershipCreateWithoutOrganizationMembershipInput, ProjectMembershipUncheckedCreateWithoutOrganizationMembershipInput>
+  }
+
+  export type ProjectMembershipCreateManyOrganizationMembershipInputEnvelope = {
+    data: ProjectMembershipCreateManyOrganizationMembershipInput | ProjectMembershipCreateManyOrganizationMembershipInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type OrganizationUpsertWithoutOrganizationMembershipsInput = {
+    update: XOR<OrganizationUpdateWithoutOrganizationMembershipsInput, OrganizationUncheckedUpdateWithoutOrganizationMembershipsInput>
+    create: XOR<OrganizationCreateWithoutOrganizationMembershipsInput, OrganizationUncheckedCreateWithoutOrganizationMembershipsInput>
+    where?: OrganizationWhereInput
+  }
+
+  export type OrganizationUpdateToOneWithWhereWithoutOrganizationMembershipsInput = {
+    where?: OrganizationWhereInput
+    data: XOR<OrganizationUpdateWithoutOrganizationMembershipsInput, OrganizationUncheckedUpdateWithoutOrganizationMembershipsInput>
+  }
+
+  export type OrganizationUpdateWithoutOrganizationMembershipsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
+    projects?: ProjectUpdateManyWithoutOrganizationNestedInput
+    MembershipInvitation?: MembershipInvitationUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type OrganizationUncheckedUpdateWithoutOrganizationMembershipsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
+    projects?: ProjectUncheckedUpdateManyWithoutOrganizationNestedInput
+    MembershipInvitation?: MembershipInvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type UserUpsertWithoutOrganizationMembershipsInput = {
+    update: XOR<UserUpdateWithoutOrganizationMembershipsInput, UserUncheckedUpdateWithoutOrganizationMembershipsInput>
+    create: XOR<UserCreateWithoutOrganizationMembershipsInput, UserUncheckedCreateWithoutOrganizationMembershipsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutOrganizationMembershipsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutOrganizationMembershipsInput, UserUncheckedUpdateWithoutOrganizationMembershipsInput>
+  }
+
+  export type UserUpdateWithoutOrganizationMembershipsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    admin?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    featureFlags?: UserUpdatefeatureFlagsInput | string[]
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    projectMemberships?: ProjectMembershipUpdateManyWithoutUserNestedInput
+    invitations?: MembershipInvitationUpdateManyWithoutInvitedByUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutOrganizationMembershipsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    admin?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    featureFlags?: UserUpdatefeatureFlagsInput | string[]
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    projectMemberships?: ProjectMembershipUncheckedUpdateManyWithoutUserNestedInput
+    invitations?: MembershipInvitationUncheckedUpdateManyWithoutInvitedByUserNestedInput
+  }
+
+  export type ProjectMembershipUpsertWithWhereUniqueWithoutOrganizationMembershipInput = {
+    where: ProjectMembershipWhereUniqueInput
+    update: XOR<ProjectMembershipUpdateWithoutOrganizationMembershipInput, ProjectMembershipUncheckedUpdateWithoutOrganizationMembershipInput>
+    create: XOR<ProjectMembershipCreateWithoutOrganizationMembershipInput, ProjectMembershipUncheckedCreateWithoutOrganizationMembershipInput>
+  }
+
+  export type ProjectMembershipUpdateWithWhereUniqueWithoutOrganizationMembershipInput = {
+    where: ProjectMembershipWhereUniqueInput
+    data: XOR<ProjectMembershipUpdateWithoutOrganizationMembershipInput, ProjectMembershipUncheckedUpdateWithoutOrganizationMembershipInput>
+  }
+
+  export type ProjectMembershipUpdateManyWithWhereWithoutOrganizationMembershipInput = {
+    where: ProjectMembershipScalarWhereInput
+    data: XOR<ProjectMembershipUpdateManyMutationInput, ProjectMembershipUncheckedUpdateManyWithoutOrganizationMembershipInput>
+  }
+
+  export type OrganizationMembershipCreateWithoutProjectMembershipsInput = {
+    id?: string
+    role: $Enums.Role
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    organization: OrganizationCreateNestedOneWithoutOrganizationMembershipsInput
+    user: UserCreateNestedOneWithoutOrganizationMembershipsInput
+  }
+
+  export type OrganizationMembershipUncheckedCreateWithoutProjectMembershipsInput = {
+    id?: string
+    orgId: string
+    userId: string
+    role: $Enums.Role
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type OrganizationMembershipCreateOrConnectWithoutProjectMembershipsInput = {
+    where: OrganizationMembershipWhereUniqueInput
+    create: XOR<OrganizationMembershipCreateWithoutProjectMembershipsInput, OrganizationMembershipUncheckedCreateWithoutProjectMembershipsInput>
   }
 
   export type ProjectCreateWithoutProjectMembersInput = {
@@ -50418,7 +55088,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     name: string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
+    organization: OrganizationCreateNestedOneWithoutProjectsInput
     traces?: TraceCreateNestedManyWithoutProjectInput
     observations?: ObservationCreateNestedManyWithoutProjectInput
     apiKeys?: ApiKeyCreateNestedManyWithoutProjectInput
@@ -50428,7 +55098,6 @@ export namespace Prisma {
     sessions?: TraceSessionCreateNestedManyWithoutProjectInput
     Prompt?: PromptCreateNestedManyWithoutProjectInput
     Model?: ModelCreateNestedManyWithoutProjectInput
-    AuditLog?: AuditLogCreateNestedManyWithoutProjectInput
     EvalTemplate?: EvalTemplateCreateNestedManyWithoutProjectInput
     JobConfiguration?: JobConfigurationCreateNestedManyWithoutProjectInput
     JobExecution?: JobExecutionCreateNestedManyWithoutProjectInput
@@ -50437,14 +55106,15 @@ export namespace Prisma {
     Score?: ScoreCreateNestedManyWithoutProjectInput
     scoreConfig?: ScoreConfigCreateNestedManyWithoutProjectInput
     BatchExport?: BatchExportCreateNestedManyWithoutProjectInput
+    comment?: CommentCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutProjectMembersInput = {
     id?: string
+    orgId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     name: string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     traces?: TraceUncheckedCreateNestedManyWithoutProjectInput
     observations?: ObservationUncheckedCreateNestedManyWithoutProjectInput
     apiKeys?: ApiKeyUncheckedCreateNestedManyWithoutProjectInput
@@ -50454,7 +55124,6 @@ export namespace Prisma {
     sessions?: TraceSessionUncheckedCreateNestedManyWithoutProjectInput
     Prompt?: PromptUncheckedCreateNestedManyWithoutProjectInput
     Model?: ModelUncheckedCreateNestedManyWithoutProjectInput
-    AuditLog?: AuditLogUncheckedCreateNestedManyWithoutProjectInput
     EvalTemplate?: EvalTemplateUncheckedCreateNestedManyWithoutProjectInput
     JobConfiguration?: JobConfigurationUncheckedCreateNestedManyWithoutProjectInput
     JobExecution?: JobExecutionUncheckedCreateNestedManyWithoutProjectInput
@@ -50463,6 +55132,7 @@ export namespace Prisma {
     Score?: ScoreUncheckedCreateNestedManyWithoutProjectInput
     scoreConfig?: ScoreConfigUncheckedCreateNestedManyWithoutProjectInput
     BatchExport?: BatchExportUncheckedCreateNestedManyWithoutProjectInput
+    comment?: CommentUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutProjectMembersInput = {
@@ -50483,8 +55153,8 @@ export namespace Prisma {
     featureFlags?: UserCreatefeatureFlagsInput | string[]
     accounts?: AccountCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
-    invitations?: MembershipInvitationCreateNestedManyWithoutSenderInput
-    AuditLog?: AuditLogCreateNestedManyWithoutUserInput
+    organizationMemberships?: OrganizationMembershipCreateNestedManyWithoutUserInput
+    invitations?: MembershipInvitationCreateNestedManyWithoutInvitedByUserInput
   }
 
   export type UserUncheckedCreateWithoutProjectMembershipsInput = {
@@ -50500,13 +55170,42 @@ export namespace Prisma {
     featureFlags?: UserCreatefeatureFlagsInput | string[]
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
-    invitations?: MembershipInvitationUncheckedCreateNestedManyWithoutSenderInput
-    AuditLog?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    organizationMemberships?: OrganizationMembershipUncheckedCreateNestedManyWithoutUserInput
+    invitations?: MembershipInvitationUncheckedCreateNestedManyWithoutInvitedByUserInput
   }
 
   export type UserCreateOrConnectWithoutProjectMembershipsInput = {
     where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutProjectMembershipsInput, UserUncheckedCreateWithoutProjectMembershipsInput>
+  }
+
+  export type OrganizationMembershipUpsertWithoutProjectMembershipsInput = {
+    update: XOR<OrganizationMembershipUpdateWithoutProjectMembershipsInput, OrganizationMembershipUncheckedUpdateWithoutProjectMembershipsInput>
+    create: XOR<OrganizationMembershipCreateWithoutProjectMembershipsInput, OrganizationMembershipUncheckedCreateWithoutProjectMembershipsInput>
+    where?: OrganizationMembershipWhereInput
+  }
+
+  export type OrganizationMembershipUpdateToOneWithWhereWithoutProjectMembershipsInput = {
+    where?: OrganizationMembershipWhereInput
+    data: XOR<OrganizationMembershipUpdateWithoutProjectMembershipsInput, OrganizationMembershipUncheckedUpdateWithoutProjectMembershipsInput>
+  }
+
+  export type OrganizationMembershipUpdateWithoutProjectMembershipsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutOrganizationMembershipsNestedInput
+    user?: UserUpdateOneRequiredWithoutOrganizationMembershipsNestedInput
+  }
+
+  export type OrganizationMembershipUncheckedUpdateWithoutProjectMembershipsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ProjectUpsertWithoutProjectMembersInput = {
@@ -50525,7 +55224,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
+    organization?: OrganizationUpdateOneRequiredWithoutProjectsNestedInput
     traces?: TraceUpdateManyWithoutProjectNestedInput
     observations?: ObservationUpdateManyWithoutProjectNestedInput
     apiKeys?: ApiKeyUpdateManyWithoutProjectNestedInput
@@ -50535,7 +55234,6 @@ export namespace Prisma {
     sessions?: TraceSessionUpdateManyWithoutProjectNestedInput
     Prompt?: PromptUpdateManyWithoutProjectNestedInput
     Model?: ModelUpdateManyWithoutProjectNestedInput
-    AuditLog?: AuditLogUpdateManyWithoutProjectNestedInput
     EvalTemplate?: EvalTemplateUpdateManyWithoutProjectNestedInput
     JobConfiguration?: JobConfigurationUpdateManyWithoutProjectNestedInput
     JobExecution?: JobExecutionUpdateManyWithoutProjectNestedInput
@@ -50544,14 +55242,15 @@ export namespace Prisma {
     Score?: ScoreUpdateManyWithoutProjectNestedInput
     scoreConfig?: ScoreConfigUpdateManyWithoutProjectNestedInput
     BatchExport?: BatchExportUpdateManyWithoutProjectNestedInput
+    comment?: CommentUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutProjectMembersInput = {
     id?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     traces?: TraceUncheckedUpdateManyWithoutProjectNestedInput
     observations?: ObservationUncheckedUpdateManyWithoutProjectNestedInput
     apiKeys?: ApiKeyUncheckedUpdateManyWithoutProjectNestedInput
@@ -50561,7 +55260,6 @@ export namespace Prisma {
     sessions?: TraceSessionUncheckedUpdateManyWithoutProjectNestedInput
     Prompt?: PromptUncheckedUpdateManyWithoutProjectNestedInput
     Model?: ModelUncheckedUpdateManyWithoutProjectNestedInput
-    AuditLog?: AuditLogUncheckedUpdateManyWithoutProjectNestedInput
     EvalTemplate?: EvalTemplateUncheckedUpdateManyWithoutProjectNestedInput
     JobConfiguration?: JobConfigurationUncheckedUpdateManyWithoutProjectNestedInput
     JobExecution?: JobExecutionUncheckedUpdateManyWithoutProjectNestedInput
@@ -50570,6 +55268,7 @@ export namespace Prisma {
     Score?: ScoreUncheckedUpdateManyWithoutProjectNestedInput
     scoreConfig?: ScoreConfigUncheckedUpdateManyWithoutProjectNestedInput
     BatchExport?: BatchExportUncheckedUpdateManyWithoutProjectNestedInput
+    comment?: CommentUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type UserUpsertWithoutProjectMembershipsInput = {
@@ -50596,8 +55295,8 @@ export namespace Prisma {
     featureFlags?: UserUpdatefeatureFlagsInput | string[]
     accounts?: AccountUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
-    invitations?: MembershipInvitationUpdateManyWithoutSenderNestedInput
-    AuditLog?: AuditLogUpdateManyWithoutUserNestedInput
+    organizationMemberships?: OrganizationMembershipUpdateManyWithoutUserNestedInput
+    invitations?: MembershipInvitationUpdateManyWithoutInvitedByUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProjectMembershipsInput = {
@@ -50613,8 +55312,33 @@ export namespace Prisma {
     featureFlags?: UserUpdatefeatureFlagsInput | string[]
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
-    invitations?: MembershipInvitationUncheckedUpdateManyWithoutSenderNestedInput
-    AuditLog?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    organizationMemberships?: OrganizationMembershipUncheckedUpdateManyWithoutUserNestedInput
+    invitations?: MembershipInvitationUncheckedUpdateManyWithoutInvitedByUserNestedInput
+  }
+
+  export type OrganizationCreateWithoutMembershipInvitationInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
+    organizationMemberships?: OrganizationMembershipCreateNestedManyWithoutOrganizationInput
+    projects?: ProjectCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationUncheckedCreateWithoutMembershipInvitationInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
+    organizationMemberships?: OrganizationMembershipUncheckedCreateNestedManyWithoutOrganizationInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationCreateOrConnectWithoutMembershipInvitationInput = {
+    where: OrganizationWhereUniqueInput
+    create: XOR<OrganizationCreateWithoutMembershipInvitationInput, OrganizationUncheckedCreateWithoutMembershipInvitationInput>
   }
 
   export type ProjectCreateWithoutInvitationsInput = {
@@ -50622,8 +55346,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     name: string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipCreateNestedManyWithoutProjectInput
+    organization: OrganizationCreateNestedOneWithoutProjectsInput
     traces?: TraceCreateNestedManyWithoutProjectInput
     observations?: ObservationCreateNestedManyWithoutProjectInput
     apiKeys?: ApiKeyCreateNestedManyWithoutProjectInput
@@ -50632,7 +55356,6 @@ export namespace Prisma {
     sessions?: TraceSessionCreateNestedManyWithoutProjectInput
     Prompt?: PromptCreateNestedManyWithoutProjectInput
     Model?: ModelCreateNestedManyWithoutProjectInput
-    AuditLog?: AuditLogCreateNestedManyWithoutProjectInput
     EvalTemplate?: EvalTemplateCreateNestedManyWithoutProjectInput
     JobConfiguration?: JobConfigurationCreateNestedManyWithoutProjectInput
     JobExecution?: JobExecutionCreateNestedManyWithoutProjectInput
@@ -50641,14 +55364,15 @@ export namespace Prisma {
     Score?: ScoreCreateNestedManyWithoutProjectInput
     scoreConfig?: ScoreConfigCreateNestedManyWithoutProjectInput
     BatchExport?: BatchExportCreateNestedManyWithoutProjectInput
+    comment?: CommentCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutInvitationsInput = {
     id?: string
+    orgId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     name: string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUncheckedCreateNestedManyWithoutProjectInput
     traces?: TraceUncheckedCreateNestedManyWithoutProjectInput
     observations?: ObservationUncheckedCreateNestedManyWithoutProjectInput
@@ -50658,7 +55382,6 @@ export namespace Prisma {
     sessions?: TraceSessionUncheckedCreateNestedManyWithoutProjectInput
     Prompt?: PromptUncheckedCreateNestedManyWithoutProjectInput
     Model?: ModelUncheckedCreateNestedManyWithoutProjectInput
-    AuditLog?: AuditLogUncheckedCreateNestedManyWithoutProjectInput
     EvalTemplate?: EvalTemplateUncheckedCreateNestedManyWithoutProjectInput
     JobConfiguration?: JobConfigurationUncheckedCreateNestedManyWithoutProjectInput
     JobExecution?: JobExecutionUncheckedCreateNestedManyWithoutProjectInput
@@ -50667,6 +55390,7 @@ export namespace Prisma {
     Score?: ScoreUncheckedCreateNestedManyWithoutProjectInput
     scoreConfig?: ScoreConfigUncheckedCreateNestedManyWithoutProjectInput
     BatchExport?: BatchExportUncheckedCreateNestedManyWithoutProjectInput
+    comment?: CommentUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutInvitationsInput = {
@@ -50687,8 +55411,8 @@ export namespace Prisma {
     featureFlags?: UserCreatefeatureFlagsInput | string[]
     accounts?: AccountCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
+    organizationMemberships?: OrganizationMembershipCreateNestedManyWithoutUserInput
     projectMemberships?: ProjectMembershipCreateNestedManyWithoutUserInput
-    AuditLog?: AuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutInvitationsInput = {
@@ -50704,13 +55428,44 @@ export namespace Prisma {
     featureFlags?: UserCreatefeatureFlagsInput | string[]
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    organizationMemberships?: OrganizationMembershipUncheckedCreateNestedManyWithoutUserInput
     projectMemberships?: ProjectMembershipUncheckedCreateNestedManyWithoutUserInput
-    AuditLog?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutInvitationsInput = {
     where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutInvitationsInput, UserUncheckedCreateWithoutInvitationsInput>
+  }
+
+  export type OrganizationUpsertWithoutMembershipInvitationInput = {
+    update: XOR<OrganizationUpdateWithoutMembershipInvitationInput, OrganizationUncheckedUpdateWithoutMembershipInvitationInput>
+    create: XOR<OrganizationCreateWithoutMembershipInvitationInput, OrganizationUncheckedCreateWithoutMembershipInvitationInput>
+    where?: OrganizationWhereInput
+  }
+
+  export type OrganizationUpdateToOneWithWhereWithoutMembershipInvitationInput = {
+    where?: OrganizationWhereInput
+    data: XOR<OrganizationUpdateWithoutMembershipInvitationInput, OrganizationUncheckedUpdateWithoutMembershipInvitationInput>
+  }
+
+  export type OrganizationUpdateWithoutMembershipInvitationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
+    organizationMemberships?: OrganizationMembershipUpdateManyWithoutOrganizationNestedInput
+    projects?: ProjectUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type OrganizationUncheckedUpdateWithoutMembershipInvitationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
+    organizationMemberships?: OrganizationMembershipUncheckedUpdateManyWithoutOrganizationNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type ProjectUpsertWithoutInvitationsInput = {
@@ -50729,8 +55484,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUpdateManyWithoutProjectNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutProjectsNestedInput
     traces?: TraceUpdateManyWithoutProjectNestedInput
     observations?: ObservationUpdateManyWithoutProjectNestedInput
     apiKeys?: ApiKeyUpdateManyWithoutProjectNestedInput
@@ -50739,7 +55494,6 @@ export namespace Prisma {
     sessions?: TraceSessionUpdateManyWithoutProjectNestedInput
     Prompt?: PromptUpdateManyWithoutProjectNestedInput
     Model?: ModelUpdateManyWithoutProjectNestedInput
-    AuditLog?: AuditLogUpdateManyWithoutProjectNestedInput
     EvalTemplate?: EvalTemplateUpdateManyWithoutProjectNestedInput
     JobConfiguration?: JobConfigurationUpdateManyWithoutProjectNestedInput
     JobExecution?: JobExecutionUpdateManyWithoutProjectNestedInput
@@ -50748,14 +55502,15 @@ export namespace Prisma {
     Score?: ScoreUpdateManyWithoutProjectNestedInput
     scoreConfig?: ScoreConfigUpdateManyWithoutProjectNestedInput
     BatchExport?: BatchExportUpdateManyWithoutProjectNestedInput
+    comment?: CommentUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutInvitationsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUncheckedUpdateManyWithoutProjectNestedInput
     traces?: TraceUncheckedUpdateManyWithoutProjectNestedInput
     observations?: ObservationUncheckedUpdateManyWithoutProjectNestedInput
@@ -50765,7 +55520,6 @@ export namespace Prisma {
     sessions?: TraceSessionUncheckedUpdateManyWithoutProjectNestedInput
     Prompt?: PromptUncheckedUpdateManyWithoutProjectNestedInput
     Model?: ModelUncheckedUpdateManyWithoutProjectNestedInput
-    AuditLog?: AuditLogUncheckedUpdateManyWithoutProjectNestedInput
     EvalTemplate?: EvalTemplateUncheckedUpdateManyWithoutProjectNestedInput
     JobConfiguration?: JobConfigurationUncheckedUpdateManyWithoutProjectNestedInput
     JobExecution?: JobExecutionUncheckedUpdateManyWithoutProjectNestedInput
@@ -50774,6 +55528,7 @@ export namespace Prisma {
     Score?: ScoreUncheckedUpdateManyWithoutProjectNestedInput
     scoreConfig?: ScoreConfigUncheckedUpdateManyWithoutProjectNestedInput
     BatchExport?: BatchExportUncheckedUpdateManyWithoutProjectNestedInput
+    comment?: CommentUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type UserUpsertWithoutInvitationsInput = {
@@ -50800,8 +55555,8 @@ export namespace Prisma {
     featureFlags?: UserUpdatefeatureFlagsInput | string[]
     accounts?: AccountUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
+    organizationMemberships?: OrganizationMembershipUpdateManyWithoutUserNestedInput
     projectMemberships?: ProjectMembershipUpdateManyWithoutUserNestedInput
-    AuditLog?: AuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutInvitationsInput = {
@@ -50817,8 +55572,8 @@ export namespace Prisma {
     featureFlags?: UserUpdatefeatureFlagsInput | string[]
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    organizationMemberships?: OrganizationMembershipUncheckedUpdateManyWithoutUserNestedInput
     projectMemberships?: ProjectMembershipUncheckedUpdateManyWithoutUserNestedInput
-    AuditLog?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ProjectCreateWithoutSessionsInput = {
@@ -50826,8 +55581,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     name: string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipCreateNestedManyWithoutProjectInput
+    organization: OrganizationCreateNestedOneWithoutProjectsInput
     traces?: TraceCreateNestedManyWithoutProjectInput
     observations?: ObservationCreateNestedManyWithoutProjectInput
     apiKeys?: ApiKeyCreateNestedManyWithoutProjectInput
@@ -50836,7 +55591,6 @@ export namespace Prisma {
     invitations?: MembershipInvitationCreateNestedManyWithoutProjectInput
     Prompt?: PromptCreateNestedManyWithoutProjectInput
     Model?: ModelCreateNestedManyWithoutProjectInput
-    AuditLog?: AuditLogCreateNestedManyWithoutProjectInput
     EvalTemplate?: EvalTemplateCreateNestedManyWithoutProjectInput
     JobConfiguration?: JobConfigurationCreateNestedManyWithoutProjectInput
     JobExecution?: JobExecutionCreateNestedManyWithoutProjectInput
@@ -50845,14 +55599,15 @@ export namespace Prisma {
     Score?: ScoreCreateNestedManyWithoutProjectInput
     scoreConfig?: ScoreConfigCreateNestedManyWithoutProjectInput
     BatchExport?: BatchExportCreateNestedManyWithoutProjectInput
+    comment?: CommentCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutSessionsInput = {
     id?: string
+    orgId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     name: string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUncheckedCreateNestedManyWithoutProjectInput
     traces?: TraceUncheckedCreateNestedManyWithoutProjectInput
     observations?: ObservationUncheckedCreateNestedManyWithoutProjectInput
@@ -50862,7 +55617,6 @@ export namespace Prisma {
     invitations?: MembershipInvitationUncheckedCreateNestedManyWithoutProjectInput
     Prompt?: PromptUncheckedCreateNestedManyWithoutProjectInput
     Model?: ModelUncheckedCreateNestedManyWithoutProjectInput
-    AuditLog?: AuditLogUncheckedCreateNestedManyWithoutProjectInput
     EvalTemplate?: EvalTemplateUncheckedCreateNestedManyWithoutProjectInput
     JobConfiguration?: JobConfigurationUncheckedCreateNestedManyWithoutProjectInput
     JobExecution?: JobExecutionUncheckedCreateNestedManyWithoutProjectInput
@@ -50871,6 +55625,7 @@ export namespace Prisma {
     Score?: ScoreUncheckedCreateNestedManyWithoutProjectInput
     scoreConfig?: ScoreConfigUncheckedCreateNestedManyWithoutProjectInput
     BatchExport?: BatchExportUncheckedCreateNestedManyWithoutProjectInput
+    comment?: CommentUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutSessionsInput = {
@@ -50895,7 +55650,6 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     project: ProjectCreateNestedOneWithoutTracesInput
-    DatasetItem?: DatasetItemCreateNestedManyWithoutSourceTraceInput
     JobExecution?: JobExecutionCreateNestedManyWithoutTraceInput
   }
 
@@ -50915,7 +55669,6 @@ export namespace Prisma {
     output?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
-    DatasetItem?: DatasetItemUncheckedCreateNestedManyWithoutSourceTraceInput
     JobExecution?: JobExecutionUncheckedCreateNestedManyWithoutTraceInput
   }
 
@@ -50945,8 +55698,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUpdateManyWithoutProjectNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutProjectsNestedInput
     traces?: TraceUpdateManyWithoutProjectNestedInput
     observations?: ObservationUpdateManyWithoutProjectNestedInput
     apiKeys?: ApiKeyUpdateManyWithoutProjectNestedInput
@@ -50955,7 +55708,6 @@ export namespace Prisma {
     invitations?: MembershipInvitationUpdateManyWithoutProjectNestedInput
     Prompt?: PromptUpdateManyWithoutProjectNestedInput
     Model?: ModelUpdateManyWithoutProjectNestedInput
-    AuditLog?: AuditLogUpdateManyWithoutProjectNestedInput
     EvalTemplate?: EvalTemplateUpdateManyWithoutProjectNestedInput
     JobConfiguration?: JobConfigurationUpdateManyWithoutProjectNestedInput
     JobExecution?: JobExecutionUpdateManyWithoutProjectNestedInput
@@ -50964,14 +55716,15 @@ export namespace Prisma {
     Score?: ScoreUpdateManyWithoutProjectNestedInput
     scoreConfig?: ScoreConfigUpdateManyWithoutProjectNestedInput
     BatchExport?: BatchExportUpdateManyWithoutProjectNestedInput
+    comment?: CommentUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutSessionsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUncheckedUpdateManyWithoutProjectNestedInput
     traces?: TraceUncheckedUpdateManyWithoutProjectNestedInput
     observations?: ObservationUncheckedUpdateManyWithoutProjectNestedInput
@@ -50981,7 +55734,6 @@ export namespace Prisma {
     invitations?: MembershipInvitationUncheckedUpdateManyWithoutProjectNestedInput
     Prompt?: PromptUncheckedUpdateManyWithoutProjectNestedInput
     Model?: ModelUncheckedUpdateManyWithoutProjectNestedInput
-    AuditLog?: AuditLogUncheckedUpdateManyWithoutProjectNestedInput
     EvalTemplate?: EvalTemplateUncheckedUpdateManyWithoutProjectNestedInput
     JobConfiguration?: JobConfigurationUncheckedUpdateManyWithoutProjectNestedInput
     JobExecution?: JobExecutionUncheckedUpdateManyWithoutProjectNestedInput
@@ -50990,6 +55742,7 @@ export namespace Prisma {
     Score?: ScoreUncheckedUpdateManyWithoutProjectNestedInput
     scoreConfig?: ScoreConfigUncheckedUpdateManyWithoutProjectNestedInput
     BatchExport?: BatchExportUncheckedUpdateManyWithoutProjectNestedInput
+    comment?: CommentUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type TraceUpsertWithWhereUniqueWithoutSessionInput = {
@@ -51013,8 +55766,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     name: string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipCreateNestedManyWithoutProjectInput
+    organization: OrganizationCreateNestedOneWithoutProjectsInput
     observations?: ObservationCreateNestedManyWithoutProjectInput
     apiKeys?: ApiKeyCreateNestedManyWithoutProjectInput
     dataset?: DatasetCreateNestedManyWithoutProjectInput
@@ -51023,7 +55776,6 @@ export namespace Prisma {
     sessions?: TraceSessionCreateNestedManyWithoutProjectInput
     Prompt?: PromptCreateNestedManyWithoutProjectInput
     Model?: ModelCreateNestedManyWithoutProjectInput
-    AuditLog?: AuditLogCreateNestedManyWithoutProjectInput
     EvalTemplate?: EvalTemplateCreateNestedManyWithoutProjectInput
     JobConfiguration?: JobConfigurationCreateNestedManyWithoutProjectInput
     JobExecution?: JobExecutionCreateNestedManyWithoutProjectInput
@@ -51032,14 +55784,15 @@ export namespace Prisma {
     Score?: ScoreCreateNestedManyWithoutProjectInput
     scoreConfig?: ScoreConfigCreateNestedManyWithoutProjectInput
     BatchExport?: BatchExportCreateNestedManyWithoutProjectInput
+    comment?: CommentCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutTracesInput = {
     id?: string
+    orgId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     name: string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUncheckedCreateNestedManyWithoutProjectInput
     observations?: ObservationUncheckedCreateNestedManyWithoutProjectInput
     apiKeys?: ApiKeyUncheckedCreateNestedManyWithoutProjectInput
@@ -51049,7 +55802,6 @@ export namespace Prisma {
     sessions?: TraceSessionUncheckedCreateNestedManyWithoutProjectInput
     Prompt?: PromptUncheckedCreateNestedManyWithoutProjectInput
     Model?: ModelUncheckedCreateNestedManyWithoutProjectInput
-    AuditLog?: AuditLogUncheckedCreateNestedManyWithoutProjectInput
     EvalTemplate?: EvalTemplateUncheckedCreateNestedManyWithoutProjectInput
     JobConfiguration?: JobConfigurationUncheckedCreateNestedManyWithoutProjectInput
     JobExecution?: JobExecutionUncheckedCreateNestedManyWithoutProjectInput
@@ -51058,6 +55810,7 @@ export namespace Prisma {
     Score?: ScoreUncheckedCreateNestedManyWithoutProjectInput
     scoreConfig?: ScoreConfigUncheckedCreateNestedManyWithoutProjectInput
     BatchExport?: BatchExportUncheckedCreateNestedManyWithoutProjectInput
+    comment?: CommentUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutTracesInput = {
@@ -51086,42 +55839,6 @@ export namespace Prisma {
   export type TraceSessionCreateOrConnectWithoutTracesInput = {
     where: TraceSessionWhereUniqueInput
     create: XOR<TraceSessionCreateWithoutTracesInput, TraceSessionUncheckedCreateWithoutTracesInput>
-  }
-
-  export type DatasetItemCreateWithoutSourceTraceInput = {
-    id?: string
-    status?: $Enums.DatasetStatus
-    input?: NullableJsonNullValueInput | InputJsonValue
-    expectedOutput?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    sourceObservation?: ObservationCreateNestedOneWithoutDerivedDatasetItemsInput
-    dataset: DatasetCreateNestedOneWithoutDatasetItemsInput
-    datasetRunItems?: DatasetRunItemsCreateNestedManyWithoutDatasetItemInput
-  }
-
-  export type DatasetItemUncheckedCreateWithoutSourceTraceInput = {
-    id?: string
-    status?: $Enums.DatasetStatus
-    input?: NullableJsonNullValueInput | InputJsonValue
-    expectedOutput?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    sourceObservationId?: string | null
-    datasetId: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    datasetRunItems?: DatasetRunItemsUncheckedCreateNestedManyWithoutDatasetItemInput
-  }
-
-  export type DatasetItemCreateOrConnectWithoutSourceTraceInput = {
-    where: DatasetItemWhereUniqueInput
-    create: XOR<DatasetItemCreateWithoutSourceTraceInput, DatasetItemUncheckedCreateWithoutSourceTraceInput>
-  }
-
-  export type DatasetItemCreateManySourceTraceInputEnvelope = {
-    data: DatasetItemCreateManySourceTraceInput | DatasetItemCreateManySourceTraceInput[]
-    skipDuplicates?: boolean
   }
 
   export type JobExecutionCreateWithoutTraceInput = {
@@ -51176,8 +55893,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUpdateManyWithoutProjectNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutProjectsNestedInput
     observations?: ObservationUpdateManyWithoutProjectNestedInput
     apiKeys?: ApiKeyUpdateManyWithoutProjectNestedInput
     dataset?: DatasetUpdateManyWithoutProjectNestedInput
@@ -51186,7 +55903,6 @@ export namespace Prisma {
     sessions?: TraceSessionUpdateManyWithoutProjectNestedInput
     Prompt?: PromptUpdateManyWithoutProjectNestedInput
     Model?: ModelUpdateManyWithoutProjectNestedInput
-    AuditLog?: AuditLogUpdateManyWithoutProjectNestedInput
     EvalTemplate?: EvalTemplateUpdateManyWithoutProjectNestedInput
     JobConfiguration?: JobConfigurationUpdateManyWithoutProjectNestedInput
     JobExecution?: JobExecutionUpdateManyWithoutProjectNestedInput
@@ -51195,14 +55911,15 @@ export namespace Prisma {
     Score?: ScoreUpdateManyWithoutProjectNestedInput
     scoreConfig?: ScoreConfigUpdateManyWithoutProjectNestedInput
     BatchExport?: BatchExportUpdateManyWithoutProjectNestedInput
+    comment?: CommentUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutTracesInput = {
     id?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUncheckedUpdateManyWithoutProjectNestedInput
     observations?: ObservationUncheckedUpdateManyWithoutProjectNestedInput
     apiKeys?: ApiKeyUncheckedUpdateManyWithoutProjectNestedInput
@@ -51212,7 +55929,6 @@ export namespace Prisma {
     sessions?: TraceSessionUncheckedUpdateManyWithoutProjectNestedInput
     Prompt?: PromptUncheckedUpdateManyWithoutProjectNestedInput
     Model?: ModelUncheckedUpdateManyWithoutProjectNestedInput
-    AuditLog?: AuditLogUncheckedUpdateManyWithoutProjectNestedInput
     EvalTemplate?: EvalTemplateUncheckedUpdateManyWithoutProjectNestedInput
     JobConfiguration?: JobConfigurationUncheckedUpdateManyWithoutProjectNestedInput
     JobExecution?: JobExecutionUncheckedUpdateManyWithoutProjectNestedInput
@@ -51221,6 +55937,7 @@ export namespace Prisma {
     Score?: ScoreUncheckedUpdateManyWithoutProjectNestedInput
     scoreConfig?: ScoreConfigUncheckedUpdateManyWithoutProjectNestedInput
     BatchExport?: BatchExportUncheckedUpdateManyWithoutProjectNestedInput
+    comment?: CommentUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type TraceSessionUpsertWithoutTracesInput = {
@@ -51252,38 +55969,6 @@ export namespace Prisma {
     public?: BoolFieldUpdateOperationsInput | boolean
   }
 
-  export type DatasetItemUpsertWithWhereUniqueWithoutSourceTraceInput = {
-    where: DatasetItemWhereUniqueInput
-    update: XOR<DatasetItemUpdateWithoutSourceTraceInput, DatasetItemUncheckedUpdateWithoutSourceTraceInput>
-    create: XOR<DatasetItemCreateWithoutSourceTraceInput, DatasetItemUncheckedCreateWithoutSourceTraceInput>
-  }
-
-  export type DatasetItemUpdateWithWhereUniqueWithoutSourceTraceInput = {
-    where: DatasetItemWhereUniqueInput
-    data: XOR<DatasetItemUpdateWithoutSourceTraceInput, DatasetItemUncheckedUpdateWithoutSourceTraceInput>
-  }
-
-  export type DatasetItemUpdateManyWithWhereWithoutSourceTraceInput = {
-    where: DatasetItemScalarWhereInput
-    data: XOR<DatasetItemUpdateManyMutationInput, DatasetItemUncheckedUpdateManyWithoutSourceTraceInput>
-  }
-
-  export type DatasetItemScalarWhereInput = {
-    AND?: DatasetItemScalarWhereInput | DatasetItemScalarWhereInput[]
-    OR?: DatasetItemScalarWhereInput[]
-    NOT?: DatasetItemScalarWhereInput | DatasetItemScalarWhereInput[]
-    id?: StringFilter<"DatasetItem"> | string
-    status?: EnumDatasetStatusFilter<"DatasetItem"> | $Enums.DatasetStatus
-    input?: JsonNullableFilter<"DatasetItem">
-    expectedOutput?: JsonNullableFilter<"DatasetItem">
-    metadata?: JsonNullableFilter<"DatasetItem">
-    sourceTraceId?: StringNullableFilter<"DatasetItem"> | string | null
-    sourceObservationId?: StringNullableFilter<"DatasetItem"> | string | null
-    datasetId?: StringFilter<"DatasetItem"> | string
-    createdAt?: DateTimeFilter<"DatasetItem"> | Date | string
-    updatedAt?: DateTimeFilter<"DatasetItem"> | Date | string
-  }
-
   export type JobExecutionUpsertWithWhereUniqueWithoutTraceInput = {
     where: JobExecutionWhereUniqueInput
     update: XOR<JobExecutionUpdateWithoutTraceInput, JobExecutionUncheckedUpdateWithoutTraceInput>
@@ -51305,8 +55990,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     name: string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipCreateNestedManyWithoutProjectInput
+    organization: OrganizationCreateNestedOneWithoutProjectsInput
     traces?: TraceCreateNestedManyWithoutProjectInput
     apiKeys?: ApiKeyCreateNestedManyWithoutProjectInput
     dataset?: DatasetCreateNestedManyWithoutProjectInput
@@ -51315,7 +56000,6 @@ export namespace Prisma {
     sessions?: TraceSessionCreateNestedManyWithoutProjectInput
     Prompt?: PromptCreateNestedManyWithoutProjectInput
     Model?: ModelCreateNestedManyWithoutProjectInput
-    AuditLog?: AuditLogCreateNestedManyWithoutProjectInput
     EvalTemplate?: EvalTemplateCreateNestedManyWithoutProjectInput
     JobConfiguration?: JobConfigurationCreateNestedManyWithoutProjectInput
     JobExecution?: JobExecutionCreateNestedManyWithoutProjectInput
@@ -51324,14 +56008,15 @@ export namespace Prisma {
     Score?: ScoreCreateNestedManyWithoutProjectInput
     scoreConfig?: ScoreConfigCreateNestedManyWithoutProjectInput
     BatchExport?: BatchExportCreateNestedManyWithoutProjectInput
+    comment?: CommentCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutObservationsInput = {
     id?: string
+    orgId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     name: string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUncheckedCreateNestedManyWithoutProjectInput
     traces?: TraceUncheckedCreateNestedManyWithoutProjectInput
     apiKeys?: ApiKeyUncheckedCreateNestedManyWithoutProjectInput
@@ -51341,7 +56026,6 @@ export namespace Prisma {
     sessions?: TraceSessionUncheckedCreateNestedManyWithoutProjectInput
     Prompt?: PromptUncheckedCreateNestedManyWithoutProjectInput
     Model?: ModelUncheckedCreateNestedManyWithoutProjectInput
-    AuditLog?: AuditLogUncheckedCreateNestedManyWithoutProjectInput
     EvalTemplate?: EvalTemplateUncheckedCreateNestedManyWithoutProjectInput
     JobConfiguration?: JobConfigurationUncheckedCreateNestedManyWithoutProjectInput
     JobExecution?: JobExecutionUncheckedCreateNestedManyWithoutProjectInput
@@ -51350,47 +56034,12 @@ export namespace Prisma {
     Score?: ScoreUncheckedCreateNestedManyWithoutProjectInput
     scoreConfig?: ScoreConfigUncheckedCreateNestedManyWithoutProjectInput
     BatchExport?: BatchExportUncheckedCreateNestedManyWithoutProjectInput
+    comment?: CommentUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutObservationsInput = {
     where: ProjectWhereUniqueInput
     create: XOR<ProjectCreateWithoutObservationsInput, ProjectUncheckedCreateWithoutObservationsInput>
-  }
-
-  export type DatasetItemCreateWithoutSourceObservationInput = {
-    id?: string
-    status?: $Enums.DatasetStatus
-    input?: NullableJsonNullValueInput | InputJsonValue
-    expectedOutput?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    sourceTrace?: TraceCreateNestedOneWithoutDatasetItemInput
-    dataset: DatasetCreateNestedOneWithoutDatasetItemsInput
-    datasetRunItems?: DatasetRunItemsCreateNestedManyWithoutDatasetItemInput
-  }
-
-  export type DatasetItemUncheckedCreateWithoutSourceObservationInput = {
-    id?: string
-    status?: $Enums.DatasetStatus
-    input?: NullableJsonNullValueInput | InputJsonValue
-    expectedOutput?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    sourceTraceId?: string | null
-    datasetId: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    datasetRunItems?: DatasetRunItemsUncheckedCreateNestedManyWithoutDatasetItemInput
-  }
-
-  export type DatasetItemCreateOrConnectWithoutSourceObservationInput = {
-    where: DatasetItemWhereUniqueInput
-    create: XOR<DatasetItemCreateWithoutSourceObservationInput, DatasetItemUncheckedCreateWithoutSourceObservationInput>
-  }
-
-  export type DatasetItemCreateManySourceObservationInputEnvelope = {
-    data: DatasetItemCreateManySourceObservationInput | DatasetItemCreateManySourceObservationInput[]
-    skipDuplicates?: boolean
   }
 
   export type ProjectUpsertWithoutObservationsInput = {
@@ -51409,8 +56058,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUpdateManyWithoutProjectNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutProjectsNestedInput
     traces?: TraceUpdateManyWithoutProjectNestedInput
     apiKeys?: ApiKeyUpdateManyWithoutProjectNestedInput
     dataset?: DatasetUpdateManyWithoutProjectNestedInput
@@ -51419,7 +56068,6 @@ export namespace Prisma {
     sessions?: TraceSessionUpdateManyWithoutProjectNestedInput
     Prompt?: PromptUpdateManyWithoutProjectNestedInput
     Model?: ModelUpdateManyWithoutProjectNestedInput
-    AuditLog?: AuditLogUpdateManyWithoutProjectNestedInput
     EvalTemplate?: EvalTemplateUpdateManyWithoutProjectNestedInput
     JobConfiguration?: JobConfigurationUpdateManyWithoutProjectNestedInput
     JobExecution?: JobExecutionUpdateManyWithoutProjectNestedInput
@@ -51428,14 +56076,15 @@ export namespace Prisma {
     Score?: ScoreUpdateManyWithoutProjectNestedInput
     scoreConfig?: ScoreConfigUpdateManyWithoutProjectNestedInput
     BatchExport?: BatchExportUpdateManyWithoutProjectNestedInput
+    comment?: CommentUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutObservationsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUncheckedUpdateManyWithoutProjectNestedInput
     traces?: TraceUncheckedUpdateManyWithoutProjectNestedInput
     apiKeys?: ApiKeyUncheckedUpdateManyWithoutProjectNestedInput
@@ -51445,7 +56094,6 @@ export namespace Prisma {
     sessions?: TraceSessionUncheckedUpdateManyWithoutProjectNestedInput
     Prompt?: PromptUncheckedUpdateManyWithoutProjectNestedInput
     Model?: ModelUncheckedUpdateManyWithoutProjectNestedInput
-    AuditLog?: AuditLogUncheckedUpdateManyWithoutProjectNestedInput
     EvalTemplate?: EvalTemplateUncheckedUpdateManyWithoutProjectNestedInput
     JobConfiguration?: JobConfigurationUncheckedUpdateManyWithoutProjectNestedInput
     JobExecution?: JobExecutionUncheckedUpdateManyWithoutProjectNestedInput
@@ -51454,22 +56102,7 @@ export namespace Prisma {
     Score?: ScoreUncheckedUpdateManyWithoutProjectNestedInput
     scoreConfig?: ScoreConfigUncheckedUpdateManyWithoutProjectNestedInput
     BatchExport?: BatchExportUncheckedUpdateManyWithoutProjectNestedInput
-  }
-
-  export type DatasetItemUpsertWithWhereUniqueWithoutSourceObservationInput = {
-    where: DatasetItemWhereUniqueInput
-    update: XOR<DatasetItemUpdateWithoutSourceObservationInput, DatasetItemUncheckedUpdateWithoutSourceObservationInput>
-    create: XOR<DatasetItemCreateWithoutSourceObservationInput, DatasetItemUncheckedCreateWithoutSourceObservationInput>
-  }
-
-  export type DatasetItemUpdateWithWhereUniqueWithoutSourceObservationInput = {
-    where: DatasetItemWhereUniqueInput
-    data: XOR<DatasetItemUpdateWithoutSourceObservationInput, DatasetItemUncheckedUpdateWithoutSourceObservationInput>
-  }
-
-  export type DatasetItemUpdateManyWithWhereWithoutSourceObservationInput = {
-    where: DatasetItemScalarWhereInput
-    data: XOR<DatasetItemUpdateManyMutationInput, DatasetItemUncheckedUpdateManyWithoutSourceObservationInput>
+    comment?: CommentUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectCreateWithoutScoreInput = {
@@ -51477,8 +56110,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     name: string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipCreateNestedManyWithoutProjectInput
+    organization: OrganizationCreateNestedOneWithoutProjectsInput
     traces?: TraceCreateNestedManyWithoutProjectInput
     observations?: ObservationCreateNestedManyWithoutProjectInput
     apiKeys?: ApiKeyCreateNestedManyWithoutProjectInput
@@ -51488,7 +56121,6 @@ export namespace Prisma {
     sessions?: TraceSessionCreateNestedManyWithoutProjectInput
     Prompt?: PromptCreateNestedManyWithoutProjectInput
     Model?: ModelCreateNestedManyWithoutProjectInput
-    AuditLog?: AuditLogCreateNestedManyWithoutProjectInput
     EvalTemplate?: EvalTemplateCreateNestedManyWithoutProjectInput
     JobConfiguration?: JobConfigurationCreateNestedManyWithoutProjectInput
     JobExecution?: JobExecutionCreateNestedManyWithoutProjectInput
@@ -51496,14 +56128,15 @@ export namespace Prisma {
     PosthogIntegration?: PosthogIntegrationCreateNestedManyWithoutProjectInput
     scoreConfig?: ScoreConfigCreateNestedManyWithoutProjectInput
     BatchExport?: BatchExportCreateNestedManyWithoutProjectInput
+    comment?: CommentCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutScoreInput = {
     id?: string
+    orgId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     name: string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUncheckedCreateNestedManyWithoutProjectInput
     traces?: TraceUncheckedCreateNestedManyWithoutProjectInput
     observations?: ObservationUncheckedCreateNestedManyWithoutProjectInput
@@ -51514,7 +56147,6 @@ export namespace Prisma {
     sessions?: TraceSessionUncheckedCreateNestedManyWithoutProjectInput
     Prompt?: PromptUncheckedCreateNestedManyWithoutProjectInput
     Model?: ModelUncheckedCreateNestedManyWithoutProjectInput
-    AuditLog?: AuditLogUncheckedCreateNestedManyWithoutProjectInput
     EvalTemplate?: EvalTemplateUncheckedCreateNestedManyWithoutProjectInput
     JobConfiguration?: JobConfigurationUncheckedCreateNestedManyWithoutProjectInput
     JobExecution?: JobExecutionUncheckedCreateNestedManyWithoutProjectInput
@@ -51522,6 +56154,7 @@ export namespace Prisma {
     PosthogIntegration?: PosthogIntegrationUncheckedCreateNestedManyWithoutProjectInput
     scoreConfig?: ScoreConfigUncheckedCreateNestedManyWithoutProjectInput
     BatchExport?: BatchExportUncheckedCreateNestedManyWithoutProjectInput
+    comment?: CommentUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutScoreInput = {
@@ -51614,8 +56247,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUpdateManyWithoutProjectNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutProjectsNestedInput
     traces?: TraceUpdateManyWithoutProjectNestedInput
     observations?: ObservationUpdateManyWithoutProjectNestedInput
     apiKeys?: ApiKeyUpdateManyWithoutProjectNestedInput
@@ -51625,7 +56258,6 @@ export namespace Prisma {
     sessions?: TraceSessionUpdateManyWithoutProjectNestedInput
     Prompt?: PromptUpdateManyWithoutProjectNestedInput
     Model?: ModelUpdateManyWithoutProjectNestedInput
-    AuditLog?: AuditLogUpdateManyWithoutProjectNestedInput
     EvalTemplate?: EvalTemplateUpdateManyWithoutProjectNestedInput
     JobConfiguration?: JobConfigurationUpdateManyWithoutProjectNestedInput
     JobExecution?: JobExecutionUpdateManyWithoutProjectNestedInput
@@ -51633,14 +56265,15 @@ export namespace Prisma {
     PosthogIntegration?: PosthogIntegrationUpdateManyWithoutProjectNestedInput
     scoreConfig?: ScoreConfigUpdateManyWithoutProjectNestedInput
     BatchExport?: BatchExportUpdateManyWithoutProjectNestedInput
+    comment?: CommentUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutScoreInput = {
     id?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUncheckedUpdateManyWithoutProjectNestedInput
     traces?: TraceUncheckedUpdateManyWithoutProjectNestedInput
     observations?: ObservationUncheckedUpdateManyWithoutProjectNestedInput
@@ -51651,7 +56284,6 @@ export namespace Prisma {
     sessions?: TraceSessionUncheckedUpdateManyWithoutProjectNestedInput
     Prompt?: PromptUncheckedUpdateManyWithoutProjectNestedInput
     Model?: ModelUncheckedUpdateManyWithoutProjectNestedInput
-    AuditLog?: AuditLogUncheckedUpdateManyWithoutProjectNestedInput
     EvalTemplate?: EvalTemplateUncheckedUpdateManyWithoutProjectNestedInput
     JobConfiguration?: JobConfigurationUncheckedUpdateManyWithoutProjectNestedInput
     JobExecution?: JobExecutionUncheckedUpdateManyWithoutProjectNestedInput
@@ -51659,6 +56291,7 @@ export namespace Prisma {
     PosthogIntegration?: PosthogIntegrationUncheckedUpdateManyWithoutProjectNestedInput
     scoreConfig?: ScoreConfigUncheckedUpdateManyWithoutProjectNestedInput
     BatchExport?: BatchExportUncheckedUpdateManyWithoutProjectNestedInput
+    comment?: CommentUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type JobExecutionUpsertWithWhereUniqueWithoutScoreInput = {
@@ -51721,8 +56354,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     name: string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipCreateNestedManyWithoutProjectInput
+    organization: OrganizationCreateNestedOneWithoutProjectsInput
     traces?: TraceCreateNestedManyWithoutProjectInput
     observations?: ObservationCreateNestedManyWithoutProjectInput
     apiKeys?: ApiKeyCreateNestedManyWithoutProjectInput
@@ -51732,7 +56365,6 @@ export namespace Prisma {
     sessions?: TraceSessionCreateNestedManyWithoutProjectInput
     Prompt?: PromptCreateNestedManyWithoutProjectInput
     Model?: ModelCreateNestedManyWithoutProjectInput
-    AuditLog?: AuditLogCreateNestedManyWithoutProjectInput
     EvalTemplate?: EvalTemplateCreateNestedManyWithoutProjectInput
     JobConfiguration?: JobConfigurationCreateNestedManyWithoutProjectInput
     JobExecution?: JobExecutionCreateNestedManyWithoutProjectInput
@@ -51740,14 +56372,15 @@ export namespace Prisma {
     PosthogIntegration?: PosthogIntegrationCreateNestedManyWithoutProjectInput
     Score?: ScoreCreateNestedManyWithoutProjectInput
     BatchExport?: BatchExportCreateNestedManyWithoutProjectInput
+    comment?: CommentCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutScoreConfigInput = {
     id?: string
+    orgId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     name: string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUncheckedCreateNestedManyWithoutProjectInput
     traces?: TraceUncheckedCreateNestedManyWithoutProjectInput
     observations?: ObservationUncheckedCreateNestedManyWithoutProjectInput
@@ -51758,7 +56391,6 @@ export namespace Prisma {
     sessions?: TraceSessionUncheckedCreateNestedManyWithoutProjectInput
     Prompt?: PromptUncheckedCreateNestedManyWithoutProjectInput
     Model?: ModelUncheckedCreateNestedManyWithoutProjectInput
-    AuditLog?: AuditLogUncheckedCreateNestedManyWithoutProjectInput
     EvalTemplate?: EvalTemplateUncheckedCreateNestedManyWithoutProjectInput
     JobConfiguration?: JobConfigurationUncheckedCreateNestedManyWithoutProjectInput
     JobExecution?: JobExecutionUncheckedCreateNestedManyWithoutProjectInput
@@ -51766,6 +56398,7 @@ export namespace Prisma {
     PosthogIntegration?: PosthogIntegrationUncheckedCreateNestedManyWithoutProjectInput
     Score?: ScoreUncheckedCreateNestedManyWithoutProjectInput
     BatchExport?: BatchExportUncheckedCreateNestedManyWithoutProjectInput
+    comment?: CommentUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutScoreConfigInput = {
@@ -51835,8 +56468,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUpdateManyWithoutProjectNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutProjectsNestedInput
     traces?: TraceUpdateManyWithoutProjectNestedInput
     observations?: ObservationUpdateManyWithoutProjectNestedInput
     apiKeys?: ApiKeyUpdateManyWithoutProjectNestedInput
@@ -51846,7 +56479,6 @@ export namespace Prisma {
     sessions?: TraceSessionUpdateManyWithoutProjectNestedInput
     Prompt?: PromptUpdateManyWithoutProjectNestedInput
     Model?: ModelUpdateManyWithoutProjectNestedInput
-    AuditLog?: AuditLogUpdateManyWithoutProjectNestedInput
     EvalTemplate?: EvalTemplateUpdateManyWithoutProjectNestedInput
     JobConfiguration?: JobConfigurationUpdateManyWithoutProjectNestedInput
     JobExecution?: JobExecutionUpdateManyWithoutProjectNestedInput
@@ -51854,14 +56486,15 @@ export namespace Prisma {
     PosthogIntegration?: PosthogIntegrationUpdateManyWithoutProjectNestedInput
     Score?: ScoreUpdateManyWithoutProjectNestedInput
     BatchExport?: BatchExportUpdateManyWithoutProjectNestedInput
+    comment?: CommentUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutScoreConfigInput = {
     id?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUncheckedUpdateManyWithoutProjectNestedInput
     traces?: TraceUncheckedUpdateManyWithoutProjectNestedInput
     observations?: ObservationUncheckedUpdateManyWithoutProjectNestedInput
@@ -51872,7 +56505,6 @@ export namespace Prisma {
     sessions?: TraceSessionUncheckedUpdateManyWithoutProjectNestedInput
     Prompt?: PromptUncheckedUpdateManyWithoutProjectNestedInput
     Model?: ModelUncheckedUpdateManyWithoutProjectNestedInput
-    AuditLog?: AuditLogUncheckedUpdateManyWithoutProjectNestedInput
     EvalTemplate?: EvalTemplateUncheckedUpdateManyWithoutProjectNestedInput
     JobConfiguration?: JobConfigurationUncheckedUpdateManyWithoutProjectNestedInput
     JobExecution?: JobExecutionUncheckedUpdateManyWithoutProjectNestedInput
@@ -51880,6 +56512,7 @@ export namespace Prisma {
     PosthogIntegration?: PosthogIntegrationUncheckedUpdateManyWithoutProjectNestedInput
     Score?: ScoreUncheckedUpdateManyWithoutProjectNestedInput
     BatchExport?: BatchExportUncheckedUpdateManyWithoutProjectNestedInput
+    comment?: CommentUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type ScoreUpsertWithWhereUniqueWithoutScoreConfigInput = {
@@ -51903,8 +56536,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     name: string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipCreateNestedManyWithoutProjectInput
+    organization: OrganizationCreateNestedOneWithoutProjectsInput
     traces?: TraceCreateNestedManyWithoutProjectInput
     observations?: ObservationCreateNestedManyWithoutProjectInput
     apiKeys?: ApiKeyCreateNestedManyWithoutProjectInput
@@ -51913,7 +56546,6 @@ export namespace Prisma {
     sessions?: TraceSessionCreateNestedManyWithoutProjectInput
     Prompt?: PromptCreateNestedManyWithoutProjectInput
     Model?: ModelCreateNestedManyWithoutProjectInput
-    AuditLog?: AuditLogCreateNestedManyWithoutProjectInput
     EvalTemplate?: EvalTemplateCreateNestedManyWithoutProjectInput
     JobConfiguration?: JobConfigurationCreateNestedManyWithoutProjectInput
     JobExecution?: JobExecutionCreateNestedManyWithoutProjectInput
@@ -51922,14 +56554,15 @@ export namespace Prisma {
     Score?: ScoreCreateNestedManyWithoutProjectInput
     scoreConfig?: ScoreConfigCreateNestedManyWithoutProjectInput
     BatchExport?: BatchExportCreateNestedManyWithoutProjectInput
+    comment?: CommentCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutDatasetInput = {
     id?: string
+    orgId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     name: string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUncheckedCreateNestedManyWithoutProjectInput
     traces?: TraceUncheckedCreateNestedManyWithoutProjectInput
     observations?: ObservationUncheckedCreateNestedManyWithoutProjectInput
@@ -51939,7 +56572,6 @@ export namespace Prisma {
     sessions?: TraceSessionUncheckedCreateNestedManyWithoutProjectInput
     Prompt?: PromptUncheckedCreateNestedManyWithoutProjectInput
     Model?: ModelUncheckedCreateNestedManyWithoutProjectInput
-    AuditLog?: AuditLogUncheckedCreateNestedManyWithoutProjectInput
     EvalTemplate?: EvalTemplateUncheckedCreateNestedManyWithoutProjectInput
     JobConfiguration?: JobConfigurationUncheckedCreateNestedManyWithoutProjectInput
     JobExecution?: JobExecutionUncheckedCreateNestedManyWithoutProjectInput
@@ -51948,6 +56580,7 @@ export namespace Prisma {
     Score?: ScoreUncheckedCreateNestedManyWithoutProjectInput
     scoreConfig?: ScoreConfigUncheckedCreateNestedManyWithoutProjectInput
     BatchExport?: BatchExportUncheckedCreateNestedManyWithoutProjectInput
+    comment?: CommentUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutDatasetInput = {
@@ -51961,10 +56594,10 @@ export namespace Prisma {
     input?: NullableJsonNullValueInput | InputJsonValue
     expectedOutput?: NullableJsonNullValueInput | InputJsonValue
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    sourceTraceId?: string | null
+    sourceObservationId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    sourceTrace?: TraceCreateNestedOneWithoutDatasetItemInput
-    sourceObservation?: ObservationCreateNestedOneWithoutDerivedDatasetItemsInput
     datasetRunItems?: DatasetRunItemsCreateNestedManyWithoutDatasetItemInput
   }
 
@@ -52037,8 +56670,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUpdateManyWithoutProjectNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutProjectsNestedInput
     traces?: TraceUpdateManyWithoutProjectNestedInput
     observations?: ObservationUpdateManyWithoutProjectNestedInput
     apiKeys?: ApiKeyUpdateManyWithoutProjectNestedInput
@@ -52047,7 +56680,6 @@ export namespace Prisma {
     sessions?: TraceSessionUpdateManyWithoutProjectNestedInput
     Prompt?: PromptUpdateManyWithoutProjectNestedInput
     Model?: ModelUpdateManyWithoutProjectNestedInput
-    AuditLog?: AuditLogUpdateManyWithoutProjectNestedInput
     EvalTemplate?: EvalTemplateUpdateManyWithoutProjectNestedInput
     JobConfiguration?: JobConfigurationUpdateManyWithoutProjectNestedInput
     JobExecution?: JobExecutionUpdateManyWithoutProjectNestedInput
@@ -52056,14 +56688,15 @@ export namespace Prisma {
     Score?: ScoreUpdateManyWithoutProjectNestedInput
     scoreConfig?: ScoreConfigUpdateManyWithoutProjectNestedInput
     BatchExport?: BatchExportUpdateManyWithoutProjectNestedInput
+    comment?: CommentUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutDatasetInput = {
     id?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUncheckedUpdateManyWithoutProjectNestedInput
     traces?: TraceUncheckedUpdateManyWithoutProjectNestedInput
     observations?: ObservationUncheckedUpdateManyWithoutProjectNestedInput
@@ -52073,7 +56706,6 @@ export namespace Prisma {
     sessions?: TraceSessionUncheckedUpdateManyWithoutProjectNestedInput
     Prompt?: PromptUncheckedUpdateManyWithoutProjectNestedInput
     Model?: ModelUncheckedUpdateManyWithoutProjectNestedInput
-    AuditLog?: AuditLogUncheckedUpdateManyWithoutProjectNestedInput
     EvalTemplate?: EvalTemplateUncheckedUpdateManyWithoutProjectNestedInput
     JobConfiguration?: JobConfigurationUncheckedUpdateManyWithoutProjectNestedInput
     JobExecution?: JobExecutionUncheckedUpdateManyWithoutProjectNestedInput
@@ -52082,6 +56714,7 @@ export namespace Prisma {
     Score?: ScoreUncheckedUpdateManyWithoutProjectNestedInput
     scoreConfig?: ScoreConfigUncheckedUpdateManyWithoutProjectNestedInput
     BatchExport?: BatchExportUncheckedUpdateManyWithoutProjectNestedInput
+    comment?: CommentUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type DatasetItemUpsertWithWhereUniqueWithoutDatasetInput = {
@@ -52098,6 +56731,23 @@ export namespace Prisma {
   export type DatasetItemUpdateManyWithWhereWithoutDatasetInput = {
     where: DatasetItemScalarWhereInput
     data: XOR<DatasetItemUpdateManyMutationInput, DatasetItemUncheckedUpdateManyWithoutDatasetInput>
+  }
+
+  export type DatasetItemScalarWhereInput = {
+    AND?: DatasetItemScalarWhereInput | DatasetItemScalarWhereInput[]
+    OR?: DatasetItemScalarWhereInput[]
+    NOT?: DatasetItemScalarWhereInput | DatasetItemScalarWhereInput[]
+    id?: StringFilter<"DatasetItem"> | string
+    projectId?: StringFilter<"DatasetItem"> | string
+    status?: EnumDatasetStatusFilter<"DatasetItem"> | $Enums.DatasetStatus
+    input?: JsonNullableFilter<"DatasetItem">
+    expectedOutput?: JsonNullableFilter<"DatasetItem">
+    metadata?: JsonNullableFilter<"DatasetItem">
+    sourceTraceId?: StringNullableFilter<"DatasetItem"> | string | null
+    sourceObservationId?: StringNullableFilter<"DatasetItem"> | string | null
+    datasetId?: StringFilter<"DatasetItem"> | string
+    createdAt?: DateTimeFilter<"DatasetItem"> | Date | string
+    updatedAt?: DateTimeFilter<"DatasetItem"> | Date | string
   }
 
   export type DatasetRunsUpsertWithWhereUniqueWithoutDatasetInput = {
@@ -52121,134 +56771,13 @@ export namespace Prisma {
     OR?: DatasetRunsScalarWhereInput[]
     NOT?: DatasetRunsScalarWhereInput | DatasetRunsScalarWhereInput[]
     id?: StringFilter<"DatasetRuns"> | string
+    projectId?: StringFilter<"DatasetRuns"> | string
     name?: StringFilter<"DatasetRuns"> | string
     description?: StringNullableFilter<"DatasetRuns"> | string | null
     metadata?: JsonNullableFilter<"DatasetRuns">
     datasetId?: StringFilter<"DatasetRuns"> | string
     createdAt?: DateTimeFilter<"DatasetRuns"> | Date | string
     updatedAt?: DateTimeFilter<"DatasetRuns"> | Date | string
-  }
-
-  export type TraceCreateWithoutDatasetItemInput = {
-    id?: string
-    externalId?: string | null
-    timestamp?: Date | string
-    name?: string | null
-    userId?: string | null
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    release?: string | null
-    version?: string | null
-    public?: boolean
-    bookmarked?: boolean
-    tags?: TraceCreatetagsInput | string[]
-    input?: NullableJsonNullValueInput | InputJsonValue
-    output?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    project: ProjectCreateNestedOneWithoutTracesInput
-    session?: TraceSessionCreateNestedOneWithoutTracesInput
-    JobExecution?: JobExecutionCreateNestedManyWithoutTraceInput
-  }
-
-  export type TraceUncheckedCreateWithoutDatasetItemInput = {
-    id?: string
-    externalId?: string | null
-    timestamp?: Date | string
-    name?: string | null
-    userId?: string | null
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    release?: string | null
-    version?: string | null
-    projectId: string
-    public?: boolean
-    bookmarked?: boolean
-    tags?: TraceCreatetagsInput | string[]
-    input?: NullableJsonNullValueInput | InputJsonValue
-    output?: NullableJsonNullValueInput | InputJsonValue
-    sessionId?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    JobExecution?: JobExecutionUncheckedCreateNestedManyWithoutTraceInput
-  }
-
-  export type TraceCreateOrConnectWithoutDatasetItemInput = {
-    where: TraceWhereUniqueInput
-    create: XOR<TraceCreateWithoutDatasetItemInput, TraceUncheckedCreateWithoutDatasetItemInput>
-  }
-
-  export type ObservationCreateWithoutDerivedDatasetItemsInput = {
-    id?: string
-    traceId?: string | null
-    type: $Enums.ObservationType
-    startTime?: Date | string
-    endTime?: Date | string | null
-    name?: string | null
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    parentObservationId?: string | null
-    level?: $Enums.ObservationLevel
-    statusMessage?: string | null
-    version?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    model?: string | null
-    internalModel?: string | null
-    internalModelId?: string | null
-    modelParameters?: NullableJsonNullValueInput | InputJsonValue
-    input?: NullableJsonNullValueInput | InputJsonValue
-    output?: NullableJsonNullValueInput | InputJsonValue
-    promptTokens?: number
-    completionTokens?: number
-    totalTokens?: number
-    unit?: string | null
-    inputCost?: Decimal | DecimalJsLike | number | string | null
-    outputCost?: Decimal | DecimalJsLike | number | string | null
-    totalCost?: Decimal | DecimalJsLike | number | string | null
-    calculatedInputCost?: Decimal | DecimalJsLike | number | string | null
-    calculatedOutputCost?: Decimal | DecimalJsLike | number | string | null
-    calculatedTotalCost?: Decimal | DecimalJsLike | number | string | null
-    completionStartTime?: Date | string | null
-    promptId?: string | null
-    project: ProjectCreateNestedOneWithoutObservationsInput
-  }
-
-  export type ObservationUncheckedCreateWithoutDerivedDatasetItemsInput = {
-    id?: string
-    traceId?: string | null
-    projectId: string
-    type: $Enums.ObservationType
-    startTime?: Date | string
-    endTime?: Date | string | null
-    name?: string | null
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    parentObservationId?: string | null
-    level?: $Enums.ObservationLevel
-    statusMessage?: string | null
-    version?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    model?: string | null
-    internalModel?: string | null
-    internalModelId?: string | null
-    modelParameters?: NullableJsonNullValueInput | InputJsonValue
-    input?: NullableJsonNullValueInput | InputJsonValue
-    output?: NullableJsonNullValueInput | InputJsonValue
-    promptTokens?: number
-    completionTokens?: number
-    totalTokens?: number
-    unit?: string | null
-    inputCost?: Decimal | DecimalJsLike | number | string | null
-    outputCost?: Decimal | DecimalJsLike | number | string | null
-    totalCost?: Decimal | DecimalJsLike | number | string | null
-    calculatedInputCost?: Decimal | DecimalJsLike | number | string | null
-    calculatedOutputCost?: Decimal | DecimalJsLike | number | string | null
-    calculatedTotalCost?: Decimal | DecimalJsLike | number | string | null
-    completionStartTime?: Date | string | null
-    promptId?: string | null
-  }
-
-  export type ObservationCreateOrConnectWithoutDerivedDatasetItemsInput = {
-    where: ObservationWhereUniqueInput
-    create: XOR<ObservationCreateWithoutDerivedDatasetItemsInput, ObservationUncheckedCreateWithoutDerivedDatasetItemsInput>
   }
 
   export type DatasetCreateWithoutDatasetItemsInput = {
@@ -52264,10 +56793,10 @@ export namespace Prisma {
 
   export type DatasetUncheckedCreateWithoutDatasetItemsInput = {
     id?: string
+    projectId: string
     name: string
     description?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    projectId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     datasetRuns?: DatasetRunsUncheckedCreateNestedManyWithoutDatasetInput
@@ -52306,140 +56835,6 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type TraceUpsertWithoutDatasetItemInput = {
-    update: XOR<TraceUpdateWithoutDatasetItemInput, TraceUncheckedUpdateWithoutDatasetItemInput>
-    create: XOR<TraceCreateWithoutDatasetItemInput, TraceUncheckedCreateWithoutDatasetItemInput>
-    where?: TraceWhereInput
-  }
-
-  export type TraceUpdateToOneWithWhereWithoutDatasetItemInput = {
-    where?: TraceWhereInput
-    data: XOR<TraceUpdateWithoutDatasetItemInput, TraceUncheckedUpdateWithoutDatasetItemInput>
-  }
-
-  export type TraceUpdateWithoutDatasetItemInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    externalId?: NullableStringFieldUpdateOperationsInput | string | null
-    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
-    name?: NullableStringFieldUpdateOperationsInput | string | null
-    userId?: NullableStringFieldUpdateOperationsInput | string | null
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    release?: NullableStringFieldUpdateOperationsInput | string | null
-    version?: NullableStringFieldUpdateOperationsInput | string | null
-    public?: BoolFieldUpdateOperationsInput | boolean
-    bookmarked?: BoolFieldUpdateOperationsInput | boolean
-    tags?: TraceUpdatetagsInput | string[]
-    input?: NullableJsonNullValueInput | InputJsonValue
-    output?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    project?: ProjectUpdateOneRequiredWithoutTracesNestedInput
-    session?: TraceSessionUpdateOneWithoutTracesNestedInput
-    JobExecution?: JobExecutionUpdateManyWithoutTraceNestedInput
-  }
-
-  export type TraceUncheckedUpdateWithoutDatasetItemInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    externalId?: NullableStringFieldUpdateOperationsInput | string | null
-    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
-    name?: NullableStringFieldUpdateOperationsInput | string | null
-    userId?: NullableStringFieldUpdateOperationsInput | string | null
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    release?: NullableStringFieldUpdateOperationsInput | string | null
-    version?: NullableStringFieldUpdateOperationsInput | string | null
-    projectId?: StringFieldUpdateOperationsInput | string
-    public?: BoolFieldUpdateOperationsInput | boolean
-    bookmarked?: BoolFieldUpdateOperationsInput | boolean
-    tags?: TraceUpdatetagsInput | string[]
-    input?: NullableJsonNullValueInput | InputJsonValue
-    output?: NullableJsonNullValueInput | InputJsonValue
-    sessionId?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    JobExecution?: JobExecutionUncheckedUpdateManyWithoutTraceNestedInput
-  }
-
-  export type ObservationUpsertWithoutDerivedDatasetItemsInput = {
-    update: XOR<ObservationUpdateWithoutDerivedDatasetItemsInput, ObservationUncheckedUpdateWithoutDerivedDatasetItemsInput>
-    create: XOR<ObservationCreateWithoutDerivedDatasetItemsInput, ObservationUncheckedCreateWithoutDerivedDatasetItemsInput>
-    where?: ObservationWhereInput
-  }
-
-  export type ObservationUpdateToOneWithWhereWithoutDerivedDatasetItemsInput = {
-    where?: ObservationWhereInput
-    data: XOR<ObservationUpdateWithoutDerivedDatasetItemsInput, ObservationUncheckedUpdateWithoutDerivedDatasetItemsInput>
-  }
-
-  export type ObservationUpdateWithoutDerivedDatasetItemsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    traceId?: NullableStringFieldUpdateOperationsInput | string | null
-    type?: EnumObservationTypeFieldUpdateOperationsInput | $Enums.ObservationType
-    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
-    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    name?: NullableStringFieldUpdateOperationsInput | string | null
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    parentObservationId?: NullableStringFieldUpdateOperationsInput | string | null
-    level?: EnumObservationLevelFieldUpdateOperationsInput | $Enums.ObservationLevel
-    statusMessage?: NullableStringFieldUpdateOperationsInput | string | null
-    version?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    model?: NullableStringFieldUpdateOperationsInput | string | null
-    internalModel?: NullableStringFieldUpdateOperationsInput | string | null
-    internalModelId?: NullableStringFieldUpdateOperationsInput | string | null
-    modelParameters?: NullableJsonNullValueInput | InputJsonValue
-    input?: NullableJsonNullValueInput | InputJsonValue
-    output?: NullableJsonNullValueInput | InputJsonValue
-    promptTokens?: IntFieldUpdateOperationsInput | number
-    completionTokens?: IntFieldUpdateOperationsInput | number
-    totalTokens?: IntFieldUpdateOperationsInput | number
-    unit?: NullableStringFieldUpdateOperationsInput | string | null
-    inputCost?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    outputCost?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    totalCost?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    calculatedInputCost?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    calculatedOutputCost?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    calculatedTotalCost?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    completionStartTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    promptId?: NullableStringFieldUpdateOperationsInput | string | null
-    project?: ProjectUpdateOneRequiredWithoutObservationsNestedInput
-  }
-
-  export type ObservationUncheckedUpdateWithoutDerivedDatasetItemsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    traceId?: NullableStringFieldUpdateOperationsInput | string | null
-    projectId?: StringFieldUpdateOperationsInput | string
-    type?: EnumObservationTypeFieldUpdateOperationsInput | $Enums.ObservationType
-    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
-    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    name?: NullableStringFieldUpdateOperationsInput | string | null
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    parentObservationId?: NullableStringFieldUpdateOperationsInput | string | null
-    level?: EnumObservationLevelFieldUpdateOperationsInput | $Enums.ObservationLevel
-    statusMessage?: NullableStringFieldUpdateOperationsInput | string | null
-    version?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    model?: NullableStringFieldUpdateOperationsInput | string | null
-    internalModel?: NullableStringFieldUpdateOperationsInput | string | null
-    internalModelId?: NullableStringFieldUpdateOperationsInput | string | null
-    modelParameters?: NullableJsonNullValueInput | InputJsonValue
-    input?: NullableJsonNullValueInput | InputJsonValue
-    output?: NullableJsonNullValueInput | InputJsonValue
-    promptTokens?: IntFieldUpdateOperationsInput | number
-    completionTokens?: IntFieldUpdateOperationsInput | number
-    totalTokens?: IntFieldUpdateOperationsInput | number
-    unit?: NullableStringFieldUpdateOperationsInput | string | null
-    inputCost?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    outputCost?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    totalCost?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    calculatedInputCost?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    calculatedOutputCost?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    calculatedTotalCost?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    completionStartTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    promptId?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
   export type DatasetUpsertWithoutDatasetItemsInput = {
     update: XOR<DatasetUpdateWithoutDatasetItemsInput, DatasetUncheckedUpdateWithoutDatasetItemsInput>
     create: XOR<DatasetCreateWithoutDatasetItemsInput, DatasetUncheckedCreateWithoutDatasetItemsInput>
@@ -52464,10 +56859,10 @@ export namespace Prisma {
 
   export type DatasetUncheckedUpdateWithoutDatasetItemsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    projectId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     datasetRuns?: DatasetRunsUncheckedUpdateManyWithoutDatasetNestedInput
@@ -52494,6 +56889,7 @@ export namespace Prisma {
     OR?: DatasetRunItemsScalarWhereInput[]
     NOT?: DatasetRunItemsScalarWhereInput | DatasetRunItemsScalarWhereInput[]
     id?: StringFilter<"DatasetRunItems"> | string
+    projectId?: StringFilter<"DatasetRunItems"> | string
     datasetRunId?: StringFilter<"DatasetRunItems"> | string
     datasetItemId?: StringFilter<"DatasetRunItems"> | string
     traceId?: StringFilter<"DatasetRunItems"> | string
@@ -52515,10 +56911,10 @@ export namespace Prisma {
 
   export type DatasetUncheckedCreateWithoutDatasetRunsInput = {
     id?: string
+    projectId: string
     name: string
     description?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    projectId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     datasetItems?: DatasetItemUncheckedCreateNestedManyWithoutDatasetInput
@@ -52581,10 +56977,10 @@ export namespace Prisma {
 
   export type DatasetUncheckedUpdateWithoutDatasetRunsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    projectId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     datasetItems?: DatasetItemUncheckedUpdateManyWithoutDatasetNestedInput
@@ -52618,6 +57014,7 @@ export namespace Prisma {
 
   export type DatasetRunsUncheckedCreateWithoutDatasetRunItemsInput = {
     id?: string
+    projectId: string
     name: string
     description?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
@@ -52637,15 +57034,16 @@ export namespace Prisma {
     input?: NullableJsonNullValueInput | InputJsonValue
     expectedOutput?: NullableJsonNullValueInput | InputJsonValue
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    sourceTraceId?: string | null
+    sourceObservationId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    sourceTrace?: TraceCreateNestedOneWithoutDatasetItemInput
-    sourceObservation?: ObservationCreateNestedOneWithoutDerivedDatasetItemsInput
     dataset: DatasetCreateNestedOneWithoutDatasetItemsInput
   }
 
   export type DatasetItemUncheckedCreateWithoutDatasetRunItemsInput = {
     id?: string
+    projectId: string
     status?: $Enums.DatasetStatus
     input?: NullableJsonNullValueInput | InputJsonValue
     expectedOutput?: NullableJsonNullValueInput | InputJsonValue
@@ -52685,6 +57083,7 @@ export namespace Prisma {
 
   export type DatasetRunsUncheckedUpdateWithoutDatasetRunItemsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
@@ -52710,15 +57109,16 @@ export namespace Prisma {
     input?: NullableJsonNullValueInput | InputJsonValue
     expectedOutput?: NullableJsonNullValueInput | InputJsonValue
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    sourceTraceId?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceObservationId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    sourceTrace?: TraceUpdateOneWithoutDatasetItemNestedInput
-    sourceObservation?: ObservationUpdateOneWithoutDerivedDatasetItemsNestedInput
     dataset?: DatasetUpdateOneRequiredWithoutDatasetItemsNestedInput
   }
 
   export type DatasetItemUncheckedUpdateWithoutDatasetRunItemsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
     status?: EnumDatasetStatusFieldUpdateOperationsInput | $Enums.DatasetStatus
     input?: NullableJsonNullValueInput | InputJsonValue
     expectedOutput?: NullableJsonNullValueInput | InputJsonValue
@@ -52735,8 +57135,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     name: string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipCreateNestedManyWithoutProjectInput
+    organization: OrganizationCreateNestedOneWithoutProjectsInput
     traces?: TraceCreateNestedManyWithoutProjectInput
     observations?: ObservationCreateNestedManyWithoutProjectInput
     apiKeys?: ApiKeyCreateNestedManyWithoutProjectInput
@@ -52745,7 +57145,6 @@ export namespace Prisma {
     sessions?: TraceSessionCreateNestedManyWithoutProjectInput
     Prompt?: PromptCreateNestedManyWithoutProjectInput
     Model?: ModelCreateNestedManyWithoutProjectInput
-    AuditLog?: AuditLogCreateNestedManyWithoutProjectInput
     EvalTemplate?: EvalTemplateCreateNestedManyWithoutProjectInput
     JobConfiguration?: JobConfigurationCreateNestedManyWithoutProjectInput
     JobExecution?: JobExecutionCreateNestedManyWithoutProjectInput
@@ -52754,14 +57153,15 @@ export namespace Prisma {
     Score?: ScoreCreateNestedManyWithoutProjectInput
     scoreConfig?: ScoreConfigCreateNestedManyWithoutProjectInput
     BatchExport?: BatchExportCreateNestedManyWithoutProjectInput
+    comment?: CommentCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutRawEventsInput = {
     id?: string
+    orgId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     name: string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUncheckedCreateNestedManyWithoutProjectInput
     traces?: TraceUncheckedCreateNestedManyWithoutProjectInput
     observations?: ObservationUncheckedCreateNestedManyWithoutProjectInput
@@ -52771,7 +57171,6 @@ export namespace Prisma {
     sessions?: TraceSessionUncheckedCreateNestedManyWithoutProjectInput
     Prompt?: PromptUncheckedCreateNestedManyWithoutProjectInput
     Model?: ModelUncheckedCreateNestedManyWithoutProjectInput
-    AuditLog?: AuditLogUncheckedCreateNestedManyWithoutProjectInput
     EvalTemplate?: EvalTemplateUncheckedCreateNestedManyWithoutProjectInput
     JobConfiguration?: JobConfigurationUncheckedCreateNestedManyWithoutProjectInput
     JobExecution?: JobExecutionUncheckedCreateNestedManyWithoutProjectInput
@@ -52780,6 +57179,7 @@ export namespace Prisma {
     Score?: ScoreUncheckedCreateNestedManyWithoutProjectInput
     scoreConfig?: ScoreConfigUncheckedCreateNestedManyWithoutProjectInput
     BatchExport?: BatchExportUncheckedCreateNestedManyWithoutProjectInput
+    comment?: CommentUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutRawEventsInput = {
@@ -52803,8 +57203,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUpdateManyWithoutProjectNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutProjectsNestedInput
     traces?: TraceUpdateManyWithoutProjectNestedInput
     observations?: ObservationUpdateManyWithoutProjectNestedInput
     apiKeys?: ApiKeyUpdateManyWithoutProjectNestedInput
@@ -52813,7 +57213,127 @@ export namespace Prisma {
     sessions?: TraceSessionUpdateManyWithoutProjectNestedInput
     Prompt?: PromptUpdateManyWithoutProjectNestedInput
     Model?: ModelUpdateManyWithoutProjectNestedInput
-    AuditLog?: AuditLogUpdateManyWithoutProjectNestedInput
+    EvalTemplate?: EvalTemplateUpdateManyWithoutProjectNestedInput
+    JobConfiguration?: JobConfigurationUpdateManyWithoutProjectNestedInput
+    JobExecution?: JobExecutionUpdateManyWithoutProjectNestedInput
+    LlmApiKeys?: LlmApiKeysUpdateManyWithoutProjectNestedInput
+    PosthogIntegration?: PosthogIntegrationUpdateManyWithoutProjectNestedInput
+    Score?: ScoreUpdateManyWithoutProjectNestedInput
+    scoreConfig?: ScoreConfigUpdateManyWithoutProjectNestedInput
+    BatchExport?: BatchExportUpdateManyWithoutProjectNestedInput
+    comment?: CommentUpdateManyWithoutProjectNestedInput
+  }
+
+  export type ProjectUncheckedUpdateWithoutRawEventsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    projectMembers?: ProjectMembershipUncheckedUpdateManyWithoutProjectNestedInput
+    traces?: TraceUncheckedUpdateManyWithoutProjectNestedInput
+    observations?: ObservationUncheckedUpdateManyWithoutProjectNestedInput
+    apiKeys?: ApiKeyUncheckedUpdateManyWithoutProjectNestedInput
+    dataset?: DatasetUncheckedUpdateManyWithoutProjectNestedInput
+    invitations?: MembershipInvitationUncheckedUpdateManyWithoutProjectNestedInput
+    sessions?: TraceSessionUncheckedUpdateManyWithoutProjectNestedInput
+    Prompt?: PromptUncheckedUpdateManyWithoutProjectNestedInput
+    Model?: ModelUncheckedUpdateManyWithoutProjectNestedInput
+    EvalTemplate?: EvalTemplateUncheckedUpdateManyWithoutProjectNestedInput
+    JobConfiguration?: JobConfigurationUncheckedUpdateManyWithoutProjectNestedInput
+    JobExecution?: JobExecutionUncheckedUpdateManyWithoutProjectNestedInput
+    LlmApiKeys?: LlmApiKeysUncheckedUpdateManyWithoutProjectNestedInput
+    PosthogIntegration?: PosthogIntegrationUncheckedUpdateManyWithoutProjectNestedInput
+    Score?: ScoreUncheckedUpdateManyWithoutProjectNestedInput
+    scoreConfig?: ScoreConfigUncheckedUpdateManyWithoutProjectNestedInput
+    BatchExport?: BatchExportUncheckedUpdateManyWithoutProjectNestedInput
+    comment?: CommentUncheckedUpdateManyWithoutProjectNestedInput
+  }
+
+  export type ProjectCreateWithoutCommentInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    projectMembers?: ProjectMembershipCreateNestedManyWithoutProjectInput
+    organization: OrganizationCreateNestedOneWithoutProjectsInput
+    traces?: TraceCreateNestedManyWithoutProjectInput
+    observations?: ObservationCreateNestedManyWithoutProjectInput
+    apiKeys?: ApiKeyCreateNestedManyWithoutProjectInput
+    dataset?: DatasetCreateNestedManyWithoutProjectInput
+    RawEvents?: EventsCreateNestedManyWithoutProjectInput
+    invitations?: MembershipInvitationCreateNestedManyWithoutProjectInput
+    sessions?: TraceSessionCreateNestedManyWithoutProjectInput
+    Prompt?: PromptCreateNestedManyWithoutProjectInput
+    Model?: ModelCreateNestedManyWithoutProjectInput
+    EvalTemplate?: EvalTemplateCreateNestedManyWithoutProjectInput
+    JobConfiguration?: JobConfigurationCreateNestedManyWithoutProjectInput
+    JobExecution?: JobExecutionCreateNestedManyWithoutProjectInput
+    LlmApiKeys?: LlmApiKeysCreateNestedManyWithoutProjectInput
+    PosthogIntegration?: PosthogIntegrationCreateNestedManyWithoutProjectInput
+    Score?: ScoreCreateNestedManyWithoutProjectInput
+    scoreConfig?: ScoreConfigCreateNestedManyWithoutProjectInput
+    BatchExport?: BatchExportCreateNestedManyWithoutProjectInput
+  }
+
+  export type ProjectUncheckedCreateWithoutCommentInput = {
+    id?: string
+    orgId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    projectMembers?: ProjectMembershipUncheckedCreateNestedManyWithoutProjectInput
+    traces?: TraceUncheckedCreateNestedManyWithoutProjectInput
+    observations?: ObservationUncheckedCreateNestedManyWithoutProjectInput
+    apiKeys?: ApiKeyUncheckedCreateNestedManyWithoutProjectInput
+    dataset?: DatasetUncheckedCreateNestedManyWithoutProjectInput
+    RawEvents?: EventsUncheckedCreateNestedManyWithoutProjectInput
+    invitations?: MembershipInvitationUncheckedCreateNestedManyWithoutProjectInput
+    sessions?: TraceSessionUncheckedCreateNestedManyWithoutProjectInput
+    Prompt?: PromptUncheckedCreateNestedManyWithoutProjectInput
+    Model?: ModelUncheckedCreateNestedManyWithoutProjectInput
+    EvalTemplate?: EvalTemplateUncheckedCreateNestedManyWithoutProjectInput
+    JobConfiguration?: JobConfigurationUncheckedCreateNestedManyWithoutProjectInput
+    JobExecution?: JobExecutionUncheckedCreateNestedManyWithoutProjectInput
+    LlmApiKeys?: LlmApiKeysUncheckedCreateNestedManyWithoutProjectInput
+    PosthogIntegration?: PosthogIntegrationUncheckedCreateNestedManyWithoutProjectInput
+    Score?: ScoreUncheckedCreateNestedManyWithoutProjectInput
+    scoreConfig?: ScoreConfigUncheckedCreateNestedManyWithoutProjectInput
+    BatchExport?: BatchExportUncheckedCreateNestedManyWithoutProjectInput
+  }
+
+  export type ProjectCreateOrConnectWithoutCommentInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutCommentInput, ProjectUncheckedCreateWithoutCommentInput>
+  }
+
+  export type ProjectUpsertWithoutCommentInput = {
+    update: XOR<ProjectUpdateWithoutCommentInput, ProjectUncheckedUpdateWithoutCommentInput>
+    create: XOR<ProjectCreateWithoutCommentInput, ProjectUncheckedCreateWithoutCommentInput>
+    where?: ProjectWhereInput
+  }
+
+  export type ProjectUpdateToOneWithWhereWithoutCommentInput = {
+    where?: ProjectWhereInput
+    data: XOR<ProjectUpdateWithoutCommentInput, ProjectUncheckedUpdateWithoutCommentInput>
+  }
+
+  export type ProjectUpdateWithoutCommentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    projectMembers?: ProjectMembershipUpdateManyWithoutProjectNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutProjectsNestedInput
+    traces?: TraceUpdateManyWithoutProjectNestedInput
+    observations?: ObservationUpdateManyWithoutProjectNestedInput
+    apiKeys?: ApiKeyUpdateManyWithoutProjectNestedInput
+    dataset?: DatasetUpdateManyWithoutProjectNestedInput
+    RawEvents?: EventsUpdateManyWithoutProjectNestedInput
+    invitations?: MembershipInvitationUpdateManyWithoutProjectNestedInput
+    sessions?: TraceSessionUpdateManyWithoutProjectNestedInput
+    Prompt?: PromptUpdateManyWithoutProjectNestedInput
+    Model?: ModelUpdateManyWithoutProjectNestedInput
     EvalTemplate?: EvalTemplateUpdateManyWithoutProjectNestedInput
     JobConfiguration?: JobConfigurationUpdateManyWithoutProjectNestedInput
     JobExecution?: JobExecutionUpdateManyWithoutProjectNestedInput
@@ -52824,22 +57344,22 @@ export namespace Prisma {
     BatchExport?: BatchExportUpdateManyWithoutProjectNestedInput
   }
 
-  export type ProjectUncheckedUpdateWithoutRawEventsInput = {
+  export type ProjectUncheckedUpdateWithoutCommentInput = {
     id?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUncheckedUpdateManyWithoutProjectNestedInput
     traces?: TraceUncheckedUpdateManyWithoutProjectNestedInput
     observations?: ObservationUncheckedUpdateManyWithoutProjectNestedInput
     apiKeys?: ApiKeyUncheckedUpdateManyWithoutProjectNestedInput
     dataset?: DatasetUncheckedUpdateManyWithoutProjectNestedInput
+    RawEvents?: EventsUncheckedUpdateManyWithoutProjectNestedInput
     invitations?: MembershipInvitationUncheckedUpdateManyWithoutProjectNestedInput
     sessions?: TraceSessionUncheckedUpdateManyWithoutProjectNestedInput
     Prompt?: PromptUncheckedUpdateManyWithoutProjectNestedInput
     Model?: ModelUncheckedUpdateManyWithoutProjectNestedInput
-    AuditLog?: AuditLogUncheckedUpdateManyWithoutProjectNestedInput
     EvalTemplate?: EvalTemplateUncheckedUpdateManyWithoutProjectNestedInput
     JobConfiguration?: JobConfigurationUncheckedUpdateManyWithoutProjectNestedInput
     JobExecution?: JobExecutionUncheckedUpdateManyWithoutProjectNestedInput
@@ -52855,8 +57375,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     name: string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipCreateNestedManyWithoutProjectInput
+    organization: OrganizationCreateNestedOneWithoutProjectsInput
     traces?: TraceCreateNestedManyWithoutProjectInput
     observations?: ObservationCreateNestedManyWithoutProjectInput
     apiKeys?: ApiKeyCreateNestedManyWithoutProjectInput
@@ -52865,7 +57385,6 @@ export namespace Prisma {
     invitations?: MembershipInvitationCreateNestedManyWithoutProjectInput
     sessions?: TraceSessionCreateNestedManyWithoutProjectInput
     Model?: ModelCreateNestedManyWithoutProjectInput
-    AuditLog?: AuditLogCreateNestedManyWithoutProjectInput
     EvalTemplate?: EvalTemplateCreateNestedManyWithoutProjectInput
     JobConfiguration?: JobConfigurationCreateNestedManyWithoutProjectInput
     JobExecution?: JobExecutionCreateNestedManyWithoutProjectInput
@@ -52874,14 +57393,15 @@ export namespace Prisma {
     Score?: ScoreCreateNestedManyWithoutProjectInput
     scoreConfig?: ScoreConfigCreateNestedManyWithoutProjectInput
     BatchExport?: BatchExportCreateNestedManyWithoutProjectInput
+    comment?: CommentCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutPromptInput = {
     id?: string
+    orgId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     name: string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUncheckedCreateNestedManyWithoutProjectInput
     traces?: TraceUncheckedCreateNestedManyWithoutProjectInput
     observations?: ObservationUncheckedCreateNestedManyWithoutProjectInput
@@ -52891,7 +57411,6 @@ export namespace Prisma {
     invitations?: MembershipInvitationUncheckedCreateNestedManyWithoutProjectInput
     sessions?: TraceSessionUncheckedCreateNestedManyWithoutProjectInput
     Model?: ModelUncheckedCreateNestedManyWithoutProjectInput
-    AuditLog?: AuditLogUncheckedCreateNestedManyWithoutProjectInput
     EvalTemplate?: EvalTemplateUncheckedCreateNestedManyWithoutProjectInput
     JobConfiguration?: JobConfigurationUncheckedCreateNestedManyWithoutProjectInput
     JobExecution?: JobExecutionUncheckedCreateNestedManyWithoutProjectInput
@@ -52900,6 +57419,7 @@ export namespace Prisma {
     Score?: ScoreUncheckedCreateNestedManyWithoutProjectInput
     scoreConfig?: ScoreConfigUncheckedCreateNestedManyWithoutProjectInput
     BatchExport?: BatchExportUncheckedCreateNestedManyWithoutProjectInput
+    comment?: CommentUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutPromptInput = {
@@ -52923,8 +57443,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUpdateManyWithoutProjectNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutProjectsNestedInput
     traces?: TraceUpdateManyWithoutProjectNestedInput
     observations?: ObservationUpdateManyWithoutProjectNestedInput
     apiKeys?: ApiKeyUpdateManyWithoutProjectNestedInput
@@ -52933,7 +57453,6 @@ export namespace Prisma {
     invitations?: MembershipInvitationUpdateManyWithoutProjectNestedInput
     sessions?: TraceSessionUpdateManyWithoutProjectNestedInput
     Model?: ModelUpdateManyWithoutProjectNestedInput
-    AuditLog?: AuditLogUpdateManyWithoutProjectNestedInput
     EvalTemplate?: EvalTemplateUpdateManyWithoutProjectNestedInput
     JobConfiguration?: JobConfigurationUpdateManyWithoutProjectNestedInput
     JobExecution?: JobExecutionUpdateManyWithoutProjectNestedInput
@@ -52942,14 +57461,15 @@ export namespace Prisma {
     Score?: ScoreUpdateManyWithoutProjectNestedInput
     scoreConfig?: ScoreConfigUpdateManyWithoutProjectNestedInput
     BatchExport?: BatchExportUpdateManyWithoutProjectNestedInput
+    comment?: CommentUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutPromptInput = {
     id?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUncheckedUpdateManyWithoutProjectNestedInput
     traces?: TraceUncheckedUpdateManyWithoutProjectNestedInput
     observations?: ObservationUncheckedUpdateManyWithoutProjectNestedInput
@@ -52959,7 +57479,6 @@ export namespace Prisma {
     invitations?: MembershipInvitationUncheckedUpdateManyWithoutProjectNestedInput
     sessions?: TraceSessionUncheckedUpdateManyWithoutProjectNestedInput
     Model?: ModelUncheckedUpdateManyWithoutProjectNestedInput
-    AuditLog?: AuditLogUncheckedUpdateManyWithoutProjectNestedInput
     EvalTemplate?: EvalTemplateUncheckedUpdateManyWithoutProjectNestedInput
     JobConfiguration?: JobConfigurationUncheckedUpdateManyWithoutProjectNestedInput
     JobExecution?: JobExecutionUncheckedUpdateManyWithoutProjectNestedInput
@@ -52968,6 +57487,7 @@ export namespace Prisma {
     Score?: ScoreUncheckedUpdateManyWithoutProjectNestedInput
     scoreConfig?: ScoreConfigUncheckedUpdateManyWithoutProjectNestedInput
     BatchExport?: BatchExportUncheckedUpdateManyWithoutProjectNestedInput
+    comment?: CommentUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectCreateWithoutModelInput = {
@@ -52975,8 +57495,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     name: string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipCreateNestedManyWithoutProjectInput
+    organization: OrganizationCreateNestedOneWithoutProjectsInput
     traces?: TraceCreateNestedManyWithoutProjectInput
     observations?: ObservationCreateNestedManyWithoutProjectInput
     apiKeys?: ApiKeyCreateNestedManyWithoutProjectInput
@@ -52985,7 +57505,6 @@ export namespace Prisma {
     invitations?: MembershipInvitationCreateNestedManyWithoutProjectInput
     sessions?: TraceSessionCreateNestedManyWithoutProjectInput
     Prompt?: PromptCreateNestedManyWithoutProjectInput
-    AuditLog?: AuditLogCreateNestedManyWithoutProjectInput
     EvalTemplate?: EvalTemplateCreateNestedManyWithoutProjectInput
     JobConfiguration?: JobConfigurationCreateNestedManyWithoutProjectInput
     JobExecution?: JobExecutionCreateNestedManyWithoutProjectInput
@@ -52994,14 +57513,15 @@ export namespace Prisma {
     Score?: ScoreCreateNestedManyWithoutProjectInput
     scoreConfig?: ScoreConfigCreateNestedManyWithoutProjectInput
     BatchExport?: BatchExportCreateNestedManyWithoutProjectInput
+    comment?: CommentCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutModelInput = {
     id?: string
+    orgId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     name: string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUncheckedCreateNestedManyWithoutProjectInput
     traces?: TraceUncheckedCreateNestedManyWithoutProjectInput
     observations?: ObservationUncheckedCreateNestedManyWithoutProjectInput
@@ -53011,7 +57531,6 @@ export namespace Prisma {
     invitations?: MembershipInvitationUncheckedCreateNestedManyWithoutProjectInput
     sessions?: TraceSessionUncheckedCreateNestedManyWithoutProjectInput
     Prompt?: PromptUncheckedCreateNestedManyWithoutProjectInput
-    AuditLog?: AuditLogUncheckedCreateNestedManyWithoutProjectInput
     EvalTemplate?: EvalTemplateUncheckedCreateNestedManyWithoutProjectInput
     JobConfiguration?: JobConfigurationUncheckedCreateNestedManyWithoutProjectInput
     JobExecution?: JobExecutionUncheckedCreateNestedManyWithoutProjectInput
@@ -53020,6 +57539,7 @@ export namespace Prisma {
     Score?: ScoreUncheckedCreateNestedManyWithoutProjectInput
     scoreConfig?: ScoreConfigUncheckedCreateNestedManyWithoutProjectInput
     BatchExport?: BatchExportUncheckedCreateNestedManyWithoutProjectInput
+    comment?: CommentUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutModelInput = {
@@ -53043,8 +57563,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUpdateManyWithoutProjectNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutProjectsNestedInput
     traces?: TraceUpdateManyWithoutProjectNestedInput
     observations?: ObservationUpdateManyWithoutProjectNestedInput
     apiKeys?: ApiKeyUpdateManyWithoutProjectNestedInput
@@ -53053,7 +57573,6 @@ export namespace Prisma {
     invitations?: MembershipInvitationUpdateManyWithoutProjectNestedInput
     sessions?: TraceSessionUpdateManyWithoutProjectNestedInput
     Prompt?: PromptUpdateManyWithoutProjectNestedInput
-    AuditLog?: AuditLogUpdateManyWithoutProjectNestedInput
     EvalTemplate?: EvalTemplateUpdateManyWithoutProjectNestedInput
     JobConfiguration?: JobConfigurationUpdateManyWithoutProjectNestedInput
     JobExecution?: JobExecutionUpdateManyWithoutProjectNestedInput
@@ -53062,14 +57581,15 @@ export namespace Prisma {
     Score?: ScoreUpdateManyWithoutProjectNestedInput
     scoreConfig?: ScoreConfigUpdateManyWithoutProjectNestedInput
     BatchExport?: BatchExportUpdateManyWithoutProjectNestedInput
+    comment?: CommentUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutModelInput = {
     id?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUncheckedUpdateManyWithoutProjectNestedInput
     traces?: TraceUncheckedUpdateManyWithoutProjectNestedInput
     observations?: ObservationUncheckedUpdateManyWithoutProjectNestedInput
@@ -53079,7 +57599,6 @@ export namespace Prisma {
     invitations?: MembershipInvitationUncheckedUpdateManyWithoutProjectNestedInput
     sessions?: TraceSessionUncheckedUpdateManyWithoutProjectNestedInput
     Prompt?: PromptUncheckedUpdateManyWithoutProjectNestedInput
-    AuditLog?: AuditLogUncheckedUpdateManyWithoutProjectNestedInput
     EvalTemplate?: EvalTemplateUncheckedUpdateManyWithoutProjectNestedInput
     JobConfiguration?: JobConfigurationUncheckedUpdateManyWithoutProjectNestedInput
     JobExecution?: JobExecutionUncheckedUpdateManyWithoutProjectNestedInput
@@ -53088,210 +57607,7 @@ export namespace Prisma {
     Score?: ScoreUncheckedUpdateManyWithoutProjectNestedInput
     scoreConfig?: ScoreConfigUncheckedUpdateManyWithoutProjectNestedInput
     BatchExport?: BatchExportUncheckedUpdateManyWithoutProjectNestedInput
-  }
-
-  export type UserCreateWithoutAuditLogInput = {
-    id?: string
-    name?: string | null
-    email?: string | null
-    emailVerified?: Date | string | null
-    password?: string | null
-    image?: string | null
-    admin?: boolean
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    featureFlags?: UserCreatefeatureFlagsInput | string[]
-    accounts?: AccountCreateNestedManyWithoutUserInput
-    sessions?: SessionCreateNestedManyWithoutUserInput
-    projectMemberships?: ProjectMembershipCreateNestedManyWithoutUserInput
-    invitations?: MembershipInvitationCreateNestedManyWithoutSenderInput
-  }
-
-  export type UserUncheckedCreateWithoutAuditLogInput = {
-    id?: string
-    name?: string | null
-    email?: string | null
-    emailVerified?: Date | string | null
-    password?: string | null
-    image?: string | null
-    admin?: boolean
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    featureFlags?: UserCreatefeatureFlagsInput | string[]
-    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
-    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
-    projectMemberships?: ProjectMembershipUncheckedCreateNestedManyWithoutUserInput
-    invitations?: MembershipInvitationUncheckedCreateNestedManyWithoutSenderInput
-  }
-
-  export type UserCreateOrConnectWithoutAuditLogInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutAuditLogInput, UserUncheckedCreateWithoutAuditLogInput>
-  }
-
-  export type ProjectCreateWithoutAuditLogInput = {
-    id?: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    name: string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
-    projectMembers?: ProjectMembershipCreateNestedManyWithoutProjectInput
-    traces?: TraceCreateNestedManyWithoutProjectInput
-    observations?: ObservationCreateNestedManyWithoutProjectInput
-    apiKeys?: ApiKeyCreateNestedManyWithoutProjectInput
-    dataset?: DatasetCreateNestedManyWithoutProjectInput
-    RawEvents?: EventsCreateNestedManyWithoutProjectInput
-    invitations?: MembershipInvitationCreateNestedManyWithoutProjectInput
-    sessions?: TraceSessionCreateNestedManyWithoutProjectInput
-    Prompt?: PromptCreateNestedManyWithoutProjectInput
-    Model?: ModelCreateNestedManyWithoutProjectInput
-    EvalTemplate?: EvalTemplateCreateNestedManyWithoutProjectInput
-    JobConfiguration?: JobConfigurationCreateNestedManyWithoutProjectInput
-    JobExecution?: JobExecutionCreateNestedManyWithoutProjectInput
-    LlmApiKeys?: LlmApiKeysCreateNestedManyWithoutProjectInput
-    PosthogIntegration?: PosthogIntegrationCreateNestedManyWithoutProjectInput
-    Score?: ScoreCreateNestedManyWithoutProjectInput
-    scoreConfig?: ScoreConfigCreateNestedManyWithoutProjectInput
-    BatchExport?: BatchExportCreateNestedManyWithoutProjectInput
-  }
-
-  export type ProjectUncheckedCreateWithoutAuditLogInput = {
-    id?: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    name: string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
-    projectMembers?: ProjectMembershipUncheckedCreateNestedManyWithoutProjectInput
-    traces?: TraceUncheckedCreateNestedManyWithoutProjectInput
-    observations?: ObservationUncheckedCreateNestedManyWithoutProjectInput
-    apiKeys?: ApiKeyUncheckedCreateNestedManyWithoutProjectInput
-    dataset?: DatasetUncheckedCreateNestedManyWithoutProjectInput
-    RawEvents?: EventsUncheckedCreateNestedManyWithoutProjectInput
-    invitations?: MembershipInvitationUncheckedCreateNestedManyWithoutProjectInput
-    sessions?: TraceSessionUncheckedCreateNestedManyWithoutProjectInput
-    Prompt?: PromptUncheckedCreateNestedManyWithoutProjectInput
-    Model?: ModelUncheckedCreateNestedManyWithoutProjectInput
-    EvalTemplate?: EvalTemplateUncheckedCreateNestedManyWithoutProjectInput
-    JobConfiguration?: JobConfigurationUncheckedCreateNestedManyWithoutProjectInput
-    JobExecution?: JobExecutionUncheckedCreateNestedManyWithoutProjectInput
-    LlmApiKeys?: LlmApiKeysUncheckedCreateNestedManyWithoutProjectInput
-    PosthogIntegration?: PosthogIntegrationUncheckedCreateNestedManyWithoutProjectInput
-    Score?: ScoreUncheckedCreateNestedManyWithoutProjectInput
-    scoreConfig?: ScoreConfigUncheckedCreateNestedManyWithoutProjectInput
-    BatchExport?: BatchExportUncheckedCreateNestedManyWithoutProjectInput
-  }
-
-  export type ProjectCreateOrConnectWithoutAuditLogInput = {
-    where: ProjectWhereUniqueInput
-    create: XOR<ProjectCreateWithoutAuditLogInput, ProjectUncheckedCreateWithoutAuditLogInput>
-  }
-
-  export type UserUpsertWithoutAuditLogInput = {
-    update: XOR<UserUpdateWithoutAuditLogInput, UserUncheckedUpdateWithoutAuditLogInput>
-    create: XOR<UserCreateWithoutAuditLogInput, UserUncheckedCreateWithoutAuditLogInput>
-    where?: UserWhereInput
-  }
-
-  export type UserUpdateToOneWithWhereWithoutAuditLogInput = {
-    where?: UserWhereInput
-    data: XOR<UserUpdateWithoutAuditLogInput, UserUncheckedUpdateWithoutAuditLogInput>
-  }
-
-  export type UserUpdateWithoutAuditLogInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: NullableStringFieldUpdateOperationsInput | string | null
-    email?: NullableStringFieldUpdateOperationsInput | string | null
-    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    password?: NullableStringFieldUpdateOperationsInput | string | null
-    image?: NullableStringFieldUpdateOperationsInput | string | null
-    admin?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    featureFlags?: UserUpdatefeatureFlagsInput | string[]
-    accounts?: AccountUpdateManyWithoutUserNestedInput
-    sessions?: SessionUpdateManyWithoutUserNestedInput
-    projectMemberships?: ProjectMembershipUpdateManyWithoutUserNestedInput
-    invitations?: MembershipInvitationUpdateManyWithoutSenderNestedInput
-  }
-
-  export type UserUncheckedUpdateWithoutAuditLogInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: NullableStringFieldUpdateOperationsInput | string | null
-    email?: NullableStringFieldUpdateOperationsInput | string | null
-    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    password?: NullableStringFieldUpdateOperationsInput | string | null
-    image?: NullableStringFieldUpdateOperationsInput | string | null
-    admin?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    featureFlags?: UserUpdatefeatureFlagsInput | string[]
-    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
-    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
-    projectMemberships?: ProjectMembershipUncheckedUpdateManyWithoutUserNestedInput
-    invitations?: MembershipInvitationUncheckedUpdateManyWithoutSenderNestedInput
-  }
-
-  export type ProjectUpsertWithoutAuditLogInput = {
-    update: XOR<ProjectUpdateWithoutAuditLogInput, ProjectUncheckedUpdateWithoutAuditLogInput>
-    create: XOR<ProjectCreateWithoutAuditLogInput, ProjectUncheckedCreateWithoutAuditLogInput>
-    where?: ProjectWhereInput
-  }
-
-  export type ProjectUpdateToOneWithWhereWithoutAuditLogInput = {
-    where?: ProjectWhereInput
-    data: XOR<ProjectUpdateWithoutAuditLogInput, ProjectUncheckedUpdateWithoutAuditLogInput>
-  }
-
-  export type ProjectUpdateWithoutAuditLogInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    name?: StringFieldUpdateOperationsInput | string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
-    projectMembers?: ProjectMembershipUpdateManyWithoutProjectNestedInput
-    traces?: TraceUpdateManyWithoutProjectNestedInput
-    observations?: ObservationUpdateManyWithoutProjectNestedInput
-    apiKeys?: ApiKeyUpdateManyWithoutProjectNestedInput
-    dataset?: DatasetUpdateManyWithoutProjectNestedInput
-    RawEvents?: EventsUpdateManyWithoutProjectNestedInput
-    invitations?: MembershipInvitationUpdateManyWithoutProjectNestedInput
-    sessions?: TraceSessionUpdateManyWithoutProjectNestedInput
-    Prompt?: PromptUpdateManyWithoutProjectNestedInput
-    Model?: ModelUpdateManyWithoutProjectNestedInput
-    EvalTemplate?: EvalTemplateUpdateManyWithoutProjectNestedInput
-    JobConfiguration?: JobConfigurationUpdateManyWithoutProjectNestedInput
-    JobExecution?: JobExecutionUpdateManyWithoutProjectNestedInput
-    LlmApiKeys?: LlmApiKeysUpdateManyWithoutProjectNestedInput
-    PosthogIntegration?: PosthogIntegrationUpdateManyWithoutProjectNestedInput
-    Score?: ScoreUpdateManyWithoutProjectNestedInput
-    scoreConfig?: ScoreConfigUpdateManyWithoutProjectNestedInput
-    BatchExport?: BatchExportUpdateManyWithoutProjectNestedInput
-  }
-
-  export type ProjectUncheckedUpdateWithoutAuditLogInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    name?: StringFieldUpdateOperationsInput | string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
-    projectMembers?: ProjectMembershipUncheckedUpdateManyWithoutProjectNestedInput
-    traces?: TraceUncheckedUpdateManyWithoutProjectNestedInput
-    observations?: ObservationUncheckedUpdateManyWithoutProjectNestedInput
-    apiKeys?: ApiKeyUncheckedUpdateManyWithoutProjectNestedInput
-    dataset?: DatasetUncheckedUpdateManyWithoutProjectNestedInput
-    RawEvents?: EventsUncheckedUpdateManyWithoutProjectNestedInput
-    invitations?: MembershipInvitationUncheckedUpdateManyWithoutProjectNestedInput
-    sessions?: TraceSessionUncheckedUpdateManyWithoutProjectNestedInput
-    Prompt?: PromptUncheckedUpdateManyWithoutProjectNestedInput
-    Model?: ModelUncheckedUpdateManyWithoutProjectNestedInput
-    EvalTemplate?: EvalTemplateUncheckedUpdateManyWithoutProjectNestedInput
-    JobConfiguration?: JobConfigurationUncheckedUpdateManyWithoutProjectNestedInput
-    JobExecution?: JobExecutionUncheckedUpdateManyWithoutProjectNestedInput
-    LlmApiKeys?: LlmApiKeysUncheckedUpdateManyWithoutProjectNestedInput
-    PosthogIntegration?: PosthogIntegrationUncheckedUpdateManyWithoutProjectNestedInput
-    Score?: ScoreUncheckedUpdateManyWithoutProjectNestedInput
-    scoreConfig?: ScoreConfigUncheckedUpdateManyWithoutProjectNestedInput
-    BatchExport?: BatchExportUncheckedUpdateManyWithoutProjectNestedInput
+    comment?: CommentUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectCreateWithoutEvalTemplateInput = {
@@ -53299,8 +57615,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     name: string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipCreateNestedManyWithoutProjectInput
+    organization: OrganizationCreateNestedOneWithoutProjectsInput
     traces?: TraceCreateNestedManyWithoutProjectInput
     observations?: ObservationCreateNestedManyWithoutProjectInput
     apiKeys?: ApiKeyCreateNestedManyWithoutProjectInput
@@ -53310,7 +57626,6 @@ export namespace Prisma {
     sessions?: TraceSessionCreateNestedManyWithoutProjectInput
     Prompt?: PromptCreateNestedManyWithoutProjectInput
     Model?: ModelCreateNestedManyWithoutProjectInput
-    AuditLog?: AuditLogCreateNestedManyWithoutProjectInput
     JobConfiguration?: JobConfigurationCreateNestedManyWithoutProjectInput
     JobExecution?: JobExecutionCreateNestedManyWithoutProjectInput
     LlmApiKeys?: LlmApiKeysCreateNestedManyWithoutProjectInput
@@ -53318,14 +57633,15 @@ export namespace Prisma {
     Score?: ScoreCreateNestedManyWithoutProjectInput
     scoreConfig?: ScoreConfigCreateNestedManyWithoutProjectInput
     BatchExport?: BatchExportCreateNestedManyWithoutProjectInput
+    comment?: CommentCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutEvalTemplateInput = {
     id?: string
+    orgId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     name: string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUncheckedCreateNestedManyWithoutProjectInput
     traces?: TraceUncheckedCreateNestedManyWithoutProjectInput
     observations?: ObservationUncheckedCreateNestedManyWithoutProjectInput
@@ -53336,7 +57652,6 @@ export namespace Prisma {
     sessions?: TraceSessionUncheckedCreateNestedManyWithoutProjectInput
     Prompt?: PromptUncheckedCreateNestedManyWithoutProjectInput
     Model?: ModelUncheckedCreateNestedManyWithoutProjectInput
-    AuditLog?: AuditLogUncheckedCreateNestedManyWithoutProjectInput
     JobConfiguration?: JobConfigurationUncheckedCreateNestedManyWithoutProjectInput
     JobExecution?: JobExecutionUncheckedCreateNestedManyWithoutProjectInput
     LlmApiKeys?: LlmApiKeysUncheckedCreateNestedManyWithoutProjectInput
@@ -53344,6 +57659,7 @@ export namespace Prisma {
     Score?: ScoreUncheckedCreateNestedManyWithoutProjectInput
     scoreConfig?: ScoreConfigUncheckedCreateNestedManyWithoutProjectInput
     BatchExport?: BatchExportUncheckedCreateNestedManyWithoutProjectInput
+    comment?: CommentUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutEvalTemplateInput = {
@@ -53409,8 +57725,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUpdateManyWithoutProjectNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutProjectsNestedInput
     traces?: TraceUpdateManyWithoutProjectNestedInput
     observations?: ObservationUpdateManyWithoutProjectNestedInput
     apiKeys?: ApiKeyUpdateManyWithoutProjectNestedInput
@@ -53420,7 +57736,6 @@ export namespace Prisma {
     sessions?: TraceSessionUpdateManyWithoutProjectNestedInput
     Prompt?: PromptUpdateManyWithoutProjectNestedInput
     Model?: ModelUpdateManyWithoutProjectNestedInput
-    AuditLog?: AuditLogUpdateManyWithoutProjectNestedInput
     JobConfiguration?: JobConfigurationUpdateManyWithoutProjectNestedInput
     JobExecution?: JobExecutionUpdateManyWithoutProjectNestedInput
     LlmApiKeys?: LlmApiKeysUpdateManyWithoutProjectNestedInput
@@ -53428,14 +57743,15 @@ export namespace Prisma {
     Score?: ScoreUpdateManyWithoutProjectNestedInput
     scoreConfig?: ScoreConfigUpdateManyWithoutProjectNestedInput
     BatchExport?: BatchExportUpdateManyWithoutProjectNestedInput
+    comment?: CommentUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutEvalTemplateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUncheckedUpdateManyWithoutProjectNestedInput
     traces?: TraceUncheckedUpdateManyWithoutProjectNestedInput
     observations?: ObservationUncheckedUpdateManyWithoutProjectNestedInput
@@ -53446,7 +57762,6 @@ export namespace Prisma {
     sessions?: TraceSessionUncheckedUpdateManyWithoutProjectNestedInput
     Prompt?: PromptUncheckedUpdateManyWithoutProjectNestedInput
     Model?: ModelUncheckedUpdateManyWithoutProjectNestedInput
-    AuditLog?: AuditLogUncheckedUpdateManyWithoutProjectNestedInput
     JobConfiguration?: JobConfigurationUncheckedUpdateManyWithoutProjectNestedInput
     JobExecution?: JobExecutionUncheckedUpdateManyWithoutProjectNestedInput
     LlmApiKeys?: LlmApiKeysUncheckedUpdateManyWithoutProjectNestedInput
@@ -53454,6 +57769,7 @@ export namespace Prisma {
     Score?: ScoreUncheckedUpdateManyWithoutProjectNestedInput
     scoreConfig?: ScoreConfigUncheckedUpdateManyWithoutProjectNestedInput
     BatchExport?: BatchExportUncheckedUpdateManyWithoutProjectNestedInput
+    comment?: CommentUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type JobConfigurationUpsertWithWhereUniqueWithoutEvalTemplateInput = {
@@ -53477,8 +57793,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     name: string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipCreateNestedManyWithoutProjectInput
+    organization: OrganizationCreateNestedOneWithoutProjectsInput
     traces?: TraceCreateNestedManyWithoutProjectInput
     observations?: ObservationCreateNestedManyWithoutProjectInput
     apiKeys?: ApiKeyCreateNestedManyWithoutProjectInput
@@ -53488,7 +57804,6 @@ export namespace Prisma {
     sessions?: TraceSessionCreateNestedManyWithoutProjectInput
     Prompt?: PromptCreateNestedManyWithoutProjectInput
     Model?: ModelCreateNestedManyWithoutProjectInput
-    AuditLog?: AuditLogCreateNestedManyWithoutProjectInput
     EvalTemplate?: EvalTemplateCreateNestedManyWithoutProjectInput
     JobExecution?: JobExecutionCreateNestedManyWithoutProjectInput
     LlmApiKeys?: LlmApiKeysCreateNestedManyWithoutProjectInput
@@ -53496,14 +57811,15 @@ export namespace Prisma {
     Score?: ScoreCreateNestedManyWithoutProjectInput
     scoreConfig?: ScoreConfigCreateNestedManyWithoutProjectInput
     BatchExport?: BatchExportCreateNestedManyWithoutProjectInput
+    comment?: CommentCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutJobConfigurationInput = {
     id?: string
+    orgId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     name: string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUncheckedCreateNestedManyWithoutProjectInput
     traces?: TraceUncheckedCreateNestedManyWithoutProjectInput
     observations?: ObservationUncheckedCreateNestedManyWithoutProjectInput
@@ -53514,7 +57830,6 @@ export namespace Prisma {
     sessions?: TraceSessionUncheckedCreateNestedManyWithoutProjectInput
     Prompt?: PromptUncheckedCreateNestedManyWithoutProjectInput
     Model?: ModelUncheckedCreateNestedManyWithoutProjectInput
-    AuditLog?: AuditLogUncheckedCreateNestedManyWithoutProjectInput
     EvalTemplate?: EvalTemplateUncheckedCreateNestedManyWithoutProjectInput
     JobExecution?: JobExecutionUncheckedCreateNestedManyWithoutProjectInput
     LlmApiKeys?: LlmApiKeysUncheckedCreateNestedManyWithoutProjectInput
@@ -53522,6 +57837,7 @@ export namespace Prisma {
     Score?: ScoreUncheckedCreateNestedManyWithoutProjectInput
     scoreConfig?: ScoreConfigUncheckedCreateNestedManyWithoutProjectInput
     BatchExport?: BatchExportUncheckedCreateNestedManyWithoutProjectInput
+    comment?: CommentUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutJobConfigurationInput = {
@@ -53616,8 +57932,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUpdateManyWithoutProjectNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutProjectsNestedInput
     traces?: TraceUpdateManyWithoutProjectNestedInput
     observations?: ObservationUpdateManyWithoutProjectNestedInput
     apiKeys?: ApiKeyUpdateManyWithoutProjectNestedInput
@@ -53627,7 +57943,6 @@ export namespace Prisma {
     sessions?: TraceSessionUpdateManyWithoutProjectNestedInput
     Prompt?: PromptUpdateManyWithoutProjectNestedInput
     Model?: ModelUpdateManyWithoutProjectNestedInput
-    AuditLog?: AuditLogUpdateManyWithoutProjectNestedInput
     EvalTemplate?: EvalTemplateUpdateManyWithoutProjectNestedInput
     JobExecution?: JobExecutionUpdateManyWithoutProjectNestedInput
     LlmApiKeys?: LlmApiKeysUpdateManyWithoutProjectNestedInput
@@ -53635,14 +57950,15 @@ export namespace Prisma {
     Score?: ScoreUpdateManyWithoutProjectNestedInput
     scoreConfig?: ScoreConfigUpdateManyWithoutProjectNestedInput
     BatchExport?: BatchExportUpdateManyWithoutProjectNestedInput
+    comment?: CommentUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutJobConfigurationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUncheckedUpdateManyWithoutProjectNestedInput
     traces?: TraceUncheckedUpdateManyWithoutProjectNestedInput
     observations?: ObservationUncheckedUpdateManyWithoutProjectNestedInput
@@ -53653,7 +57969,6 @@ export namespace Prisma {
     sessions?: TraceSessionUncheckedUpdateManyWithoutProjectNestedInput
     Prompt?: PromptUncheckedUpdateManyWithoutProjectNestedInput
     Model?: ModelUncheckedUpdateManyWithoutProjectNestedInput
-    AuditLog?: AuditLogUncheckedUpdateManyWithoutProjectNestedInput
     EvalTemplate?: EvalTemplateUncheckedUpdateManyWithoutProjectNestedInput
     JobExecution?: JobExecutionUncheckedUpdateManyWithoutProjectNestedInput
     LlmApiKeys?: LlmApiKeysUncheckedUpdateManyWithoutProjectNestedInput
@@ -53661,6 +57976,7 @@ export namespace Prisma {
     Score?: ScoreUncheckedUpdateManyWithoutProjectNestedInput
     scoreConfig?: ScoreConfigUncheckedUpdateManyWithoutProjectNestedInput
     BatchExport?: BatchExportUncheckedUpdateManyWithoutProjectNestedInput
+    comment?: CommentUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type EvalTemplateUpsertWithoutJobConfigurationInput = {
@@ -53725,8 +58041,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     name: string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipCreateNestedManyWithoutProjectInput
+    organization: OrganizationCreateNestedOneWithoutProjectsInput
     traces?: TraceCreateNestedManyWithoutProjectInput
     observations?: ObservationCreateNestedManyWithoutProjectInput
     apiKeys?: ApiKeyCreateNestedManyWithoutProjectInput
@@ -53736,7 +58052,6 @@ export namespace Prisma {
     sessions?: TraceSessionCreateNestedManyWithoutProjectInput
     Prompt?: PromptCreateNestedManyWithoutProjectInput
     Model?: ModelCreateNestedManyWithoutProjectInput
-    AuditLog?: AuditLogCreateNestedManyWithoutProjectInput
     EvalTemplate?: EvalTemplateCreateNestedManyWithoutProjectInput
     JobConfiguration?: JobConfigurationCreateNestedManyWithoutProjectInput
     LlmApiKeys?: LlmApiKeysCreateNestedManyWithoutProjectInput
@@ -53744,14 +58059,15 @@ export namespace Prisma {
     Score?: ScoreCreateNestedManyWithoutProjectInput
     scoreConfig?: ScoreConfigCreateNestedManyWithoutProjectInput
     BatchExport?: BatchExportCreateNestedManyWithoutProjectInput
+    comment?: CommentCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutJobExecutionInput = {
     id?: string
+    orgId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     name: string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUncheckedCreateNestedManyWithoutProjectInput
     traces?: TraceUncheckedCreateNestedManyWithoutProjectInput
     observations?: ObservationUncheckedCreateNestedManyWithoutProjectInput
@@ -53762,7 +58078,6 @@ export namespace Prisma {
     sessions?: TraceSessionUncheckedCreateNestedManyWithoutProjectInput
     Prompt?: PromptUncheckedCreateNestedManyWithoutProjectInput
     Model?: ModelUncheckedCreateNestedManyWithoutProjectInput
-    AuditLog?: AuditLogUncheckedCreateNestedManyWithoutProjectInput
     EvalTemplate?: EvalTemplateUncheckedCreateNestedManyWithoutProjectInput
     JobConfiguration?: JobConfigurationUncheckedCreateNestedManyWithoutProjectInput
     LlmApiKeys?: LlmApiKeysUncheckedCreateNestedManyWithoutProjectInput
@@ -53770,6 +58085,7 @@ export namespace Prisma {
     Score?: ScoreUncheckedCreateNestedManyWithoutProjectInput
     scoreConfig?: ScoreConfigUncheckedCreateNestedManyWithoutProjectInput
     BatchExport?: BatchExportUncheckedCreateNestedManyWithoutProjectInput
+    comment?: CommentUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutJobExecutionInput = {
@@ -53832,7 +58148,6 @@ export namespace Prisma {
     updatedAt?: Date | string
     project: ProjectCreateNestedOneWithoutTracesInput
     session?: TraceSessionCreateNestedOneWithoutTracesInput
-    DatasetItem?: DatasetItemCreateNestedManyWithoutSourceTraceInput
   }
 
   export type TraceUncheckedCreateWithoutJobExecutionInput = {
@@ -53853,7 +58168,6 @@ export namespace Prisma {
     sessionId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    DatasetItem?: DatasetItemUncheckedCreateNestedManyWithoutSourceTraceInput
   }
 
   export type TraceCreateOrConnectWithoutJobExecutionInput = {
@@ -53918,8 +58232,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUpdateManyWithoutProjectNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutProjectsNestedInput
     traces?: TraceUpdateManyWithoutProjectNestedInput
     observations?: ObservationUpdateManyWithoutProjectNestedInput
     apiKeys?: ApiKeyUpdateManyWithoutProjectNestedInput
@@ -53929,7 +58243,6 @@ export namespace Prisma {
     sessions?: TraceSessionUpdateManyWithoutProjectNestedInput
     Prompt?: PromptUpdateManyWithoutProjectNestedInput
     Model?: ModelUpdateManyWithoutProjectNestedInput
-    AuditLog?: AuditLogUpdateManyWithoutProjectNestedInput
     EvalTemplate?: EvalTemplateUpdateManyWithoutProjectNestedInput
     JobConfiguration?: JobConfigurationUpdateManyWithoutProjectNestedInput
     LlmApiKeys?: LlmApiKeysUpdateManyWithoutProjectNestedInput
@@ -53937,14 +58250,15 @@ export namespace Prisma {
     Score?: ScoreUpdateManyWithoutProjectNestedInput
     scoreConfig?: ScoreConfigUpdateManyWithoutProjectNestedInput
     BatchExport?: BatchExportUpdateManyWithoutProjectNestedInput
+    comment?: CommentUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutJobExecutionInput = {
     id?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUncheckedUpdateManyWithoutProjectNestedInput
     traces?: TraceUncheckedUpdateManyWithoutProjectNestedInput
     observations?: ObservationUncheckedUpdateManyWithoutProjectNestedInput
@@ -53955,7 +58269,6 @@ export namespace Prisma {
     sessions?: TraceSessionUncheckedUpdateManyWithoutProjectNestedInput
     Prompt?: PromptUncheckedUpdateManyWithoutProjectNestedInput
     Model?: ModelUncheckedUpdateManyWithoutProjectNestedInput
-    AuditLog?: AuditLogUncheckedUpdateManyWithoutProjectNestedInput
     EvalTemplate?: EvalTemplateUncheckedUpdateManyWithoutProjectNestedInput
     JobConfiguration?: JobConfigurationUncheckedUpdateManyWithoutProjectNestedInput
     LlmApiKeys?: LlmApiKeysUncheckedUpdateManyWithoutProjectNestedInput
@@ -53963,6 +58276,7 @@ export namespace Prisma {
     Score?: ScoreUncheckedUpdateManyWithoutProjectNestedInput
     scoreConfig?: ScoreConfigUncheckedUpdateManyWithoutProjectNestedInput
     BatchExport?: BatchExportUncheckedUpdateManyWithoutProjectNestedInput
+    comment?: CommentUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type JobConfigurationUpsertWithoutJobExecutionInput = {
@@ -54037,7 +58351,6 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     project?: ProjectUpdateOneRequiredWithoutTracesNestedInput
     session?: TraceSessionUpdateOneWithoutTracesNestedInput
-    DatasetItem?: DatasetItemUpdateManyWithoutSourceTraceNestedInput
   }
 
   export type TraceUncheckedUpdateWithoutJobExecutionInput = {
@@ -54058,7 +58371,6 @@ export namespace Prisma {
     sessionId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    DatasetItem?: DatasetItemUncheckedUpdateManyWithoutSourceTraceNestedInput
   }
 
   export type ScoreUpsertWithoutJobExecutionInput = {
@@ -54113,8 +58425,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     name: string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipCreateNestedManyWithoutProjectInput
+    organization: OrganizationCreateNestedOneWithoutProjectsInput
     traces?: TraceCreateNestedManyWithoutProjectInput
     observations?: ObservationCreateNestedManyWithoutProjectInput
     apiKeys?: ApiKeyCreateNestedManyWithoutProjectInput
@@ -54124,7 +58436,6 @@ export namespace Prisma {
     sessions?: TraceSessionCreateNestedManyWithoutProjectInput
     Prompt?: PromptCreateNestedManyWithoutProjectInput
     Model?: ModelCreateNestedManyWithoutProjectInput
-    AuditLog?: AuditLogCreateNestedManyWithoutProjectInput
     EvalTemplate?: EvalTemplateCreateNestedManyWithoutProjectInput
     JobConfiguration?: JobConfigurationCreateNestedManyWithoutProjectInput
     JobExecution?: JobExecutionCreateNestedManyWithoutProjectInput
@@ -54132,14 +58443,15 @@ export namespace Prisma {
     Score?: ScoreCreateNestedManyWithoutProjectInput
     scoreConfig?: ScoreConfigCreateNestedManyWithoutProjectInput
     BatchExport?: BatchExportCreateNestedManyWithoutProjectInput
+    comment?: CommentCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutPosthogIntegrationInput = {
     id?: string
+    orgId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     name: string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUncheckedCreateNestedManyWithoutProjectInput
     traces?: TraceUncheckedCreateNestedManyWithoutProjectInput
     observations?: ObservationUncheckedCreateNestedManyWithoutProjectInput
@@ -54150,7 +58462,6 @@ export namespace Prisma {
     sessions?: TraceSessionUncheckedCreateNestedManyWithoutProjectInput
     Prompt?: PromptUncheckedCreateNestedManyWithoutProjectInput
     Model?: ModelUncheckedCreateNestedManyWithoutProjectInput
-    AuditLog?: AuditLogUncheckedCreateNestedManyWithoutProjectInput
     EvalTemplate?: EvalTemplateUncheckedCreateNestedManyWithoutProjectInput
     JobConfiguration?: JobConfigurationUncheckedCreateNestedManyWithoutProjectInput
     JobExecution?: JobExecutionUncheckedCreateNestedManyWithoutProjectInput
@@ -54158,6 +58469,7 @@ export namespace Prisma {
     Score?: ScoreUncheckedCreateNestedManyWithoutProjectInput
     scoreConfig?: ScoreConfigUncheckedCreateNestedManyWithoutProjectInput
     BatchExport?: BatchExportUncheckedCreateNestedManyWithoutProjectInput
+    comment?: CommentUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutPosthogIntegrationInput = {
@@ -54181,8 +58493,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUpdateManyWithoutProjectNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutProjectsNestedInput
     traces?: TraceUpdateManyWithoutProjectNestedInput
     observations?: ObservationUpdateManyWithoutProjectNestedInput
     apiKeys?: ApiKeyUpdateManyWithoutProjectNestedInput
@@ -54192,7 +58504,6 @@ export namespace Prisma {
     sessions?: TraceSessionUpdateManyWithoutProjectNestedInput
     Prompt?: PromptUpdateManyWithoutProjectNestedInput
     Model?: ModelUpdateManyWithoutProjectNestedInput
-    AuditLog?: AuditLogUpdateManyWithoutProjectNestedInput
     EvalTemplate?: EvalTemplateUpdateManyWithoutProjectNestedInput
     JobConfiguration?: JobConfigurationUpdateManyWithoutProjectNestedInput
     JobExecution?: JobExecutionUpdateManyWithoutProjectNestedInput
@@ -54200,14 +58511,15 @@ export namespace Prisma {
     Score?: ScoreUpdateManyWithoutProjectNestedInput
     scoreConfig?: ScoreConfigUpdateManyWithoutProjectNestedInput
     BatchExport?: BatchExportUpdateManyWithoutProjectNestedInput
+    comment?: CommentUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutPosthogIntegrationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUncheckedUpdateManyWithoutProjectNestedInput
     traces?: TraceUncheckedUpdateManyWithoutProjectNestedInput
     observations?: ObservationUncheckedUpdateManyWithoutProjectNestedInput
@@ -54218,7 +58530,6 @@ export namespace Prisma {
     sessions?: TraceSessionUncheckedUpdateManyWithoutProjectNestedInput
     Prompt?: PromptUncheckedUpdateManyWithoutProjectNestedInput
     Model?: ModelUncheckedUpdateManyWithoutProjectNestedInput
-    AuditLog?: AuditLogUncheckedUpdateManyWithoutProjectNestedInput
     EvalTemplate?: EvalTemplateUncheckedUpdateManyWithoutProjectNestedInput
     JobConfiguration?: JobConfigurationUncheckedUpdateManyWithoutProjectNestedInput
     JobExecution?: JobExecutionUncheckedUpdateManyWithoutProjectNestedInput
@@ -54226,6 +58537,7 @@ export namespace Prisma {
     Score?: ScoreUncheckedUpdateManyWithoutProjectNestedInput
     scoreConfig?: ScoreConfigUncheckedUpdateManyWithoutProjectNestedInput
     BatchExport?: BatchExportUncheckedUpdateManyWithoutProjectNestedInput
+    comment?: CommentUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectCreateWithoutBatchExportInput = {
@@ -54233,8 +58545,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     name: string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipCreateNestedManyWithoutProjectInput
+    organization: OrganizationCreateNestedOneWithoutProjectsInput
     traces?: TraceCreateNestedManyWithoutProjectInput
     observations?: ObservationCreateNestedManyWithoutProjectInput
     apiKeys?: ApiKeyCreateNestedManyWithoutProjectInput
@@ -54244,7 +58556,6 @@ export namespace Prisma {
     sessions?: TraceSessionCreateNestedManyWithoutProjectInput
     Prompt?: PromptCreateNestedManyWithoutProjectInput
     Model?: ModelCreateNestedManyWithoutProjectInput
-    AuditLog?: AuditLogCreateNestedManyWithoutProjectInput
     EvalTemplate?: EvalTemplateCreateNestedManyWithoutProjectInput
     JobConfiguration?: JobConfigurationCreateNestedManyWithoutProjectInput
     JobExecution?: JobExecutionCreateNestedManyWithoutProjectInput
@@ -54252,14 +58563,15 @@ export namespace Prisma {
     PosthogIntegration?: PosthogIntegrationCreateNestedManyWithoutProjectInput
     Score?: ScoreCreateNestedManyWithoutProjectInput
     scoreConfig?: ScoreConfigCreateNestedManyWithoutProjectInput
+    comment?: CommentCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutBatchExportInput = {
     id?: string
+    orgId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     name: string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUncheckedCreateNestedManyWithoutProjectInput
     traces?: TraceUncheckedCreateNestedManyWithoutProjectInput
     observations?: ObservationUncheckedCreateNestedManyWithoutProjectInput
@@ -54270,7 +58582,6 @@ export namespace Prisma {
     sessions?: TraceSessionUncheckedCreateNestedManyWithoutProjectInput
     Prompt?: PromptUncheckedCreateNestedManyWithoutProjectInput
     Model?: ModelUncheckedCreateNestedManyWithoutProjectInput
-    AuditLog?: AuditLogUncheckedCreateNestedManyWithoutProjectInput
     EvalTemplate?: EvalTemplateUncheckedCreateNestedManyWithoutProjectInput
     JobConfiguration?: JobConfigurationUncheckedCreateNestedManyWithoutProjectInput
     JobExecution?: JobExecutionUncheckedCreateNestedManyWithoutProjectInput
@@ -54278,6 +58589,7 @@ export namespace Prisma {
     PosthogIntegration?: PosthogIntegrationUncheckedCreateNestedManyWithoutProjectInput
     Score?: ScoreUncheckedCreateNestedManyWithoutProjectInput
     scoreConfig?: ScoreConfigUncheckedCreateNestedManyWithoutProjectInput
+    comment?: CommentUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutBatchExportInput = {
@@ -54301,8 +58613,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUpdateManyWithoutProjectNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutProjectsNestedInput
     traces?: TraceUpdateManyWithoutProjectNestedInput
     observations?: ObservationUpdateManyWithoutProjectNestedInput
     apiKeys?: ApiKeyUpdateManyWithoutProjectNestedInput
@@ -54312,7 +58624,6 @@ export namespace Prisma {
     sessions?: TraceSessionUpdateManyWithoutProjectNestedInput
     Prompt?: PromptUpdateManyWithoutProjectNestedInput
     Model?: ModelUpdateManyWithoutProjectNestedInput
-    AuditLog?: AuditLogUpdateManyWithoutProjectNestedInput
     EvalTemplate?: EvalTemplateUpdateManyWithoutProjectNestedInput
     JobConfiguration?: JobConfigurationUpdateManyWithoutProjectNestedInput
     JobExecution?: JobExecutionUpdateManyWithoutProjectNestedInput
@@ -54320,14 +58631,15 @@ export namespace Prisma {
     PosthogIntegration?: PosthogIntegrationUpdateManyWithoutProjectNestedInput
     Score?: ScoreUpdateManyWithoutProjectNestedInput
     scoreConfig?: ScoreConfigUpdateManyWithoutProjectNestedInput
+    comment?: CommentUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutBatchExportInput = {
     id?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
-    cloudConfig?: NullableJsonNullValueInput | InputJsonValue
     projectMembers?: ProjectMembershipUncheckedUpdateManyWithoutProjectNestedInput
     traces?: TraceUncheckedUpdateManyWithoutProjectNestedInput
     observations?: ObservationUncheckedUpdateManyWithoutProjectNestedInput
@@ -54338,7 +58650,6 @@ export namespace Prisma {
     sessions?: TraceSessionUncheckedUpdateManyWithoutProjectNestedInput
     Prompt?: PromptUncheckedUpdateManyWithoutProjectNestedInput
     Model?: ModelUncheckedUpdateManyWithoutProjectNestedInput
-    AuditLog?: AuditLogUncheckedUpdateManyWithoutProjectNestedInput
     EvalTemplate?: EvalTemplateUncheckedUpdateManyWithoutProjectNestedInput
     JobConfiguration?: JobConfigurationUncheckedUpdateManyWithoutProjectNestedInput
     JobExecution?: JobExecutionUncheckedUpdateManyWithoutProjectNestedInput
@@ -54346,6 +58657,7 @@ export namespace Prisma {
     PosthogIntegration?: PosthogIntegrationUncheckedUpdateManyWithoutProjectNestedInput
     Score?: ScoreUncheckedUpdateManyWithoutProjectNestedInput
     scoreConfig?: ScoreConfigUncheckedUpdateManyWithoutProjectNestedInput
+    comment?: CommentUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type AccountCreateManyUserInput = {
@@ -54370,33 +58682,31 @@ export namespace Prisma {
     expires: Date | string
   }
 
-  export type ProjectMembershipCreateManyUserInput = {
-    projectId: string
-    role: $Enums.ProjectRole
+  export type OrganizationMembershipCreateManyUserInput = {
+    id?: string
+    orgId: string
+    role: $Enums.Role
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
-  export type MembershipInvitationCreateManySenderInput = {
+  export type ProjectMembershipCreateManyUserInput = {
+    orgMembershipId: string
+    projectId: string
+    role: $Enums.Role
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type MembershipInvitationCreateManyInvitedByUserInput = {
     id?: string
     email: string
-    role: $Enums.ProjectRole
-    projectId: string
+    orgId: string
+    orgRole: $Enums.Role
+    projectId?: string | null
+    projectRole?: $Enums.Role | null
     createdAt?: Date | string
     updatedAt?: Date | string
-  }
-
-  export type AuditLogCreateManyUserInput = {
-    id?: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    projectId: string
-    userProjectRole: $Enums.ProjectRole
-    resourceType: string
-    resourceId: string
-    action: string
-    before?: string | null
-    after?: string | null
   }
 
   export type AccountUpdateWithoutUserInput = {
@@ -54465,96 +58775,237 @@ export namespace Prisma {
     expires?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type ProjectMembershipUpdateWithoutUserInput = {
-    role?: EnumProjectRoleFieldUpdateOperationsInput | $Enums.ProjectRole
+  export type OrganizationMembershipUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutOrganizationMembershipsNestedInput
+    ProjectMemberships?: ProjectMembershipUpdateManyWithoutOrganizationMembershipNestedInput
+  }
+
+  export type OrganizationMembershipUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    ProjectMemberships?: ProjectMembershipUncheckedUpdateManyWithoutOrganizationMembershipNestedInput
+  }
+
+  export type OrganizationMembershipUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ProjectMembershipUpdateWithoutUserInput = {
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organizationMembership?: OrganizationMembershipUpdateOneRequiredWithoutProjectMembershipsNestedInput
     project?: ProjectUpdateOneRequiredWithoutProjectMembersNestedInput
   }
 
   export type ProjectMembershipUncheckedUpdateWithoutUserInput = {
+    orgMembershipId?: StringFieldUpdateOperationsInput | string
     projectId?: StringFieldUpdateOperationsInput | string
-    role?: EnumProjectRoleFieldUpdateOperationsInput | $Enums.ProjectRole
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ProjectMembershipUncheckedUpdateManyWithoutUserInput = {
+    orgMembershipId?: StringFieldUpdateOperationsInput | string
     projectId?: StringFieldUpdateOperationsInput | string
-    role?: EnumProjectRoleFieldUpdateOperationsInput | $Enums.ProjectRole
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type MembershipInvitationUpdateWithoutSenderInput = {
+  export type MembershipInvitationUpdateWithoutInvitedByUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    role?: EnumProjectRoleFieldUpdateOperationsInput | $Enums.ProjectRole
+    orgRole?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    projectRole?: NullableEnumRoleFieldUpdateOperationsInput | $Enums.Role | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    project?: ProjectUpdateOneRequiredWithoutInvitationsNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutMembershipInvitationNestedInput
+    project?: ProjectUpdateOneWithoutInvitationsNestedInput
   }
 
-  export type MembershipInvitationUncheckedUpdateWithoutSenderInput = {
+  export type MembershipInvitationUncheckedUpdateWithoutInvitedByUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    role?: EnumProjectRoleFieldUpdateOperationsInput | $Enums.ProjectRole
-    projectId?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
+    orgRole?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectRole?: NullableEnumRoleFieldUpdateOperationsInput | $Enums.Role | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type MembershipInvitationUncheckedUpdateManyWithoutSenderInput = {
+  export type MembershipInvitationUncheckedUpdateManyWithoutInvitedByUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    role?: EnumProjectRoleFieldUpdateOperationsInput | $Enums.ProjectRole
-    projectId?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
+    orgRole?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectRole?: NullableEnumRoleFieldUpdateOperationsInput | $Enums.Role | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type AuditLogUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userProjectRole?: EnumProjectRoleFieldUpdateOperationsInput | $Enums.ProjectRole
-    resourceType?: StringFieldUpdateOperationsInput | string
-    resourceId?: StringFieldUpdateOperationsInput | string
-    action?: StringFieldUpdateOperationsInput | string
-    before?: NullableStringFieldUpdateOperationsInput | string | null
-    after?: NullableStringFieldUpdateOperationsInput | string | null
-    project?: ProjectUpdateOneRequiredWithoutAuditLogNestedInput
+  export type OrganizationMembershipCreateManyOrganizationInput = {
+    id?: string
+    userId: string
+    role: $Enums.Role
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
-  export type AuditLogUncheckedUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    projectId?: StringFieldUpdateOperationsInput | string
-    userProjectRole?: EnumProjectRoleFieldUpdateOperationsInput | $Enums.ProjectRole
-    resourceType?: StringFieldUpdateOperationsInput | string
-    resourceId?: StringFieldUpdateOperationsInput | string
-    action?: StringFieldUpdateOperationsInput | string
-    before?: NullableStringFieldUpdateOperationsInput | string | null
-    after?: NullableStringFieldUpdateOperationsInput | string | null
+  export type ProjectCreateManyOrganizationInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
   }
 
-  export type AuditLogUncheckedUpdateManyWithoutUserInput = {
+  export type MembershipInvitationCreateManyOrganizationInput = {
+    id?: string
+    email: string
+    orgRole: $Enums.Role
+    projectId?: string | null
+    projectRole?: $Enums.Role | null
+    invitedByUserId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type OrganizationMembershipUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutOrganizationMembershipsNestedInput
+    ProjectMemberships?: ProjectMembershipUpdateManyWithoutOrganizationMembershipNestedInput
+  }
+
+  export type OrganizationMembershipUncheckedUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    ProjectMemberships?: ProjectMembershipUncheckedUpdateManyWithoutOrganizationMembershipNestedInput
+  }
+
+  export type OrganizationMembershipUncheckedUpdateManyWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ProjectUpdateWithoutOrganizationInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    projectId?: StringFieldUpdateOperationsInput | string
-    userProjectRole?: EnumProjectRoleFieldUpdateOperationsInput | $Enums.ProjectRole
-    resourceType?: StringFieldUpdateOperationsInput | string
-    resourceId?: StringFieldUpdateOperationsInput | string
-    action?: StringFieldUpdateOperationsInput | string
-    before?: NullableStringFieldUpdateOperationsInput | string | null
-    after?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    projectMembers?: ProjectMembershipUpdateManyWithoutProjectNestedInput
+    traces?: TraceUpdateManyWithoutProjectNestedInput
+    observations?: ObservationUpdateManyWithoutProjectNestedInput
+    apiKeys?: ApiKeyUpdateManyWithoutProjectNestedInput
+    dataset?: DatasetUpdateManyWithoutProjectNestedInput
+    RawEvents?: EventsUpdateManyWithoutProjectNestedInput
+    invitations?: MembershipInvitationUpdateManyWithoutProjectNestedInput
+    sessions?: TraceSessionUpdateManyWithoutProjectNestedInput
+    Prompt?: PromptUpdateManyWithoutProjectNestedInput
+    Model?: ModelUpdateManyWithoutProjectNestedInput
+    EvalTemplate?: EvalTemplateUpdateManyWithoutProjectNestedInput
+    JobConfiguration?: JobConfigurationUpdateManyWithoutProjectNestedInput
+    JobExecution?: JobExecutionUpdateManyWithoutProjectNestedInput
+    LlmApiKeys?: LlmApiKeysUpdateManyWithoutProjectNestedInput
+    PosthogIntegration?: PosthogIntegrationUpdateManyWithoutProjectNestedInput
+    Score?: ScoreUpdateManyWithoutProjectNestedInput
+    scoreConfig?: ScoreConfigUpdateManyWithoutProjectNestedInput
+    BatchExport?: BatchExportUpdateManyWithoutProjectNestedInput
+    comment?: CommentUpdateManyWithoutProjectNestedInput
+  }
+
+  export type ProjectUncheckedUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    projectMembers?: ProjectMembershipUncheckedUpdateManyWithoutProjectNestedInput
+    traces?: TraceUncheckedUpdateManyWithoutProjectNestedInput
+    observations?: ObservationUncheckedUpdateManyWithoutProjectNestedInput
+    apiKeys?: ApiKeyUncheckedUpdateManyWithoutProjectNestedInput
+    dataset?: DatasetUncheckedUpdateManyWithoutProjectNestedInput
+    RawEvents?: EventsUncheckedUpdateManyWithoutProjectNestedInput
+    invitations?: MembershipInvitationUncheckedUpdateManyWithoutProjectNestedInput
+    sessions?: TraceSessionUncheckedUpdateManyWithoutProjectNestedInput
+    Prompt?: PromptUncheckedUpdateManyWithoutProjectNestedInput
+    Model?: ModelUncheckedUpdateManyWithoutProjectNestedInput
+    EvalTemplate?: EvalTemplateUncheckedUpdateManyWithoutProjectNestedInput
+    JobConfiguration?: JobConfigurationUncheckedUpdateManyWithoutProjectNestedInput
+    JobExecution?: JobExecutionUncheckedUpdateManyWithoutProjectNestedInput
+    LlmApiKeys?: LlmApiKeysUncheckedUpdateManyWithoutProjectNestedInput
+    PosthogIntegration?: PosthogIntegrationUncheckedUpdateManyWithoutProjectNestedInput
+    Score?: ScoreUncheckedUpdateManyWithoutProjectNestedInput
+    scoreConfig?: ScoreConfigUncheckedUpdateManyWithoutProjectNestedInput
+    BatchExport?: BatchExportUncheckedUpdateManyWithoutProjectNestedInput
+    comment?: CommentUncheckedUpdateManyWithoutProjectNestedInput
+  }
+
+  export type ProjectUncheckedUpdateManyWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type MembershipInvitationUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    orgRole?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    projectRole?: NullableEnumRoleFieldUpdateOperationsInput | $Enums.Role | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    project?: ProjectUpdateOneWithoutInvitationsNestedInput
+    invitedByUser?: UserUpdateOneWithoutInvitationsNestedInput
+  }
+
+  export type MembershipInvitationUncheckedUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    orgRole?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectRole?: NullableEnumRoleFieldUpdateOperationsInput | $Enums.Role | null
+    invitedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MembershipInvitationUncheckedUpdateManyWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    orgRole?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectRole?: NullableEnumRoleFieldUpdateOperationsInput | $Enums.Role | null
+    invitedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ProjectMembershipCreateManyProjectInput = {
+    orgMembershipId: string
     userId: string
-    role: $Enums.ProjectRole
+    role: $Enums.Role
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -54646,8 +59097,10 @@ export namespace Prisma {
   export type MembershipInvitationCreateManyProjectInput = {
     id?: string
     email: string
-    role: $Enums.ProjectRole
-    senderId?: string | null
+    orgId: string
+    orgRole: $Enums.Role
+    projectRole?: $Enums.Role | null
+    invitedByUserId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -54688,19 +59141,6 @@ export namespace Prisma {
     unit: string
     tokenizerId?: string | null
     tokenizerConfig?: NullableJsonNullValueInput | InputJsonValue
-  }
-
-  export type AuditLogCreateManyProjectInput = {
-    id?: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    userId: string
-    userProjectRole: $Enums.ProjectRole
-    resourceType: string
-    resourceId: string
-    action: string
-    before?: string | null
-    after?: string | null
   }
 
   export type EvalTemplateCreateManyProjectInput = {
@@ -54811,23 +59251,36 @@ export namespace Prisma {
     log?: string | null
   }
 
+  export type CommentCreateManyProjectInput = {
+    id?: string
+    objectType: $Enums.CommentObjectType
+    objectId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    content: string
+    authorUserId?: string | null
+  }
+
   export type ProjectMembershipUpdateWithoutProjectInput = {
-    role?: EnumProjectRoleFieldUpdateOperationsInput | $Enums.ProjectRole
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organizationMembership?: OrganizationMembershipUpdateOneRequiredWithoutProjectMembershipsNestedInput
     user?: UserUpdateOneRequiredWithoutProjectMembershipsNestedInput
   }
 
   export type ProjectMembershipUncheckedUpdateWithoutProjectInput = {
+    orgMembershipId?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
-    role?: EnumProjectRoleFieldUpdateOperationsInput | $Enums.ProjectRole
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ProjectMembershipUncheckedUpdateManyWithoutProjectInput = {
+    orgMembershipId?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
-    role?: EnumProjectRoleFieldUpdateOperationsInput | $Enums.ProjectRole
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -54849,7 +59302,6 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     session?: TraceSessionUpdateOneWithoutTracesNestedInput
-    DatasetItem?: DatasetItemUpdateManyWithoutSourceTraceNestedInput
     JobExecution?: JobExecutionUpdateManyWithoutTraceNestedInput
   }
 
@@ -54870,7 +59322,6 @@ export namespace Prisma {
     sessionId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    DatasetItem?: DatasetItemUncheckedUpdateManyWithoutSourceTraceNestedInput
     JobExecution?: JobExecutionUncheckedUpdateManyWithoutTraceNestedInput
   }
 
@@ -54925,7 +59376,6 @@ export namespace Prisma {
     calculatedTotalCost?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     completionStartTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     promptId?: NullableStringFieldUpdateOperationsInput | string | null
-    derivedDatasetItems?: DatasetItemUpdateManyWithoutSourceObservationNestedInput
   }
 
   export type ObservationUncheckedUpdateWithoutProjectInput = {
@@ -54960,7 +59410,6 @@ export namespace Prisma {
     calculatedTotalCost?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     completionStartTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     promptId?: NullableStringFieldUpdateOperationsInput | string | null
-    derivedDatasetItems?: DatasetItemUncheckedUpdateManyWithoutSourceObservationNestedInput
   }
 
   export type ObservationUncheckedUpdateManyWithoutProjectInput = {
@@ -55097,17 +59546,21 @@ export namespace Prisma {
   export type MembershipInvitationUpdateWithoutProjectInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    role?: EnumProjectRoleFieldUpdateOperationsInput | $Enums.ProjectRole
+    orgRole?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    projectRole?: NullableEnumRoleFieldUpdateOperationsInput | $Enums.Role | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    sender?: UserUpdateOneWithoutInvitationsNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutMembershipInvitationNestedInput
+    invitedByUser?: UserUpdateOneWithoutInvitationsNestedInput
   }
 
   export type MembershipInvitationUncheckedUpdateWithoutProjectInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    role?: EnumProjectRoleFieldUpdateOperationsInput | $Enums.ProjectRole
-    senderId?: NullableStringFieldUpdateOperationsInput | string | null
+    orgId?: StringFieldUpdateOperationsInput | string
+    orgRole?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    projectRole?: NullableEnumRoleFieldUpdateOperationsInput | $Enums.Role | null
+    invitedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -55115,8 +59568,10 @@ export namespace Prisma {
   export type MembershipInvitationUncheckedUpdateManyWithoutProjectInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    role?: EnumProjectRoleFieldUpdateOperationsInput | $Enums.ProjectRole
-    senderId?: NullableStringFieldUpdateOperationsInput | string | null
+    orgId?: StringFieldUpdateOperationsInput | string
+    orgRole?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    projectRole?: NullableEnumRoleFieldUpdateOperationsInput | $Enums.Role | null
+    invitedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -55235,45 +59690,6 @@ export namespace Prisma {
     unit?: StringFieldUpdateOperationsInput | string
     tokenizerId?: NullableStringFieldUpdateOperationsInput | string | null
     tokenizerConfig?: NullableJsonNullValueInput | InputJsonValue
-  }
-
-  export type AuditLogUpdateWithoutProjectInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userProjectRole?: EnumProjectRoleFieldUpdateOperationsInput | $Enums.ProjectRole
-    resourceType?: StringFieldUpdateOperationsInput | string
-    resourceId?: StringFieldUpdateOperationsInput | string
-    action?: StringFieldUpdateOperationsInput | string
-    before?: NullableStringFieldUpdateOperationsInput | string | null
-    after?: NullableStringFieldUpdateOperationsInput | string | null
-    user?: UserUpdateOneRequiredWithoutAuditLogNestedInput
-  }
-
-  export type AuditLogUncheckedUpdateWithoutProjectInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userId?: StringFieldUpdateOperationsInput | string
-    userProjectRole?: EnumProjectRoleFieldUpdateOperationsInput | $Enums.ProjectRole
-    resourceType?: StringFieldUpdateOperationsInput | string
-    resourceId?: StringFieldUpdateOperationsInput | string
-    action?: StringFieldUpdateOperationsInput | string
-    before?: NullableStringFieldUpdateOperationsInput | string | null
-    after?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
-  export type AuditLogUncheckedUpdateManyWithoutProjectInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userId?: StringFieldUpdateOperationsInput | string
-    userProjectRole?: EnumProjectRoleFieldUpdateOperationsInput | $Enums.ProjectRole
-    resourceType?: StringFieldUpdateOperationsInput | string
-    resourceId?: StringFieldUpdateOperationsInput | string
-    action?: StringFieldUpdateOperationsInput | string
-    before?: NullableStringFieldUpdateOperationsInput | string | null
-    after?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type EvalTemplateUpdateWithoutProjectInput = {
@@ -55608,6 +60024,68 @@ export namespace Prisma {
     log?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
+  export type CommentUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    objectType?: EnumCommentObjectTypeFieldUpdateOperationsInput | $Enums.CommentObjectType
+    objectId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    content?: StringFieldUpdateOperationsInput | string
+    authorUserId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type CommentUncheckedUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    objectType?: EnumCommentObjectTypeFieldUpdateOperationsInput | $Enums.CommentObjectType
+    objectId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    content?: StringFieldUpdateOperationsInput | string
+    authorUserId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type CommentUncheckedUpdateManyWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    objectType?: EnumCommentObjectTypeFieldUpdateOperationsInput | $Enums.CommentObjectType
+    objectId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    content?: StringFieldUpdateOperationsInput | string
+    authorUserId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type ProjectMembershipCreateManyOrganizationMembershipInput = {
+    projectId: string
+    userId: string
+    role: $Enums.Role
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ProjectMembershipUpdateWithoutOrganizationMembershipInput = {
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    project?: ProjectUpdateOneRequiredWithoutProjectMembersNestedInput
+    user?: UserUpdateOneRequiredWithoutProjectMembershipsNestedInput
+  }
+
+  export type ProjectMembershipUncheckedUpdateWithoutOrganizationMembershipInput = {
+    projectId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ProjectMembershipUncheckedUpdateManyWithoutOrganizationMembershipInput = {
+    projectId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type TraceCreateManySessionInput = {
     id?: string
     externalId?: string | null
@@ -55643,7 +60121,6 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     project?: ProjectUpdateOneRequiredWithoutTracesNestedInput
-    DatasetItem?: DatasetItemUpdateManyWithoutSourceTraceNestedInput
     JobExecution?: JobExecutionUpdateManyWithoutTraceNestedInput
   }
 
@@ -55663,7 +60140,6 @@ export namespace Prisma {
     output?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    DatasetItem?: DatasetItemUncheckedUpdateManyWithoutSourceTraceNestedInput
     JobExecution?: JobExecutionUncheckedUpdateManyWithoutTraceNestedInput
   }
 
@@ -55685,18 +60161,6 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type DatasetItemCreateManySourceTraceInput = {
-    id?: string
-    status?: $Enums.DatasetStatus
-    input?: NullableJsonNullValueInput | InputJsonValue
-    expectedOutput?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    sourceObservationId?: string | null
-    datasetId: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
   export type JobExecutionCreateManyTraceInput = {
     id?: string
     createdAt?: Date | string
@@ -55708,44 +60172,6 @@ export namespace Prisma {
     endTime?: Date | string | null
     error?: string | null
     jobOutputScoreId?: string | null
-  }
-
-  export type DatasetItemUpdateWithoutSourceTraceInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    status?: EnumDatasetStatusFieldUpdateOperationsInput | $Enums.DatasetStatus
-    input?: NullableJsonNullValueInput | InputJsonValue
-    expectedOutput?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    sourceObservation?: ObservationUpdateOneWithoutDerivedDatasetItemsNestedInput
-    dataset?: DatasetUpdateOneRequiredWithoutDatasetItemsNestedInput
-    datasetRunItems?: DatasetRunItemsUpdateManyWithoutDatasetItemNestedInput
-  }
-
-  export type DatasetItemUncheckedUpdateWithoutSourceTraceInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    status?: EnumDatasetStatusFieldUpdateOperationsInput | $Enums.DatasetStatus
-    input?: NullableJsonNullValueInput | InputJsonValue
-    expectedOutput?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    sourceObservationId?: NullableStringFieldUpdateOperationsInput | string | null
-    datasetId?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    datasetRunItems?: DatasetRunItemsUncheckedUpdateManyWithoutDatasetItemNestedInput
-  }
-
-  export type DatasetItemUncheckedUpdateManyWithoutSourceTraceInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    status?: EnumDatasetStatusFieldUpdateOperationsInput | $Enums.DatasetStatus
-    input?: NullableJsonNullValueInput | InputJsonValue
-    expectedOutput?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    sourceObservationId?: NullableStringFieldUpdateOperationsInput | string | null
-    datasetId?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type JobExecutionUpdateWithoutTraceInput = {
@@ -55785,56 +60211,6 @@ export namespace Prisma {
     endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     error?: NullableStringFieldUpdateOperationsInput | string | null
     jobOutputScoreId?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
-  export type DatasetItemCreateManySourceObservationInput = {
-    id?: string
-    status?: $Enums.DatasetStatus
-    input?: NullableJsonNullValueInput | InputJsonValue
-    expectedOutput?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    sourceTraceId?: string | null
-    datasetId: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type DatasetItemUpdateWithoutSourceObservationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    status?: EnumDatasetStatusFieldUpdateOperationsInput | $Enums.DatasetStatus
-    input?: NullableJsonNullValueInput | InputJsonValue
-    expectedOutput?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    sourceTrace?: TraceUpdateOneWithoutDatasetItemNestedInput
-    dataset?: DatasetUpdateOneRequiredWithoutDatasetItemsNestedInput
-    datasetRunItems?: DatasetRunItemsUpdateManyWithoutDatasetItemNestedInput
-  }
-
-  export type DatasetItemUncheckedUpdateWithoutSourceObservationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    status?: EnumDatasetStatusFieldUpdateOperationsInput | $Enums.DatasetStatus
-    input?: NullableJsonNullValueInput | InputJsonValue
-    expectedOutput?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    sourceTraceId?: NullableStringFieldUpdateOperationsInput | string | null
-    datasetId?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    datasetRunItems?: DatasetRunItemsUncheckedUpdateManyWithoutDatasetItemNestedInput
-  }
-
-  export type DatasetItemUncheckedUpdateManyWithoutSourceObservationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    status?: EnumDatasetStatusFieldUpdateOperationsInput | $Enums.DatasetStatus
-    input?: NullableJsonNullValueInput | InputJsonValue
-    expectedOutput?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    sourceTraceId?: NullableStringFieldUpdateOperationsInput | string | null
-    datasetId?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type JobExecutionCreateManyScoreInput = {
@@ -55986,10 +60362,10 @@ export namespace Prisma {
     input?: NullableJsonNullValueInput | InputJsonValue
     expectedOutput?: NullableJsonNullValueInput | InputJsonValue
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    sourceTraceId?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceObservationId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    sourceTrace?: TraceUpdateOneWithoutDatasetItemNestedInput
-    sourceObservation?: ObservationUpdateOneWithoutDerivedDatasetItemsNestedInput
     datasetRunItems?: DatasetRunItemsUpdateManyWithoutDatasetItemNestedInput
   }
 
@@ -56243,9 +60619,17 @@ export namespace Prisma {
      */
     export type UserCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = UserCountOutputTypeDefaultArgs<ExtArgs>
     /**
+     * @deprecated Use OrganizationCountOutputTypeDefaultArgs instead
+     */
+    export type OrganizationCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = OrganizationCountOutputTypeDefaultArgs<ExtArgs>
+    /**
      * @deprecated Use ProjectCountOutputTypeDefaultArgs instead
      */
     export type ProjectCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ProjectCountOutputTypeDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use OrganizationMembershipCountOutputTypeDefaultArgs instead
+     */
+    export type OrganizationMembershipCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = OrganizationMembershipCountOutputTypeDefaultArgs<ExtArgs>
     /**
      * @deprecated Use TraceSessionCountOutputTypeDefaultArgs instead
      */
@@ -56254,10 +60638,6 @@ export namespace Prisma {
      * @deprecated Use TraceCountOutputTypeDefaultArgs instead
      */
     export type TraceCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = TraceCountOutputTypeDefaultArgs<ExtArgs>
-    /**
-     * @deprecated Use ObservationCountOutputTypeDefaultArgs instead
-     */
-    export type ObservationCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ObservationCountOutputTypeDefaultArgs<ExtArgs>
     /**
      * @deprecated Use ScoreCountOutputTypeDefaultArgs instead
      */
@@ -56303,6 +60683,10 @@ export namespace Prisma {
      */
     export type VerificationTokenArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = VerificationTokenDefaultArgs<ExtArgs>
     /**
+     * @deprecated Use OrganizationDefaultArgs instead
+     */
+    export type OrganizationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = OrganizationDefaultArgs<ExtArgs>
+    /**
      * @deprecated Use ProjectDefaultArgs instead
      */
     export type ProjectArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ProjectDefaultArgs<ExtArgs>
@@ -56314,6 +60698,10 @@ export namespace Prisma {
      * @deprecated Use LlmApiKeysDefaultArgs instead
      */
     export type LlmApiKeysArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = LlmApiKeysDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use OrganizationMembershipDefaultArgs instead
+     */
+    export type OrganizationMembershipArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = OrganizationMembershipDefaultArgs<ExtArgs>
     /**
      * @deprecated Use ProjectMembershipDefaultArgs instead
      */
@@ -56366,6 +60754,10 @@ export namespace Prisma {
      * @deprecated Use EventsDefaultArgs instead
      */
     export type EventsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = EventsDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use CommentDefaultArgs instead
+     */
+    export type CommentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = CommentDefaultArgs<ExtArgs>
     /**
      * @deprecated Use PromptDefaultArgs instead
      */
